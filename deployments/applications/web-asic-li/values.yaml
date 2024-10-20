@@ -1,3 +1,6 @@
+---
+fullnameOverride: web-asic-li
+
 image:
   repository: cr.asic.li/applications/web.asic.li
   tag: latest
