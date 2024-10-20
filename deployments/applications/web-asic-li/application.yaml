@@ -7,14 +7,14 @@ metadata:
 spec:
   project: default
   sources:
-    - repoURL: 'git@github.com:asic-li/infrastructure.git'
+    - repoURL: 'git@github.com:sevaho/atrium.git'
       path: charts/application
       targetRevision: HEAD
       helm:
         releaseName: web-asic-li
         valueFiles:
           - $values/deployments/web-asic-li/values.yaml
-    - repoURL: 'git@github.com:asic-li/infrastructure.git'
+    - repoURL: 'git@github.com:sevaho/atrium.git'
       targetRevision: HEAD
       ref: values
 
