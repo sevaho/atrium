@@ -1,4 +1,5 @@
 ---
+fullnameOverride: capnhook-alpha
 image:
   repository: cr.asic.li/applications/capnhook
   tag: 0.0.2
