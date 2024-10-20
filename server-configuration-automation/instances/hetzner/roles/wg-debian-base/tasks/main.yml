@@ -1,0 +1,9 @@
+---
+- import_tasks: create-users-admin.yml
+  become: yes
+
+- import_tasks: os-settings-and-packages.yml
+  become: yes
+
+- import_tasks: security.yml
+  become: yes

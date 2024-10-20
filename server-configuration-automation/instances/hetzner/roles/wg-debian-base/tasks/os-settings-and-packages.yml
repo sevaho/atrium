@@ -1,0 +1,67 @@
+---
+- name: OS & Packages | Set hostname to host-specific variable
+  hostname:
+    name: "{{ base_hostname }}"
+
+- name: OS & Packages | Add a localhost entry in /etc/hosts with hostname
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.0\.1 localhost'
+    line: 127.0.0.1 localhost {{ base_hostname }}
+
+- name: OS & Packages | Ensure localisation files for '{{ base_system_locale }}' are available
+  locale_gen:
+    name: "{{ base_system_locale }}"
+    state: present
+
+- name: OS & Packages | Ensure localisation files for '{{ base_system_language }}' are available
+  locale_gen:
+    name: "{{ base_system_language }}"
+    state: present
+
+- name: OS & Packages | Get current locale and language configuration
+  command: localectl status
+  register: locale_status
+  changed_when: false
+
+- name: OS & Packages | Parse 'LANG' from current locale and language configuration
+  set_fact:
+    locale_lang: "{{ locale_status.stdout | regex_search('LANG=([^\n]+)', '\\1') | first }}"
+
+- name: OS & Packages | Parse 'LANGUAGE' from current locale and language configuration
+  set_fact:
+    locale_language: "{{ locale_status.stdout | regex_search('LANGUAGE=([^\n]+)', '\\1') | default([locale_lang], true) | first }}"
+
+- name: OS & Packages | Configure locale to '{{ base_system_locale }}' and language to '{{ base_system_language }}'
+  command: localectl set-locale LANG={{ base_system_locale }} LANGUAGE={{ base_system_language }}
+  changed_when: locale_lang != base_system_locale or locale_language != base_system_language  
+
+- name: OS & Packages | Set the time zone
+  timezone:
+    name: "{{ base_timezone }}"
+
+- name: OS & Packages | Ensure all updates are installed
+  apt:
+    name: '*'
+    state: latest
+    update_cache: yes
+  when:
+   - base_update_packages|bool == true
+
+- name: OS & Packages | Install packages added by user
+  apt:
+    name: "{{ base_install_packages }}"
+    state: present
+
+- name: OS & Packages | Set MOTD
+  template:
+    src: motd
+    dest: /etc/motd
+    mode: "0644"
+
+- name: Install ntp
+  apt:
+    name: "ntp"
+    state: present
+  notify:
+    - restart ntp

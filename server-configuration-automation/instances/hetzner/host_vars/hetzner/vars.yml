@@ -1,0 +1,4 @@
+---
+base_firewall_tcp_ports:
+  - http
+  - https

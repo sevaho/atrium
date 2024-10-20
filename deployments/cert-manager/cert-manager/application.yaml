@@ -1,0 +1,51 @@
+# https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: cert-manager
+    repoURL: https://charts.jetstack.io
+    targetRevision: 1.13.2
+    helm:
+      releaseName: cert-manager
+      valuesObject: {}
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  namespace: cert-manager
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: sebastiaan@sevaho.io
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - selector: {}
+      dns01:
+        digitalocean:
+          tokenSecretRef:
+            name: digitalocean-dns
+            key: DO_TOKEN
+---
+apiVersion: v1
+data:
+  DO_TOKEN: ${DO_TOKEN::BASE64}
+kind: Secret
+metadata:
+  name: digitalocean-dns
+  namespace: cert-manager
+type: Opaque

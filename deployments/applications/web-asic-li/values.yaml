@@ -1,0 +1,15 @@
+image:
+  repository: cr.asic.li/applications/web.asic.li
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  hosts:
+    - asic.li
+    - web.asic.li
+  tls:
+    secretName: web-asic-li-certs

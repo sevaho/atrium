@@ -1,0 +1,5 @@
+name: digitalocean
+runtime:
+  name: python
+main: infrastructure/__main__.py
+description: Infrastructure for DigitalOcean

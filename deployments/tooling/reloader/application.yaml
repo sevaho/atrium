@@ -1,0 +1,24 @@
+---
+# https://github.com/stakater/Reloader/blob/master/deployments/kubernetes/chart/reloader/values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: reloader
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: reloader
+    repoURL: https://stakater.github.io/stakater-charts
+    targetRevision: 1.0.65
+    helm:
+      releaseName: reloader
+      valuesObject: {}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tooling
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

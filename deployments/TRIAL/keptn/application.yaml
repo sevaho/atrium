@@ -1,0 +1,24 @@
+---
+# https://github.com/keptn/lifecycle-toolkit/blob/main/chart/values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keptn
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: keptn
+    repoURL: https://charts.lifecycle.keptn.sh
+    targetRevision: 0.3.0
+    helm:
+      releaseName: keptn
+      valuesObject: {}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: keptn-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

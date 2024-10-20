@@ -1,0 +1,3 @@
+---
+- import_tasks: hetzner.yml
+  become: yes

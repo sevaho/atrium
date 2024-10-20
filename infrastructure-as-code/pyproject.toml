@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "infrastructure"
+version = "0.1.0"
+description = ""
+authors = ["sevaho <sebastiaan@sevaho.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pulumi = "^3.94.2"
+pulumi-digitalocean = "^4.24.0"
+pydantic = "^2.5.1"
+pydantic-settings = "^2.1.0"
+pulumi-github = "^5.22.0"
+
+
+[tool.poetry.group.dev.dependencies]
+python-dotenv = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

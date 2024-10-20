@@ -1,0 +1,15 @@
+---
+base_hostname: "{{ inventory_hostname }}"
+base_timezone: Europe/Brussels
+base_update_packages: true
+base_system_locale: en_US.UTF-8
+base_system_language: en_US.UTF-8
+
+base_users:
+  - name: admin
+
+# TO BE OVERRIDDEN
+base_install_packages: []
+
+base_firewall_tcp_ports: []
+base_firewall_udp_ports: []

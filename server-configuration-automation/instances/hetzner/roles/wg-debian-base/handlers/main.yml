@@ -1,0 +1,13 @@
+---
+- name: restart sshd
+  become: yes
+  service:
+    name: sshd
+    state: restarted
+
+- name: restart ntp
+  become: yes
+  systemd:
+    state: restarted
+    enabled: true
+    name: ntp

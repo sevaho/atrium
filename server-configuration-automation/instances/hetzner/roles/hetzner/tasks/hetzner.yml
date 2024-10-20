@@ -1,0 +1,17 @@
+- name: Install open-iscsi
+  apt:
+    name: "open-iscsi"
+    state: present
+
+- name: Install PostgreSQL and required packages
+  apt:
+    name:
+    - postgresql
+    - postgresql-contrib
+    state: present
+
+- name: Start PostgreSQL service
+  systemd:
+    name: postgresql
+    state: started
+    enabled: yes

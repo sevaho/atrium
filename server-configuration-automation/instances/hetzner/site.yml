@@ -1,0 +1,5 @@
+---
+- hosts: hetzner
+  roles:
+    - wg-debian-base
+    - hetzner

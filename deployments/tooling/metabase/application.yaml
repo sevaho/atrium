@@ -1,0 +1,32 @@
+---
+# https://artifacthub.io/packages/helm/pmint93/metabase
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metabase
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: metabase
+    repoURL: https://pmint93.github.io/helm-charts
+    targetRevision: 2.16.7
+    helm:
+      releaseName: metabase
+      valuesObject:
+        replicaCount: 1
+        siteUrl: ${METABASE_HOST}
+        database:
+          type: postgres
+          existingSecret: metabase-data-secret
+          existingSecretConnectionURIKey: connectionURI
+          existingSecretEncryptionKeyKey: encryptionKey
+
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tooling
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

@@ -1,0 +1,69 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: miniflux
+  namespace: argocd
+spec:
+  project: default
+  source:
+    path: charts/application
+    repoURL: 'git@github.com:asic-li/infrastructure.git'
+    targetRevision: HEAD
+    helm:
+      releaseName: miniflux
+      valuesObject:
+        nameOverride: miniflux
+        image:
+          repository: docker.io/miniflux/miniflux
+          tag: latest
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 8080
+
+        env:
+          RUN_MIGRATIONS: "1"
+          CREATE_ADMIN: "1"
+
+        envFromSecret:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: miniflux
+                key: DATABASE_URL
+          - name: ADMIN_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: miniflux
+                key: ADMIN_USERNAME
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: miniflux
+                key: ADMIN_PASSWORD
+
+        ingress:
+          hosts:
+            - ${MINIFLUX_HOST}
+          tls:
+            secretName: miniflux-certs
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tooling
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+---
+apiVersion: v1
+data:
+  ADMIN_PASSWORD: ${MINIFLUX_ADMIN_PASSWORD::BASE64}
+  ADMIN_USERNAME: ${MINIFLUX_ADMIN_USERNAME::BASE64}
+  DATABASE_URL: ${MINIFLUX_DB_DSN::BASE64}
+kind: Secret
+metadata:
+  name: miniflux
+  namespace: tooling

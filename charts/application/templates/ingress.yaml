@@ -1,0 +1,35 @@
+{{- if .Values.ingress.enabled }}
+{{ $fullname := include "app.fullname" . }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullname }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.clusterIssuer }}
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    {{- if .Values.ingress.extraAnnotations }}
+    {{- toYaml .Values.ingress.extraAnnotations | nindent 4 }}
+    {{- end }}
+
+spec:
+  ingressClassName: {{ .Values.ingress.ingressClass }}
+  tls:
+  - hosts:
+    {{- range $host := .Values.ingress.hosts }}
+    - {{ $host }}
+    {{- end }}
+    secretName: {{ .Values.ingress.tls.secretName }}
+  rules:
+  {{- range $host := .Values.ingress.hosts }}
+  - host: {{ $host }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: {{ $fullname }}
+            port:
+              number: {{ $.Values.service.port }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,30 @@
+---
+- name: Ensure group "admin" exists
+  ansible.builtin.group:
+    name: admin
+    state: present
+
+- name: create admin user
+  user: name=admin state=present group=admin groups="sudo"
+
+- name: Configuring sudoer access
+  community.general.sudoers:
+    name: allow-all-sudo
+    state: present
+    user: admin
+    commands: ALL
+    nopassword: true
+
+- name: Create directory
+  ansible.builtin.file:
+    path: /home/admin/.ssh
+    state: directory
+    owner: admin
+    group: admin
+    mode: '0755'
+
+- name: Copy authorized_keys
+  ansible.builtin.command: cp /root/.ssh/authorized_keys /home/admin/.ssh
+
+- name: Chown
+  ansible.builtin.command: chown -R admin:admin /home/admin/.ssh

@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.fullname" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.labels" . | nindent 8 }}
+      annotations:
+        {{- if .Values.extraAnnotations}}
+        {{ toYaml .Values.extraAnnotations | indent 8 }}
+        {{- end }}
+
+    spec:
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      serviceAccountName: {{ include "app.fullname" . }}
+      {{ if .Values.security.enabled -}}
+      securityContext:
+        {{- toYaml .Values.security.podSecurityContext | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 160
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+
+      containers:
+      - name: {{ include "app.fullname" . }}
+{{  if .Values.imageFull  }}
+        image: {{ .Values.imageFull}}
+{{  else  }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{  end  }}
+
+{{  if .Values.args  }}
+        args:
+        {{- range .Values.args  }}
+        - {{ . }}
+        {{- end  }}
+{{  end  }}
+
+        {{ if .Values.security.enabled -}}
+        securityContext:
+          {{- toYaml .Values.security.containerSecurityContext | nindent 10 }}
+        {{- end }}
+        ports:
+          - name: http
+            containerPort: {{ .Values.service.targetPort }}
+            protocol: TCP
+
+        {{ if .Values.livenessProbe -}}
+        livenessProbe:
+          {{- toYaml .Values.livenessProbe | nindent 10 }}
+        {{- end }}
+        {{ if .Values.readinessProbe -}}
+        readinessProbe:
+          {{- toYaml .Values.readinessProbe | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - sleep 10
+
+        env:
+        {{- range $name, $value := .Values.env}}
+        {{- if not (empty $value) }}
+        - name: {{ $name | quote }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+        {{ if .Values.envFromSecret }}
+        {{- toYaml .Values.envFromSecret | nindent 8 }}
+        {{- end }}

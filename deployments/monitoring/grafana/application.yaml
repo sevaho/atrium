@@ -1,0 +1,26 @@
+---
+# https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: grafana
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 7.0.17
+    helm:
+      releaseName: grafana
+      valuesObject:
+        global:
+          dnsService: "rke2-coredns-rke2-coredns"
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

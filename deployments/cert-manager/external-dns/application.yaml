@@ -1,0 +1,44 @@
+# https://github.com/kubernetes-sigs/external-dns/blob/master/charts/external-dns/values.yaml
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: external-dns
+    repoURL: https://kubernetes-sigs.github.io/external-dns
+    targetRevision: 1.13.1
+    helm:
+      releaseName: external-dns
+      valuesObject:
+        logLevel: info
+        sources:
+          - service
+          # - ingress # This does not work as expected
+        provider: digitalocean
+        env:
+          - name: DO_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: external-dns-data-secret
+                key: DO_TOKEN
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+---
+apiVersion: v1
+data:
+  DO_TOKEN: ${DO_TOKEN::BASE64}
+kind: Secret
+metadata:
+  name: external-dns-data-secret
+  namespace: cert-manager
+type: Opaque

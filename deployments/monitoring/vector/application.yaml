@@ -1,0 +1,106 @@
+---
+# https://github.com/vectordotdev/helm-charts/blob/develop/charts/vector/values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vector
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: vector
+    repoURL: https://helm.vector.dev
+    targetRevision: 0.29.0
+    helm:
+      releaseName: vector
+      valuesObject:
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: vector-data-secret
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: vector-data-secret
+                key: AWS_SECRET_ACCESS_KEY
+        podAnnotations:
+          vector.dev/exclude: 'true'
+        role: Agent
+        service:
+          enabled: false
+        tolerations:
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/controlplane
+            operator: Exists
+          - effect: NoExecute
+            key: node-role.kubernetes.io/etcd
+            operator: Exists
+        customConfig:
+          data_dir: "/var/lib/vector"
+          api:
+            enabled: false
+          sources:
+            kubernetes:
+              type: kubernetes_logs
+
+          transforms:
+            kubernetes_modify:
+              type: "remap"
+              inputs: [kubernetes]
+              source: |-
+                .created_at = .timestamp
+
+                parsed_timestamp, err = parse_timestamp(.timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+                if err != null {
+                    log("Unable to parse timestamp, taking now(): " + err, level: "error")
+                    .timestamp = to_unix_timestamp(now(), unit: "nanoseconds")
+
+                } else {
+                    .timestamp = to_unix_timestamp(parsed_timestamp, unit: "nanoseconds")
+                }
+
+          sinks:
+            # loki:
+            #   type: loki
+            #   inputs:
+            #     - kubernetes_modify
+            #   compression: snappy
+            #   endpoint: http://loki-gateway
+            #   encoding:
+            #     codec: json
+            #   labels:
+            #     pod_labels_*: '{{ printf "{{ kubernetes.pod_labels }}" }}'
+            #     container: '{{ printf "{{ kubernetes.container_name }}" }}'
+            #     namespace: '{{ printf "{{ kubernetes.pod_namespace }}" }}'
+            #     stream: '{{ printf "{{ stream }}" }}'
+            #     source: "vector"
+            s3:
+              type: aws_s3
+              inputs:
+                - kubernetes
+              endpoint: ${AWS_S3_ENDPOINT}
+              bucket: ${AWS_S3_BUCKET}
+              region: ${AWS_S3_REGION}
+              key_prefix: vector/logs/kubernetes/hetzner/year=%Y/month=%m/day=%d
+              encoding:
+                codec: json
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+---
+apiVersion: v1
+data:
+  AWS_ACCESS_KEY_ID: ${AWS_S3_ACCESS_KEY::BASE64}
+  AWS_SECRET_ACCESS_KEY: ${AWS_S3_SECRET_KEY::BASE64}
+kind: Secret
+metadata:
+  name: vector-data-secret
+  namespace: monitoring
+type: Opaque

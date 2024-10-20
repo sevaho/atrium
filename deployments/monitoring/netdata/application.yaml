@@ -1,0 +1,28 @@
+---
+# https://github.com/netdata/helmchart/blob/master/charts/netdata/values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: netdata
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: netdata
+    repoURL: https://netdata.github.io/helmchart
+    targetRevision: 3.7.78
+    helm:
+      releaseName: netdata
+      valuesObject:
+        env:
+          DO_NOT_TRACK: 1
+        ingress:
+          enabled: false
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

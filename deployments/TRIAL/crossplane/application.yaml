@@ -1,0 +1,24 @@
+---
+# https://docs.crossplane.io/v1.14/software/install/
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crossplane
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: crossplane
+    repoURL: https://charts.crossplane.io/stable
+    targetRevision: 1.14.5
+    helm:
+      releaseName: crossplane
+      valuesObject: {}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: crossplane-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

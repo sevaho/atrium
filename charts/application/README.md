@@ -1,0 +1,1 @@
+# Opinionated application chart

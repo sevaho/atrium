@@ -1,0 +1,1 @@
+hetzner ansible_host="{{ lookup('ansible.builtin.env', 'ASIC_SERVER_HETZNER_HOST') }}" ansible_port="{{ lookup('ansible.builtin.env', 'ASIC_SERVER_HETZNER_SSH_PORT') }}"

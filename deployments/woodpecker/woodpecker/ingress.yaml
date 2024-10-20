@@ -1,0 +1,29 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: woodpecker-ingress
+  namespace: woodpecker
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - ${WOODPECKER_WEBHOOK_HOST_NO_HTTPS}
+      secretName: woodpecker-ingress
+  rules:
+    - host: ${WOODPECKER_WEBHOOK_HOST_NO_HTTPS}
+      http:
+        paths:
+          - pathType: Exact
+            path: /api/hook
+            backend:
+              service:
+                name: woodpecker-server
+                port:
+                  number: 80

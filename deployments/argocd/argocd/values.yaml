@@ -1,0 +1,36 @@
+# https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
+
+configs:
+  cm:
+    url: "https://${TELEPORT_ARGOCD_HOST}"
+
+    # Dex configuration
+    dex.config: |
+      connectors:
+        # GitHub example
+        - type: github
+          id: github
+          name: GitHub
+          config:
+            clientID: ${ARGOCD_GITHUB_CLIENT_ID}
+            clientSecret: ${ARGOCD_GITHUB_CLIENT_SECRET}
+            orgs:
+            - name: ${GITHUB_ORG}
+
+  # Argo CD RBAC policy configuration
+  ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/rbac.md
+  rbac:
+    create: true
+
+    annotations: {}
+
+    # If omitted or empty, users may be still be able to login, but will see no apps, projects, etc...
+    policy.default: ''
+
+    # -- File containing user-defined policies and role definitions.
+    # Policy rules are in the form:
+    #  p, subject, resource, action, object, effect
+    # Role definitions and bindings are in the form:
+    #  g, subject, inherited-subject
+    policy.csv: |
+      g, ${GITHUB_ORG}:admin, role:admin

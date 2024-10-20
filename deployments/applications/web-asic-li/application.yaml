@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: web-asic-li
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'git@github.com:asic-li/infrastructure.git'
+      path: charts/application
+      targetRevision: HEAD
+      helm:
+        releaseName: web-asic-li
+        valueFiles:
+          - $values/deployments/web-asic-li/values.yaml
+    - repoURL: 'git@github.com:asic-li/infrastructure.git'
+      targetRevision: HEAD
+      ref: values
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: applications
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

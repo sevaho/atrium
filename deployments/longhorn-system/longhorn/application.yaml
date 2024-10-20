@@ -1,0 +1,44 @@
+# ---
+# https://github.com/longhorn/charts/blob/v1.5.x/charts/longhorn/values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: longhorn
+    repoURL: https://charts.longhorn.io
+    targetRevision: 1.5.3
+    helm:
+      releaseName: longhorn
+      valuesObject:
+        defaultSettings:
+          backupTarget: "s3://${AWS_S3_BUCKET}@${AWS_S3_REGION}/longhorn/backups/"
+          backupTargetCredentialSecret: digitalocean-s3
+        persistence:
+          defaultClassReplicaCount: 1
+        longhornManager:
+          log:
+            format: json
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: longhorn-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+---
+apiVersion: v1
+data:
+  AWS_ACCESS_KEY_ID: ${AWS_S3_ACCESS_KEY::BASE64}
+  AWS_ENDPOINTS: ${AWS_S3_ENDPOINT::BASE64}
+  AWS_SECRET_ACCESS_KEY: ${AWS_S3_SECRET_KEY::BASE64}
+  VIRTUAL_HOSTED_STYLE: dHJ1ZQ== # 'true'
+kind: Secret
+metadata:
+  name: digitalocean-s3
+  namespace: longhorn-system
+type: Opaque

@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: applications
+  annotations:
+    keptn.sh/lifecycle-toolkit: "enabled" # this tells Keptn to watch the namespace

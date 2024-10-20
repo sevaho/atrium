@@ -1,0 +1,100 @@
+---
+- name: Security | Only ssh with ssh key, not passwords
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+  notify:
+    - restart sshd
+
+- name: Security | Disallow root SSH access
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PermitRootLogin"
+    line: "PermitRootLogin no"
+    state: present
+  notify:
+    - restart sshd
+
+- name: Security | Install UFW firewall
+  apt:
+    name: ufw
+    state: latest
+
+- name: Security | Enabled and start UFW service
+  service:
+    name: ufw
+    state: started
+    enabled: yes
+
+- name: Security | Allow SSH
+  ufw:
+    rule: allow
+    port: ssh
+    proto: tcp
+
+- name: Security | Allow user-definied TCP ports/services
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  with_items: "{{ base_firewall_tcp_ports }}"
+
+- name: Security | Allow user-definied UDP ports/services
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: udp
+  with_items: "{{ base_firewall_udp_ports }}"
+
+- name: Security | Deny all incoming traffic
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+
+- name: Security | Install fail2ban
+  apt:
+    name: fail2ban
+    state: latest
+
+- name: Set SSH jail local
+  template:
+    src: jail.local
+    dest: /etc/fail2ban/jail.local
+    mode: "0644"
+
+- name: Security | Enabled and start fail2ban
+  service:
+    name: fail2ban
+    state: started
+    enabled: yes
+
+- name: Security | Install unattended-upgrades
+  apt:
+    name: unattended-upgrades
+    state: latest
+
+- name: Security | Enabled and start unattended-upgrades
+  service:
+    name: unattended-upgrades
+    state: started
+    enabled: yes
+
+- name: Security | Disable IPv6 with sysctl
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: "1"
+    state: "present"
+    reload: "yes"
+  with_items:
+    - net.ipv6.conf.all.disable_ipv6
+    - net.ipv6.conf.default.disable_ipv6
+
+- name: Security | blacklist ipv6 in modprobe
+  ansible.builtin.lineinfile:
+    dest: /etc/modprobe.d/blacklist.conf
+    line: 'blacklist ipv6'
+    mode: '0644'
+    create: yes
