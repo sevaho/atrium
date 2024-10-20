@@ -20,17 +20,16 @@ This repository contains my personal Kubernetes cluster setup (on hetzner), and 
 
 ```shell
 curl -sfL https://get.rke2.io | sh -
-
 ```
 
-## To sync or not to sync
+## To sync or not to sync (ArgoCD)
 
 Some applications are synced via ArgoCD and some are not. When synced, it means that ArgoCD will check this github repository to validate and update to the desired state.
 to sync an application, we require to write atleast 2 sources see [https://argo-cd.readthedocs.io/en/latest/user-guide/multiple_sources/#helm-value-files-from-external-git-repository](https://argo-cd.readthedocs.io/en/latest/user-guide/multiple_sources/#helm-value-files-from-external-git-repository)
 
 ## Secrets
 
-All secrets are stored in a SealedSecrets
+All secrets are stored in a `.env` file for not synced applications ([envvar](https://github.com/sevaho/scripts/blob/master/envvar) is used to load the ENV variables). When an application should be synced via ArgoCD, [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets)
 
 ## What's in this repository?
 
