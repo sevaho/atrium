@@ -34,7 +34,7 @@
 
 - name: OS & Packages | Configure locale to '{{ base_system_locale }}' and language to '{{ base_system_language }}'
   command: localectl set-locale LANG={{ base_system_locale }} LANGUAGE={{ base_system_language }}
-  changed_when: locale_lang != base_system_locale or locale_language != base_system_language  
+  changed_when: locale_lang != base_system_locale or locale_language != base_system_language
 
 - name: OS & Packages | Set the time zone
   timezone:
