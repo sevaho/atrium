@@ -1,1 +1,6 @@
 threshold: medium
+
+fileignoreconfig:
+- filename: deployments/applications/capnhook/capnhook-alpha.sealedsecrets.yaml
+  checksum: dd6f64570059d8c12bad26890a6f57cffa485998189e854580cb0508c8dce8e0
+version: ""

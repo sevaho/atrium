@@ -1,0 +1,38 @@
+---
+image:
+  repository: cr.asic.li/applications/capnhook
+  tag: 0.0.2
+
+args:
+  - --serve
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+replicaCount: 1
+
+extraAnnotations:
+  reloader.stakater.com/auto: "true"
+
+ingress:
+  hosts:
+    - alpha.capnhook.dev
+  tls:
+    secretName: alpha-capnhook-dev-certs
+
+env:
+  ENVIRONMENT: ALPHA
+
+envFromSecret:
+  - name: DB_DSN
+    valueFrom:
+      secretKeyRef:
+        name: capnhook-alpha
+        key: DB_DSN
+  - name: JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: capnhook-alpha
+        key: JWT_SECRET
