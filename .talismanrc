@@ -1,6 +1,6 @@
 threshold: medium
 
 fileignoreconfig:
-- filename: deployments/applications/capnhook/capnhook-alpha.sealedsecrets.yaml
-  checksum: dd6f64570059d8c12bad26890a6f57cffa485998189e854580cb0508c8dce8e0
+- filename: deployments/applications/goforms/goforms-data-secret.sealedsecrets.yaml
+  checksum: 28b2d16557363ece774ffb2e858d1b9a3f22e2ff6c981217d45b857d51a52277
 version: ""

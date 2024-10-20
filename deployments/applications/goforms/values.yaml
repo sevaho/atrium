@@ -1,0 +1,32 @@
+---
+fullnameOverride: goforms
+image:
+  repository: cr.asic.li/applications/goforms
+  tag: 0.0.3
+
+args:
+  - --serve
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+replicaCount: 1
+
+extraAnnotations:
+  reloader.stakater.com/auto: "true"
+
+ingress:
+  hosts:
+    - forms.asic.li
+    - goforms.asic.li
+  tls:
+    secretName: goforms-certs
+
+envFromSecret:
+  - name: MAILERSEND_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: goforms-data-secret
+        key: MAILERSEND_API_KEY

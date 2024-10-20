@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: goforms
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/sevaho/atrium'
+      path: charts/application
+      targetRevision: HEAD
+      helm:
+        releaseName: goforms
+        valueFiles:
+          - $values/deployments/applications/goforms/values.yaml
+    - repoURL: 'https://github.com/sevaho/atrium'
+      targetRevision: HEAD
+      ref: values
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: applications
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
