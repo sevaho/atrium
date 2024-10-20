@@ -13,7 +13,7 @@ spec:
       helm:
         releaseName: web-asic-li
         valueFiles:
-          - $values/deployments/web-asic-li/values.yaml
+          - $values/deployments/applications/web-asic-li/values.yaml
     - repoURL: 'https://github.com/sevaho/atrium'
       targetRevision: HEAD
       ref: values
