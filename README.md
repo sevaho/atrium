@@ -50,3 +50,9 @@ Infrastructure as code written with Pulumi
 > Still looking for a good name for this folder...
 
 This contains the ansible configuration for underlying servers.
+
+## TODO
+
+- Grafana dashboards (in git)
+- Quickwit logs
+- Fix clickhouse deployment -> now there is a memory issue
