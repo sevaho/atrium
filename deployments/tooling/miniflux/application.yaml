@@ -8,7 +8,7 @@ spec:
   project: default
   source:
     path: charts/application
-    repoURL: 'git@github.com:asic-li/infrastructure.git'
+    repoURL: 'https://github.com/sevaho/atrium'
     targetRevision: HEAD
     helm:
       releaseName: miniflux
