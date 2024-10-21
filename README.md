@@ -10,6 +10,14 @@ This repository contains my personal Kubernetes cluster setup (on hetzner), and 
 
 </div>
 
+## Goal
+
+- Make it as easy as possible to deploy to your own Kubernetes cluster.
+- All infrastructure is written in this Git folder, should be easy to migrate to a new server.
+- Have a self sustained CI/CD with secrets system.
+- Metrics, Logs, BI should work out of the box.
+- goteleport act as your jump point.
+
 ## Why creating this repository
 
 - build in public
@@ -56,3 +64,4 @@ This contains the ansible configuration for underlying servers.
 - Grafana dashboards (in git)
 - Quickwit logs
 - Fix clickhouse deployment -> now there is a memory issue
+- .env.example
