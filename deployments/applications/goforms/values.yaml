@@ -21,6 +21,7 @@ ingress:
   hosts:
     - forms.asic.li
     - goforms.asic.li
+    - goforms.dev
   tls:
     secretName: goforms-certs
 
