@@ -79,8 +79,11 @@ spec:
             uri: http://metabase.tooling.svc.cluster.local
             public_addr: ${TELEPORT_METABASE_HOST}
           - name: netdata
-            uri: http://netdata.monitoring.svc:19999
+            uri: http://netdata.observability.svc:19999
             public_addr: ${TELEPORT_NETDATA_HOST}
+          - name: coroot
+            uri: http://coroot.observability.svc:8080
+            public_addr: ${TELEPORT_COROOT_HOST}
         insecureSkipProxyTLSVerify: true
         roles: kube,app.discovery
         kubeClusterName: k8s-asic-li-1

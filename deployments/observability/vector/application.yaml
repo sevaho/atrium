@@ -89,7 +89,7 @@ spec:
 
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: monitoring
+    namespace: observability
   syncPolicy:
     automated:
       prune: false
@@ -102,5 +102,5 @@ data:
 kind: Secret
 metadata:
   name: vector-data-secret
-  namespace: monitoring
+  namespace: observability
 type: Opaque

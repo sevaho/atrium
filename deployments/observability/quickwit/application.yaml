@@ -1,0 +1,64 @@
+---
+# https://github.com/quickwit-oss/helm-charts/blob/main/charts/quickwit/values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: quickwit
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: quickwit
+    repoURL: https://helm.quickwit.io
+    targetRevision: 0.7.6
+    helm:
+      releaseName: quickwit
+      valuesObject:
+        metastore:
+          extraEnvFrom:
+            - secretRef:
+                name: quickwit-data-secret
+        config:
+          default_index_root_uri: s3://${AWS_S3_BUCKET}/quickwit-indexes
+
+          # Storage configuration.
+          storage:
+            s3:
+              endpoint: ${AWS_S3_ENDPOINT}
+              region: ${AWS_S3_REGION}
+              access_key_id: ${AWS_S3_ACCESS_KEY}
+              secret_access_key: ${AWS_S3_SECRET_KEY}
+
+        seed:
+          indexes:
+            - version: 0.8
+              index_id: otel-logs-test
+              doc_mapping:
+                field_mappings:
+                  - name: timestamp
+                    type: datetime
+                    fast: true
+                    input_formats:
+                      - unix_timestamp
+                    output_format: unix_timestamp_secs
+                  - name: body
+                    type: text
+                timestamp_field: timestamp
+              search_settings:
+                default_search_fields: [body]
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+---
+apiVersion: v1
+data:
+  QW_METASTORE_URI: ${QUICKWIT_DB_DSN::BASE64}
+kind: Secret
+metadata:
+  name: quickwit-data-secret
+  namespace: observability
+type: Opaque

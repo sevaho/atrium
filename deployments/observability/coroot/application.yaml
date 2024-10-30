@@ -1,0 +1,23 @@
+---
+# https://github.com/coroot/helm-charts/blob/main/charts/coroot/values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: coroot
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: coroot
+    repoURL: https://coroot.github.io/helm-charts
+    targetRevision: 0.15.12
+    helm:
+      releaseName: coroot
+      valuesObject: {}
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
