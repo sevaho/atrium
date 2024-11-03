@@ -10,7 +10,7 @@ spec:
   source:
     chart: vector
     repoURL: https://helm.vector.dev
-    targetRevision: 0.29.0
+    targetRevision: 0.37.0
     helm:
       releaseName: vector
       valuesObject:
@@ -44,38 +44,67 @@ spec:
           sources:
             kubernetes:
               type: kubernetes_logs
+            demo_syslogs:
+              type: "demo_logs"
+              format: "syslog"
+              count: 100000
+              interval: 0.1
 
           transforms:
-            kubernetes_modify:
+            remap_kubernetes_otel:
               type: "remap"
               inputs: [kubernetes]
               source: |-
-                .created_at = .timestamp
-
                 parsed_timestamp, err = parse_timestamp(.timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
                 if err != null {
                     log("Unable to parse timestamp, taking now(): " + err, level: "error")
-                    .timestamp = to_unix_timestamp(now(), unit: "nanoseconds")
+                    .timestamp_nanos = to_unix_timestamp(now(), unit: "nanoseconds")
 
                 } else {
-                    .timestamp = to_unix_timestamp(parsed_timestamp, unit: "nanoseconds")
+                    .timestamp_nanos = to_unix_timestamp(parsed_timestamp, unit: "nanoseconds")
                 }
+                .resource_attributes = .kubernetes
+                .service_name = .kubernetes.pod_name
+
+                .attributes.stream = .stream
+                .resource_attributes.file = .file
+
+                parsed_json, err = parse_json(.message)
+                if err != null {
+                    .body.message = .message
+                } else {
+                    .body = parsed_json
+
+                    levelinfo = null
+                    if exists(parsed_json.level) {
+                        levelinfo = parsed_json.level
+                    } else if exists(.body.level) {
+                        levelinfo = parsed_json.levelname
+                    }
+                    .severity_text = if includes(["emerg", "err", "crit", "alert", "error", "ERR", "ERROR"], levelinfo) {
+                        "ERROR"
+                    } else if includes(["warn", "warning", "WARN", "WARNING"], levelinfo) {
+                        "WARNING"
+                    } else if includes(["debug", "DEBUG"], levelinfo) {
+                        "DEBUG"
+                    } else if includes(["info", "INFO"], levelinfo) {
+                        "INFO"
+                    } else {
+                        levelinfo
+                    }
+
+                }
+                .id = uuid_v7()
+
+                del(.kubernetes)
+                del(.timestamp)
+                del(.source_type)
+                del(.stream)
+                del(.message)
+                del(.file)
+
 
           sinks:
-            # loki:
-            #   type: loki
-            #   inputs:
-            #     - kubernetes_modify
-            #   compression: snappy
-            #   endpoint: http://loki-gateway
-            #   encoding:
-            #     codec: json
-            #   labels:
-            #     pod_labels_*: '{{ printf "{{ kubernetes.pod_labels }}" }}'
-            #     container: '{{ printf "{{ kubernetes.container_name }}" }}'
-            #     namespace: '{{ printf "{{ kubernetes.pod_namespace }}" }}'
-            #     stream: '{{ printf "{{ stream }}" }}'
-            #     source: "vector"
             s3:
               type: aws_s3
               inputs:
@@ -86,6 +115,16 @@ spec:
               key_prefix: vector/logs/kubernetes/hetzner/year=%Y/month=%m/day=%d
               encoding:
                 codec: json
+            quickwit_logs:
+              type: "http"
+              method: "post"
+              inputs:
+                - remap_kubernetes_otel
+              encoding:
+                codec: json
+              framing:
+                method: "newline_delimited"
+              uri: "http://quickwit-indexer:7280/api/v1/vector-otel-0.8/ingest"
 
   destination:
     server: "https://kubernetes.default.svc"
