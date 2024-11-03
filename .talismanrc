@@ -8,3 +8,8 @@ version: ""
 fileignoreconfig:
 - filename: deployments/applications/goforms/goforms-data-secret.sealedsecrets.yaml
   checksum: bb4a7aaffe2f3f8bdd7054bc237b1f3faccd5acfd80e81e18bcbafc3909a1519
+
+fileignoreconfig:
+- filename: deployments/applications/goforms/goforms-data-secret.sealedsecrets.yaml
+  checksum: fe9541cf134d4439f2fb87b6111c61a58021ffb2928fd09effccfe2ea55d5080
+version: ""

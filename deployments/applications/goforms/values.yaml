@@ -41,3 +41,8 @@ envFromSecret:
       secretKeyRef:
         name: goforms-data-secret
         key: TELEGRAM_BOT_CHAT_ID
+  - name: GOOGLE_RECAPTCHA_SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: goforms-data-secret
+        key: GOOGLE_RECAPTCHA_SECRET_KEY
