@@ -2,6 +2,7 @@
 
 pkgs.mkShell {
     packages = [
+        pkgs.envsubst
         pkgs.kubernetes-helm
         pkgs.kubeseal
         pkgs.pulumi-bin
