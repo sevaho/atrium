@@ -1,0 +1,34 @@
+---
+# https://github.com/keephq/helm-charts/blob/main/charts/keep/values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keep
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: keep
+    repoURL: https://keephq.github.io/helm-charts
+    targetRevision: 0.1.42
+    helm:
+      releaseName: keep
+      valuesObject:
+        namespace: observability
+        global:
+          ingress:
+            enabled: false
+        backend:
+          waitForDatabase: false
+          env:
+            - name: DATABASE_CONNECTION_STRING
+              value: ${KEEP_DB_DSN}
+        database:
+          enabled: false
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false

@@ -84,6 +84,9 @@ spec:
           - name: coroot
             uri: http://coroot.observability.svc:8080
             public_addr: ${TELEPORT_COROOT_HOST}
+          - name: keep
+            uri: http://keep-frontend.observability.svc:3000
+            public_addr: ${TELEPORT_KEEP_HOST}
         insecureSkipProxyTLSVerify: true
         roles: kube,app.discovery
         kubeClusterName: k8s-asic-li-1
