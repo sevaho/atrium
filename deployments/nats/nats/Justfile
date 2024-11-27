@@ -1,0 +1,2 @@
+up: ## Up
+    kubectl apply -f ./application.yaml

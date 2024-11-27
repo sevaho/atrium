@@ -10,7 +10,7 @@ spec:
   source:
     chart: nats
     repoURL: https://nats-io.github.io/k8s/helm/charts
-    targetRevision: 1.2.5
+    targetRevision: 1.2.6
     helm:
       releaseName: nats
       valuesObject:
