@@ -16,27 +16,32 @@ data:
         proxy_http_version 1.1;
         http2 off;
 
-        # Configuration Snippet: nginx.ingress.kubernetes.io/configuration-snippet
         if ($request_uri ~* ^(/websocket|/v2|/)(/|$)(.*)) {
            rewrite ^(/websocket|/v2|/)(/|$)(.*) /$3 break;
         }
 
-        # Rule: Path for /websocket
         location ^~ /websocket {
-          # rewrite ^/websocket(/|$)(.*) /$2 break;
-            proxy_pass http://keep-websocket:6001;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $http_host;
-            proxy_cache_bypass $http_upgrade;
+          rewrite ^/websocket(/|$)(.*) /$2 break;
+          proxy_pass http://keep-websocket:6001;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Host $http_host;
+          proxy_cache_bypass $http_upgrade;
         }
 
-        # Rule: Path for /v2
+        location ~ ^/websocket(/|$)(.*) {
+            proxy_pass http://keep-websocket:6001;
+            # proxy_set_header Host $host;
+            # proxy_set_header X-Real-IP $remote_addr;
+            # proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            # proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
         location ~ ^/v2(/|$)(.*) {
             proxy_pass http://keep-backend:8080;
             proxy_set_header Host $host;
@@ -45,7 +50,6 @@ data:
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-        # Rule: Path for /
         location ~ ^/(.*) {
             proxy_pass http://keep-frontend:3000;
             proxy_set_header Host $host;
