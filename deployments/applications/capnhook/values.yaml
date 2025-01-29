@@ -19,7 +19,7 @@ extraAnnotations:
 
 ingress:
   hosts:
-    - capnhook.dev
+    - alpha.capnhook.dev
   tls:
     secretName: capnhook-dev-certs
 
