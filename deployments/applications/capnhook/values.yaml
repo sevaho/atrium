@@ -1,5 +1,5 @@
 ---
-fullnameOverride: capnhook-alpha
+fullnameOverride: capnhook
 image:
   repository: cr.asic.li/applications/capnhook
   tag: 0.0.2
@@ -19,9 +19,9 @@ extraAnnotations:
 
 ingress:
   hosts:
-    - alpha.capnhook.dev
+    - capnhook.dev
   tls:
-    secretName: alpha-capnhook-dev-certs
+    secretName: capnhook-dev-certs
 
 env:
   ENVIRONMENT: ALPHA
@@ -30,10 +30,10 @@ envFromSecret:
   - name: DB_DSN
     valueFrom:
       secretKeyRef:
-        name: capnhook-alpha
+        name: capnhook
         key: DB_DSN
   - name: JWT_SECRET
     valueFrom:
       secretKeyRef:
-        name: capnhook-alpha
+        name: capnhook
         key: JWT_SECRET

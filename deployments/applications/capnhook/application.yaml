@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: capnhook-alpha
+  name: capnhook
   namespace: argocd
 spec:
   project: default
@@ -11,9 +11,9 @@ spec:
       path: charts/application
       targetRevision: HEAD
       helm:
-        releaseName: capnhook-alpha
+        releaseName: capnhook
         valueFiles:
-          - $values/deployments/applications/capnhook/values-alpha.yaml
+          - $values/deployments/applications/capnhook/values.yaml
     - repoURL: 'https://github.com/sevaho/atrium'
       targetRevision: HEAD
       ref: values
