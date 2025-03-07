@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     chart: coroot
-    repoURL: https://coroot.github.io/helm-charts
+    repoURL: https://github.com/sevaho/atrium/blob/master/deployments/observability/coroot
     targetRevision: HEAD
     helm:
       releaseName: coroot
