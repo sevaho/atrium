@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: "1.0"
+description: Metabase
+name: metabase
+version: 1.0
+dependencies:
+  - name: metabase
+    version: "*"
+    repository: https://pmint93.github.io/helm-charts
