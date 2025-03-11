@@ -1,5 +1,4 @@
 ---
-# https://github.com/gravitational/teleport/blob/master/examples/chart/teleport-cluster/values.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -44,9 +43,14 @@ spec:
       prune: false
       selfHeal: false
 
+  info:
+  - name: releasenotes
+    value: https://github.com/gravitational/teleport/releases
+  - name: values.yaml
+    value: https://github.com/gravitational/teleport/blob/master/examples/chart/teleport-cluster/values.yaml
+
 
 ---
-# https://github.com/gravitational/teleport/blob/master/examples/chart/teleport-kube-agent/values.yaml
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -85,7 +89,7 @@ spec:
             uri: http://coroot.observability.svc:8080
             public_addr: ${TELEPORT_COROOT_HOST}
           - name: keep
-            uri: http://keep-frontend.observability.svc:3000
+            uri: http://keep-nginx.observability.svc:80
             public_addr: ${TELEPORT_KEEP_HOST}
         insecureSkipProxyTLSVerify: true
         roles: kube,app.discovery
@@ -103,3 +107,8 @@ spec:
     automated:
       prune: false
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/gravitational/teleport/releases
+  - name: values.yaml
+    value: https://github.com/gravitational/teleport/blob/master/examples/chart/teleport-kube-agent/values.yaml

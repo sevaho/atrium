@@ -24,7 +24,7 @@ spec:
     automated:
       prune: false
       selfHeal: false
-      https://github.com/kubernetes-sigs/metrics-server/releases
+
   info:
   - name: releasenotes
     value: https://github.com/kubernetes-sigs/metrics-server/releases
