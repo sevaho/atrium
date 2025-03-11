@@ -5,6 +5,6 @@ description: teleport-cluster
 name: teleport-cluster
 version: 1.0
 dependencies:
-  - name: teleport-cluster
+  - name: teleport/teleport-cluster
     version: "*"
     repoURL: https://charts.releases.teleport.dev
