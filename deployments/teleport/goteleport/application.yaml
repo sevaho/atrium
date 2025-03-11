@@ -7,9 +7,12 @@ metadata:
 spec:
   project: default
   source:
-    chart: teleport-cluster
-    repoURL: https://charts.releases.teleport.dev
-    targetRevision: 15.0.1
+    # chart: teleport-cluster
+    # repoURL: https://charts.releases.teleport.dev
+    # targetRevision: 15.0.1
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/teleport/goteleport/charts/teleport-cluster
+    targetRevision: HEAD
     helm:
       releaseName: teleport-cluster
       valuesObject:
@@ -60,9 +63,12 @@ metadata:
 spec:
   project: default
   source:
-    chart: teleport-kube-agent
-    repoURL: https://charts.releases.teleport.dev
-    targetRevision: 14.1.5
+    # chart: teleport-kube-agent
+    # repoURL: https://charts.releases.teleport.dev
+    # targetRevision: 14.1.5
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/teleport/goteleport/charts/teleport-kube-agent
+    targetRevision: HEAD
     helm:
       releaseName: teleport-kube-agent
       valuesObject:
