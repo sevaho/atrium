@@ -98,6 +98,7 @@ digitalocean.DnsRecord(
 
 digitalocean.SpacesBucket("data", region=REGION.FRA1.value, opts=pulumi.ResourceOptions(provider=provider))
 digitalocean.SpacesBucket("quickwit", region=REGION.FRA1.value, opts=pulumi.ResourceOptions(provider=provider))
+digitalocean.SpacesBucket("backup", region=REGION.FRA1.value, opts=pulumi.ResourceOptions(provider=provider))
 
 # Example with CORS
 # digitalocean.SpacesBucket(
