@@ -1,0 +1,41 @@
+---
+# https://github.com/akuity/kargo/blob/main/charts/kargo/values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kargo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: kargo
+    repoURL: ghcr.io/akuity/kargo-charts
+    targetRevision: 1.1.2
+    helm:
+      releaseName: kargo
+      valuesObject:
+        api:
+          secret:
+            name: kargo-data-secret
+          argocd:
+            urls:
+              - ${TELEPORT_ARGOCD_HOST}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kargo
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+---
+apiVersion: v1
+data:
+  ADMIN_ACCOUNT_PASSWORD_HASH: ${KARGO_ADMIN_ACCOUNT_PASSWORD_HASH::BASE64}
+  ADMIN_ACCOUNT_TOKEN_SIGNING_KEY: ${KARGO_ADMIN_ACCOUNT_TOKEN_SIGNING_KEY::BASE64}
+kind: Secret
+metadata:
+  name: kargo-data-secret
+  namespace: kargo
+type: Opaque
