@@ -62,6 +62,10 @@ This contains the ansible configuration for underlying servers.
 ## TODO
 
 - Grafana dashboards (in git)
-- Quickwit logs
+- Quickwit logs be able to see em in 1 view
 - Fix clickhouse deployment -> now there is a memory issue
 - .env.example
+- Add alertmanager and be able to get notification when new release is out
+- Be able to send mails / telegram as notification (alertmanager)
+- Have a good CI/CD flow (tekton, woodpecker, kargo, ...)
+- Be able to see releasenotes of new versions?
