@@ -19,7 +19,8 @@ spec:
             ingress:
               enabled: false
           backend:
-            waitForDatabase: false
+            waitForDatabase:
+              enabled: false
             env:
               - name: DATABASE_CONNECTION_STRING
                 value: ${KEEP_DB_DSN}
