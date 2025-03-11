@@ -1,5 +1,4 @@
-# ---
-# https://github.com/longhorn/charts/blob/v1.5.x/charts/longhorn/values.yaml
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,20 +7,21 @@ metadata:
 spec:
   project: default
   source:
-    chart: longhorn
-    repoURL: https://charts.longhorn.io
-    targetRevision: 1.5.3
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/longhorn-system/longhorn
+    targetRevision: HEAD
     helm:
       releaseName: longhorn
       valuesObject:
-        defaultSettings:
-          backupTarget: "s3://${AWS_S3_BUCKET}@${AWS_S3_REGION}/longhorn/backups/"
-          backupTargetCredentialSecret: digitalocean-s3
-        persistence:
-          defaultClassReplicaCount: 1
-        longhornManager:
-          log:
-            format: json
+        longhorn:
+          defaultSettings:
+            backupTarget: "s3://${AWS_S3_BUCKET}@${AWS_S3_REGION}/longhorn/backups/"
+            backupTargetCredentialSecret: digitalocean-s3
+          persistence:
+            defaultClassReplicaCount: 1
+          longhornManager:
+            log:
+              format: json
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -30,6 +30,11 @@ spec:
     automated:
       prune: false
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/longhorn/longhorn/releases
+  - name: values.yaml
+    value: https://github.com/longhorn/charts/blob/v1.5.x/charts/longhorn/values.yaml
 ---
 apiVersion: v1
 data:

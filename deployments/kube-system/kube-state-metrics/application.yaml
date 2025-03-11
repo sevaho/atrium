@@ -1,5 +1,4 @@
 ---
-# https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,9 +7,9 @@ metadata:
 spec:
   project: default
   source:
-    chart: kube-state-metrics
-    repoURL: https://prometheus-community.github.io/helm-charts
-    targetRevision: 5.15.2
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/kube-system/kube-state-metrics
+    targetRevision: HEAD
     helm:
       releaseName: kube-state-metrics
       valuesObject: {}
@@ -22,3 +21,8 @@ spec:
     automated:
       prune: false
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/kubernetes/kube-state-metrics/releases
+  - name: values.yaml
+    value: https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics

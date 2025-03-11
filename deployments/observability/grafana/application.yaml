@@ -1,5 +1,4 @@
 ---
-# https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,14 +7,15 @@ metadata:
 spec:
   project: default
   source:
-    chart: grafana
-    repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 7.0.17
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/observability/grafana
+    targetRevision: HEAD
     helm:
       releaseName: grafana
       valuesObject:
-        global:
-          dnsService: "rke2-coredns-rke2-coredns"
+        grafana:
+          global:
+            dnsService: "rke2-coredns-rke2-coredns"
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -24,3 +24,8 @@ spec:
     automated:
       prune: false
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/grafana/grafana/releases
+  - name: values.yaml
+    value: https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md

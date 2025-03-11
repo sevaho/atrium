@@ -1,5 +1,4 @@
 ---
-# https://github.com/nats-io/k8s/tree/main/helm/charts/nats#jetstream
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,15 +7,16 @@ metadata:
 spec:
   project: default
   source:
-    chart: nats
-    repoURL: https://nats-io.github.io/k8s/helm/charts
-    targetRevision: 1.2.6
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/nats/nats
+    targetRevision: HEAD
     helm:
       releaseName: nats
       valuesObject:
-        config:
-          jetstream:
-            enable: true
+        nats:
+          config:
+            jetstream:
+              enable: true
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -25,3 +25,8 @@ spec:
     automated:
       prune: false
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/nats-io/nats-server/releases
+  - name: values.yaml
+    value: https://github.com/nats-io/k8s/tree/main/helm/charts/nats#jetstream

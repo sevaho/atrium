@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+appVersion: "1.0"
+description: Grafana
+name: grafana
+version: 1.0
+dependencies:
+  - name: grafana
+    version: "*"
+    repository: https://grafana.github.io/helm-charts

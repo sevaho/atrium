@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+appVersion: "1.0"
+description: Keep
+name: keep
+version: 1.0
+dependencies:
+  - name: keep
+    version: "*"
+    repository: https://keephq.github.io/helm-charts

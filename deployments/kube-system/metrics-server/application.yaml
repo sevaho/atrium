@@ -7,14 +7,15 @@ metadata:
 spec:
   project: default
   source:
-    chart: metrics-server
-    repoURL: https://kubernetes-sigs.github.io/metrics-server
-    targetRevision: 3.11.0
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/kube-system/metrics-server
+    targetRevision: HEAD
     helm:
       releaseName: metrics-server
       valuesObject:
-        apiService:
-          create: false
+        metrics-server:
+          apiService:
+            create: false
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -23,3 +24,7 @@ spec:
     automated:
       prune: false
       selfHeal: false
+      https://github.com/kubernetes-sigs/metrics-server/releases
+  info:
+  - name: releasenotes
+    value: https://github.com/kubernetes-sigs/metrics-server/releases

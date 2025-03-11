@@ -1,5 +1,4 @@
 ---
-# https://github.com/bitnami-labs/sealed-secrets/blob/main/helm/sealed-secrets/values.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,15 +7,16 @@ metadata:
 spec:
   project: default
   source:
-    chart: sealed-secrets
-    repoURL: https://bitnami-labs.github.io/sealed-secrets
-    targetRevision: 1.16.1
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/kubeseal/sealed-secrets
+    targetRevision: HEAD
     helm:
       releaseName: sealed-secrets
       valuesObject:
-        image:
-          registry: docker.io
-          repository: bitnami/sealed-secrets-controller
+        sealed-secrets:
+          image:
+            registry: docker.io
+            repository: bitnami/sealed-secrets-controller
   destination:
     server: "https://kubernetes.default.svc"
     namespace: kubeseal
@@ -24,3 +24,8 @@ spec:
     automated:
       prune: false
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/bitnami-labs/sealed-secrets/releases
+  - name: values.yaml
+    value: https://github.com/bitnami-labs/sealed-secrets/blob/main/helm/sealed-secrets/values.yaml

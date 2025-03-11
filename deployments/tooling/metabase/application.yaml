@@ -1,5 +1,4 @@
 ---
-# https://artifacthub.io/packages/helm/pmint93/metabase
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,25 +7,29 @@ metadata:
 spec:
   project: default
   source:
-    chart: metabase
-    repoURL: https://pmint93.github.io/helm-charts
-    targetRevision: 2.16.7
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/tooling/metabase
+    targetRevision: HEAD
     helm:
       releaseName: metabase
       valuesObject:
-        replicaCount: 1
-        siteUrl: ${METABASE_HOST}
-        database:
-          type: postgres
-          existingSecret: metabase-data-secret
-          existingSecretConnectionURIKey: connectionURI
-          existingSecretEncryptionKeyKey: encryptionKey
+        metabase:
+          replicaCount: 1
+          siteUrl: ${METABASE_HOST}
+          database:
+            type: postgres
+            existingSecret: metabase-data-secret
+            existingSecretConnectionURIKey: connectionURI
+            existingSecretEncryptionKeyKey: encryptionKey
 
 
   destination:
     server: "https://kubernetes.default.svc"
     namespace: tooling
-  syncPolicy:
-    automated:
-      prune: false
-      selfHeal: false
+  syncPolicy: {}
+
+  info:
+  - name: releasenotes
+    value: https://github.com/metabase/metabase/releases
+  - name: values.yaml
+    value: https://artifacthub.io/packages/helm/pmint93/metabase

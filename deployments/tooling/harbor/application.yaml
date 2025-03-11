@@ -1,5 +1,4 @@
-# ---
-# https://github.com/goharbor/harbor-helm/blob/main/values.yaml
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,61 +7,62 @@ metadata:
 spec:
   project: default
   source:
-    chart: harbor
-    repoURL: https://helm.goharbor.io
-    targetRevision: 1.15.1
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/tooling/harbor
+    targetRevision: HEAD
     helm:
       releaseName: harbor
       valuesObject:
-        externalURL: https://${HARBOR_HOST}
-        core:
-          serviceAnnotations:
-            external-dns.alpha.kubernetes.io/hostname: ${HARBOR_HOST}
-        expose:
-          type: ingress
-          ingress:
-            annotations:
-              ingress.kubernetes.io/ssl-redirect: 'true'
-              nginx.ingress.kubernetes.io/ssl-redirect: 'true'
-              ingress.kubernetes.io/proxy-body-size: '0'
-              nginx.ingress.kubernetes.io/proxy-body-size: '0'
-              cert-manager.io/cluster-issuer: letsencrypt-prod
-              nginx.ingress.kubernetes.io/whitelist-source-range: ${HARBOR_IP_WHITELIST}
-            className: nginx
-            hosts:
-              core: ${HARBOR_HOST}
-          tls:
+        harbor:
+          externalURL: https://${HARBOR_HOST}
+          core:
+            serviceAnnotations:
+              external-dns.alpha.kubernetes.io/hostname: ${HARBOR_HOST}
+          expose:
+            type: ingress
+            ingress:
+              annotations:
+                ingress.kubernetes.io/ssl-redirect: 'true'
+                nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+                ingress.kubernetes.io/proxy-body-size: '0'
+                nginx.ingress.kubernetes.io/proxy-body-size: '0'
+                cert-manager.io/cluster-issuer: letsencrypt-prod
+                nginx.ingress.kubernetes.io/whitelist-source-range: ${HARBOR_IP_WHITELIST}
+              className: nginx
+              hosts:
+                core: ${HARBOR_HOST}
+            tls:
+              enabled: true
+              certSource: secret
+              secret:
+                secretName: harbor-tls-certs
+          redis:
+            type: external
+            external:
+              addr: redis-master.redis.svc.cluster.local:6379
+              # If using existingSecret, the key must be REDIS_PASSWORD (this secret does not work, something wrong with chart)
+              # existingSecret: "harbor-data-secret"
+              password: ${REDIS_PASSWORD}
+          persistence:
             enabled: true
-            certSource: secret
-            secret:
-              secretName: harbor-tls-certs
-        redis:
-          type: external
-          external:
-            addr: redis-master.redis.svc.cluster.local:6379
-            # If using existingSecret, the key must be REDIS_PASSWORD (this secret does not work, something wrong with chart)
-            # existingSecret: "harbor-data-secret"
-            password: ${REDIS_PASSWORD}
-        persistence:
-          enabled: true
-          imageChartStorage:
-            type: s3
-            s3:
-              region: ${AWS_S3_REGION}
-              bucket: ${AWS_S3_BUCKET}
-              rootdirectory: "/harbor/images"
-              regionendpoint:  ${AWS_S3_ENDPOINT}
-              # keys in the secret should be REGISTRY_STORAGE_S3_ACCESSKEY and REGISTRY_STORAGE_S3_SECRETKEY for registry
+            imageChartStorage:
+              type: s3
+              s3:
+                region: ${AWS_S3_REGION}
+                bucket: ${AWS_S3_BUCKET}
+                rootdirectory: "/harbor/images"
+                regionendpoint:  ${AWS_S3_ENDPOINT}
+                # keys in the secret should be REGISTRY_STORAGE_S3_ACCESSKEY and REGISTRY_STORAGE_S3_SECRETKEY for registry
+                existingSecret: "harbor-data-secret"
+          database:
+            type: external
+            external:
+              host: ${HARBOR_DB_HOST}
+              port: ${HARBOR_DB_PORT}
+              username: ${HARBOR_DB_USERNAME}
+              # if using existing secret, the key must be "password"
               existingSecret: "harbor-data-secret"
-        database:
-          type: external
-          external:
-            host: ${HARBOR_DB_HOST}
-            port: ${HARBOR_DB_PORT}
-            username: ${HARBOR_DB_USERNAME}
-            # if using existing secret, the key must be "password"
-            existingSecret: "harbor-data-secret"
-            coreDatabase: harbor
+              coreDatabase: harbor
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -71,6 +71,11 @@ spec:
     automated:
       prune: false
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/goharbor/harbor/releases
+  - name: values.yaml
+    value: https://github.com/goharbor/harbor-helm/blob/main/values.yaml
 ---
 apiVersion: v1
 data:

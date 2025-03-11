@@ -1,5 +1,4 @@
 ---
-# https://github.com/quickwit-oss/helm-charts/blob/main/charts/quickwit/values.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,44 +7,45 @@ metadata:
 spec:
   project: default
   source:
-    chart: quickwit
-    repoURL: https://helm.quickwit.io
-    targetRevision: 0.7.6
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/observability/quickwit
+    targetRevision: HEAD
     helm:
       releaseName: quickwit
       valuesObject:
-        metastore:
-          extraEnvFrom:
-            - secretRef:
-                name: quickwit-data-secret
-        config:
-          default_index_root_uri: s3://${AWS_S3_BUCKET}/quickwit-indexes
+        quickwit:
+          metastore:
+            extraEnvFrom:
+              - secretRef:
+                  name: quickwit-data-secret
+          config:
+            default_index_root_uri: s3://${AWS_S3_BUCKET}/quickwit-indexes
 
-          # Storage configuration.
-          storage:
-            s3:
-              endpoint: ${AWS_S3_ENDPOINT}
-              region: ${AWS_S3_REGION}
-              access_key_id: ${AWS_S3_ACCESS_KEY}
-              secret_access_key: ${AWS_S3_SECRET_KEY}
+            # Storage configuration.
+            storage:
+              s3:
+                endpoint: ${AWS_S3_ENDPOINT}
+                region: ${AWS_S3_REGION}
+                access_key_id: ${AWS_S3_ACCESS_KEY}
+                secret_access_key: ${AWS_S3_SECRET_KEY}
 
-        seed:
-          indexes:
-            - version: 0.8
-              index_id: otel-logs-test
-              doc_mapping:
-                field_mappings:
-                  - name: timestamp
-                    type: datetime
-                    fast: true
-                    input_formats:
-                      - unix_timestamp
-                    output_format: unix_timestamp_secs
-                  - name: body
-                    type: text
-                timestamp_field: timestamp
-              search_settings:
-                default_search_fields: [body]
+          seed:
+            indexes:
+              - version: 0.8
+                index_id: otel-logs-test
+                doc_mapping:
+                  field_mappings:
+                    - name: timestamp
+                      type: datetime
+                      fast: true
+                      input_formats:
+                        - unix_timestamp
+                      output_format: unix_timestamp_secs
+                    - name: body
+                      type: text
+                  timestamp_field: timestamp
+                search_settings:
+                  default_search_fields: [body]
   destination:
     server: "https://kubernetes.default.svc"
     namespace: observability
@@ -53,6 +53,11 @@ spec:
     automated:
       prune: true
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/quickwit-oss/quickwit/releases
+  - name: values.yaml
+    value: https://github.com/quickwit-oss/helm-charts/blob/main/charts/quickwit/values.yaml
 ---
 apiVersion: v1
 data:

@@ -1,5 +1,4 @@
 ---
-# https://github.com/goharbor/harbor-helm/blob/main/values.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,16 +7,17 @@ metadata:
 spec:
   project: default
   source:
-    chart: redis
-    repoURL: https://charts.bitnami.com/bitnami
-    targetRevision: 18.4.0
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/redis/redis
+    targetRevision: HEAD
     helm:
       releaseName: redis
       valuesObject:
-        auth:
-          enabled: true
-          existingSecret: redis-data-secret
-          existingSecretPasswordKey: redis-password
+        redis:
+          auth:
+            enabled: true
+            existingSecret: redis-data-secret
+            existingSecretPasswordKey: redis-password
 
 
   destination:
@@ -27,6 +27,11 @@ spec:
     automated:
       prune: false
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/redis/redis/releases
+  - name: values.yaml
+    value: https://github.com/goharbor/harbor-helm/blob/main/values.yaml
 ---
 apiVersion: v1
 data:

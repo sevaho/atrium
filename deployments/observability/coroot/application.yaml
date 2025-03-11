@@ -1,5 +1,4 @@
 ---
-# https://github.com/coroot/helm-charts/blob/main/charts/coroot/values.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,8 +7,8 @@ metadata:
 spec:
   project: default
   source:
-    chart: coroot
-    repoURL: https://github.com/sevaho/atrium/blob/master/deployments/observability/coroot
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/observability/coroot
     targetRevision: HEAD
     helm:
       releaseName: coroot
@@ -21,3 +20,8 @@ spec:
     automated:
       prune: true
       selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/coroot/coroot/releases
+  - name: values.yaml
+    value: https://github.com/coroot/helm-charts/blob/main/charts/coroot/values.yaml
