@@ -7,4 +7,4 @@ version: 1.0
 dependencies:
   - name: teleport-kube-agent
     version: "*"
-    repoURL: https://charts.releases.teleport.dev
+    repository: https://charts.releases.teleport.dev
