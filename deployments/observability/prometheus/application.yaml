@@ -1,0 +1,29 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/observability/prometheus
+    targetRevision: HEAD
+    helm:
+      releaseName: prometheus
+      valuesObject:
+        prometheus: {}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/prometheus/prometheus/releases
+  - name: values.yaml
+    value: https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/values.yaml

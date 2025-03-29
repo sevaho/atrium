@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+appVersion: "1.0"
+description: Prometheus
+name: prometheus
+version: 1.0
+dependencies:
+  - name: prometheus
+    version: "*"
+    repository: https://prometheus-community.github.io/helm-charts
