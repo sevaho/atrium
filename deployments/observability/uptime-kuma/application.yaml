@@ -13,8 +13,13 @@ spec:
     helm:
       releaseName: uptime-kuma
       valuesObject:
+        imagePullSecrets:
+          - name: regcred
         image:
-          tag: 2.21.2
+          registry: ${HARBOR_HOST}
+          repository: dockercache/louislam/uptime-kuma
+          pullPolicy: IfNotPresent
+          tag: 1-debian
 
   destination:
     server: "https://kubernetes.default.svc"
