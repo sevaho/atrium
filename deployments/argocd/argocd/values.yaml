@@ -34,3 +34,16 @@ configs:
     #  g, subject, inherited-subject
     policy.csv: |
       g, ${GITHUB_ORG}:admin, role:admin
+
+applicationSet:
+  metrics:
+    enabled: true
+controller:
+  metrics:
+    enabled: true
+repoServer:
+  metrics:
+    enabled: true
+server:
+  metrics:
+    enabled: true
