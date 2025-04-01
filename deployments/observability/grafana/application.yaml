@@ -14,8 +14,37 @@ spec:
       releaseName: grafana
       valuesObject:
         grafana:
-          global:
-            dnsService: "rke2-coredns-rke2-coredns"
+          admin:
+            existingSecret: grafana-data-secret
+            userKey: admin-username
+            passwordKey: admin-password
+          datasources:
+            datasources.yaml:
+              apiVersion: 1
+              datasources:
+              - name: Prometheus
+                type: prometheus
+                url: http://prometheus-server
+                access: proxy
+                basicAuth: true
+                basicAuthUser: ${PROMETHEUS_ADMIN_USERNAME}
+                secureJsonData:
+                  basicAuthPassword: ${PROMETHEUS_ADMIN_PASSWORD}
+                isDefault: true
+              - name: Quickwit
+                type: quickwit-quickwit-datasource
+                url: http://quickwit-control-plane:7280/api/v1
+                typeLogoUrl: public/plugins/quickwit-quickwit-datasource/img/logo.svg
+                jsonData:
+                  index: vector-otel-0.8
+                  logMessageField: body
+                  logLevelField: severity_text
+                access: proxy
+          sidecar:
+            dashboards:
+              enabled: true
+          plugins:
+            - quickwit-quickwit-datasource
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -29,3 +58,12 @@ spec:
     value: https://github.com/grafana/grafana/releases
   - name: values.yaml
     value: https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md
+---
+apiVersion: v1
+data:
+  admin-username: ${GRAFANA_ADMIN_USERNAME::BASE64}
+  admin-password: ${GRAFANA_ADMIN_PASSWORD::BASE64}
+kind: Secret
+metadata:
+  name: grafana-data-secret
+  namespace: observability
