@@ -99,6 +99,16 @@ spec:
             - name: keep
               uri: http://keep-nginx.observability.svc:80
               public_addr: ${TELEPORT_KEEP_HOST}
+            - name: uptime
+              uri: http://uptime-kuma.observability.svc:80
+              public_addr: ${TELEPORT_UPTIME_KUMA_HOST}
+            - name: grafana
+              uri: http://grafana.observability.svc:80
+              public_addr: ${TELEPORT_GRAFANA_HOST}
+              rewrite:
+                headers:
+                - "Host: ${TELEPORT_GRAFANA_HOST}"
+                - "Origin: https://${TELEPORT_GRAFANA_HOST}"
           insecureSkipProxyTLSVerify: true
           roles: kube,app.discovery
           kubeClusterName: k8s-asic-li-1
