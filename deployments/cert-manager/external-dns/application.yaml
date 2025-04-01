@@ -18,7 +18,8 @@ spec:
           sources:
             - service
             # - ingress # This does not work as expected
-          provider: digitalocean
+          provider:
+            name: digitalocean
           env:
             - name: DO_TOKEN
               valueFrom:
