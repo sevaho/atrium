@@ -1,0 +1,11 @@
+{{- if and .Values.extraCertificates.enabled (not .Values.extraCertificates.existingConfigMap) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uptime-kuma-configmap
+  labels:
+    {{- include "uptime-kuma.labels" . | nindent 4 }}
+data:
+  cacerts.pem: |-
+    {{ .Values.extraCertificates.cacerts | nindent 4 | trim }}
+{{- end }}

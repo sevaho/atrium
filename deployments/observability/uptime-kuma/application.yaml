@@ -1,0 +1,28 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: uptime-kuma
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/observability/uptime-kuma/charts/uptime-kuma
+    targetRevision: HEAD
+    helm:
+      releaseName: uptime-kuma
+      valuesObject:
+        image:
+          tag: 2.21.2
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/dirsigler/uptime-kuma-helm/releases
