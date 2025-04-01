@@ -18,6 +18,11 @@ spec:
             extraEnvFrom:
               - secretRef:
                   name: quickwit-data-secret
+
+          # Prometheus metrics
+          serviceMonitor:
+            enabled: true
+
           config:
             default_index_root_uri: s3://${AWS_S3_BUCKET}/quickwit-indexes
 
