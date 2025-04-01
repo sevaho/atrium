@@ -66,12 +66,14 @@ spec:
                   .resource_attributes = .kubernetes
                   .service_name = .kubernetes.pod_name
 
-                  .attributes.stream = .stream
+                  .attributes = .kubernetes
                   .resource_attributes.file = .file
 
                   parsed_json, err = parse_json(.message)
                   if err != null {
                       .body.message = .message
+                      .body.stream = .stream
+                      .severity_text = "INFO"
                   } else {
                       .body = parsed_json
 
