@@ -25,6 +25,7 @@ ingress:
 
 pvc:
   enabled: false
+  name: data
   size: 2Gi
   mountPath: /data
 
