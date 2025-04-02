@@ -102,10 +102,10 @@ spec:
 
 {{- if .Values.pvc.enabled }}
         volumeMounts:
-        - name: data
+        - name: {{ .Values.pvc.name }}
           mountPath: {{ .Values.pvc.mountPath }}
       volumes:
-      - name: data
+      - name: {{ .Values.pvc.name }}
         persistentVolumeClaim:
           claimName: {{ include "app.fullname" . }}
 {{  end  }}
