@@ -10,6 +10,9 @@ service:
   port: 80
   targetPort: 3000
 
+pvc:
+  enabled: true
+
 ingress:
   hosts:
     - asic.li
