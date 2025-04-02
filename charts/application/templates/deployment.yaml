@@ -95,3 +95,13 @@ spec:
         {{ if .Values.envFromSecret }}
         {{- toYaml .Values.envFromSecret | nindent 8 }}
         {{- end }}
+
+{{- if .Values.pvc.enabled }}
+        volumeMounts:
+        - name: data
+          mountPath: {{ .Values.pvc.mountPath }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ include "app.fullname" . }}
+{{  end  }}

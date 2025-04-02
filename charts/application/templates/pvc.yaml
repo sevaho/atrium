@@ -1,0 +1,13 @@
+{{- if .Values.pvc.enabled }}
+{{ $fullname := include "app.fullname" . }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullname }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvc.size }}
+{{- end }}

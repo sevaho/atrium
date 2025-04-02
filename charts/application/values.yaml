@@ -23,6 +23,11 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
 
+pvc:
+  enabled: false
+  size: 2Gi
+  mountPath: /data
+
 env:
   ENVIRONMENT: STAGING
 
