@@ -1,0 +1,55 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-workflows
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/argocd/argo-workflows
+    targetRevision: HEAD
+    helm:
+      releaseName: argo-workflows
+      valuesObject:
+        argo-workflows:
+          server:
+            enabled: true
+          workflowNamespaces:
+            - default
+          persistence:
+            postgresql:
+              host: ${DB_HOST}
+              port: ${DB_PORT}
+              database: argo-workflows
+              tableName: argo_workflows
+              # the database secrets must be in the same namespace of the controller
+              userNameSecret:
+                name: argo-workflows-data-secret
+                key: ARGO_WORKFLOWS_DB_USERNAME
+              passwordSecret:
+                name: argo-workflows-data-secret
+                key: ARGO_WORKFLOWS_DB_PASSWORD
+
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: argocd
+  syncPolicy: {}
+
+  info:
+  - name: releasenotes
+    value: https://github.com/argoproj/argo-workflows/releases
+  - name: values.yaml
+    value: https://github.com/argoproj/argo-helm/blob/main/charts/argo-workflows/values.yaml
+
+---
+apiVersion: v1
+data:
+  ARGO_WORKFLOWS_DB_USERNAME: ${ARGO_WORKFLOWS_DB_USERNAME::BASE64}
+  ARGO_WORKFLOWS_DB_PASSWORD: ${ARGO_WORKFLOWS_DB_PASSWORD::BASE64}
+kind: Secret
+metadata:
+  name: argo-workflows-data-secret
+  namespace: argocd
