@@ -7,4 +7,4 @@ version: 1.0
 dependencies:
   - name: headlamp
     version: "*"
-    repository: https://headlamp-k8s.github.io/headlamp/
+    repository: https://kubernetes-sigs.github.io/headlamp/
