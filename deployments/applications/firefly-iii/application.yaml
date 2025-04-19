@@ -1,0 +1,44 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: firefly-iii
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/tooling/firefly-iii
+    targetRevision: HEAD
+    helm:
+      releaseName: firefly-iii
+      valuesObject:
+        firefly-iii:
+          replicaCount: 1
+          config:
+            env:
+              DB_HOST: ${DB_HOST}
+              DB_CONNECTION: pgsql
+              DB_PORT: "5432"
+              DB_DATABASE: firefly
+              DB_USERNAME: ${FIREFLY_III_DB_USERNAME}
+              DEFAULT_LANGUAGE: "en_US"
+              DEFAULT_LOCALE: "equal"
+              TZ: "Europe/Brussels"
+              TRUSTED_PROXIES: "**"
+          secrets:
+            env:
+              APP_PASSWORD: ${FIREFLY_III_APP_PASSWORD}
+              DB_PASSWORD: ${FIREFLY_III_DB_PASSWORD}
+
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: applications
+  syncPolicy: {}
+
+  info:
+  - name: releasenotes
+    value: https://github.com/firefly-iii/firefly-iii/releases
+  - name: values.yaml
+    value: https://github.com/firefly-iii/kubernetes/blob/main/charts/firefly-iii/values.yaml
