@@ -8,7 +8,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/sevaho/atrium
-    path: deployments/tooling/firefly-iii
+    path: deployments/applications/firefly-iii
     targetRevision: HEAD
     helm:
       releaseName: firefly-iii
