@@ -18,22 +18,7 @@ spec:
             enabled: false
           webhook:
             certManager:
-              enabled: true
-              # -- Automatically add the cert-manager.io/inject-ca-from annotation to the
-              # webhooks and CRDs. As long as you have the cert-manager CA Injector
-              # enabled, this will automatically setup your webhook's CA to the one used
-              # by cert-manager. See https://cert-manager.io/docs/concepts/ca-injector
-              addInjectorAnnotations: true
-              cert:
-                # -- Create a certificate resource within this chart. See
-                # https://cert-manager.io/docs/usage/certificate/
-                create: true
-                # -- For the Certificate created by this chart, setup the issuer. See
-                # https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.IssuerSpec
-                issuerRef:
-                  group: cert-manager.io
-                  kind: "ClusterIssuer"
-                  name: "letsencrypt-prod"
+              enabled: false
 
   destination:
     server: "https://kubernetes.default.svc"
