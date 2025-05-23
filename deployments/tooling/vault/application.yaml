@@ -16,7 +16,7 @@ spec:
         vault:
           global:
             enabled: false
-            namespace: vault
+            namespace: tooling
           server:
             enabled: true
             standalone:
@@ -41,7 +41,7 @@ spec:
 
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: vault
+    namespace: tooling
   syncPolicy:
     automated:
       prune: false
