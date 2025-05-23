@@ -19,7 +19,7 @@ spec:
         teleport-cluster:
           authentication:
             type: github
-            localAuth: true
+            localAuth: false
           clusterName: ${TELEPORT_HOST}
           kubeClusterName: "k8s-asic-li-1"
 
@@ -102,6 +102,12 @@ spec:
             - name: uptime
               uri: http://uptime-kuma.observability.svc:80
               public_addr: ${TELEPORT_UPTIME_KUMA_HOST}
+            - name: firefly
+              uri: http://firefly-iii.applications.svc:80
+              public_addr: ${TELEPORT_FIREFLY_HOST}
+            - name: workflows
+              uri: http://argo-workflows-server.argocd.svc:2746
+              public_addr: ${TELEPORT_ARGO_WORKFLOWS_HOST}
             - name: grafana
               uri: http://grafana.observability.svc:80
               public_addr: ${TELEPORT_GRAFANA_HOST}
