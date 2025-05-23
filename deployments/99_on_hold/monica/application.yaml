@@ -1,0 +1,99 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monica
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: charts/application
+    targetRevision: HEAD
+    helm:
+      releaseName: monica
+      valuesObject:
+        imagePullSecrets: [regcred]
+        fullnameOverride: monica
+        replicaCount: 1
+
+        security:
+          enabled: false
+
+        image:
+          repository: cr.asic.li/dockercache/library/monica
+          tag: latest
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 3000
+
+        ingress:
+          enabled: false
+
+        resources:
+          limits:
+            memory: 300Mi
+          requests:
+            memory: 150Mi
+
+        # pvc:
+        #   size: 10Gi
+        #   enabled: true
+        #   name: data
+        #   mountPath: /var/www/html/storage
+
+        # This should be run once to chown
+        # initContainers:
+        # - name: chowner
+        #   image: cr.asic.li/dockercache/library/busybox
+        #   command: ["sh", "-c", "chown -R 1000:1000 /mnt"]
+        #   securityContext:
+        #     readOnlyRootFilesystem: true
+        #     capabilities:
+        #       drop: ["all"]
+        #       add: ["CHOWN"]
+        #     runAsUser: 0
+        #     runAsNonRoot: false
+        #   volumeMounts:
+        #   - name: data
+        #     mountPath: /mnt
+
+        env:
+          APP_DEBUG: true
+          CACHE_STORE: file
+          QUEUE_CONNECTION: sync
+          SESSION_DRIVER: file
+          FULL_TEXT_INDEX: false
+          SCOUT_DRIVER: file
+          SCOUT_QUEUE: false
+
+        envFromSecret:
+          - name: APP_KEY
+            valueFrom:
+              secretKeyRef:
+                name: monica-data-secret
+                key: APP_KEY
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: applications
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/monicahq/monica/releases
+  - name: env example
+    value: https://github.com/monicahq/monica/blob/main/.env.example
+
+---
+apiVersion: v1
+data:
+  APP_KEY: ${MONICA_APP_KEY::BASE64}
+kind: Secret
+metadata:
+  name: monica-data-secret
+  namespace: applications

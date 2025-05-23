@@ -1,0 +1,105 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: maybe
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: charts/application
+    targetRevision: HEAD
+    helm:
+      releaseName: maybe
+      valuesObject:
+        imagePullSecrets: [regcred]
+        fullnameOverride: maybe
+        replicaCount: 1
+
+        image:
+          repository: ghcr.io/maybe-finance/maybe
+          tag: latest
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 3000
+
+        ingress:
+          enabled: false
+
+        pvc:
+          size: 10Gi
+          enabled: true
+          name: data
+          mountPath: /rails/storage
+
+        # This should be run once to chown
+        # initContainers:
+        # - name: initContainers-hack-chowner
+        #   image: cr.asic.li/dockercache/library/busybox
+        #   command: ["sh", "-c", "chown -R 1000:1000 /mnt"]
+        #   securityContext:
+        #     readOnlyRootFilesystem: true
+        #     capabilities:
+        #       drop: ["all"]
+        #       add: ["CHOWN"]
+        #     runAsUser: 0
+        #     runAsNonRoot: false
+        #   volumeMounts:
+        #   - name: data
+        #     mountPath: /mnt
+
+        resources:
+          limits:
+            memory: 500Mi
+          requests:
+            memory: 150Mi
+
+        env:
+          PORT: 3000
+          APP_DOMAIN: ${TELEPORT_MAYBE_HOST}
+          DB_HOST: ${DB_HOST}
+          REDIS_URL: redis://:${REDIS_PASSWORD}@redis-master.redis.svc.cluster.local:6379
+
+        envFromSecret:
+          - name: SECRET_KEY_BASE
+            valueFrom:
+              secretKeyRef:
+                name: maybe-data-secret
+                key: SECRET_KEY_BASE
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: maybe-data-secret
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: maybe-data-secret
+                key: POSTGRES_USER
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: applications
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/maybe-finance/maybe/releases
+  - name: env example
+    value: https://github.com/maybe-finance/maybe/blob/main/.env.example
+
+---
+apiVersion: v1
+data:
+  SECRET_KEY_BASE: ${MAYBE_SECRET_KEY_BASE::BASE64}
+  POSTGRES_PASSWORD: ${MAYBE_POSTGRES_PASSWORD::BASE64}
+  POSTGRES_USER: ${MAYBE_POSTGRES_USER::BASE64}
+kind: Secret
+metadata:
+  name: maybe-data-secret
+  namespace: applications
