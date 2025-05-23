@@ -16,27 +16,35 @@ spec:
         argo-workflows:
           server:
             enabled: true
-          workflowNamespaces:
-            - default
-          persistence:
-            postgresql:
-              host: ${DB_HOST}
-              port: ${DB_PORT}
-              database: argo-workflows
-              tableName: argo_workflows
-              # the database secrets must be in the same namespace of the controller
-              userNameSecret:
-                name: argo-workflows-data-secret
-                key: ARGO_WORKFLOWS_DB_USERNAME
-              passwordSecret:
-                name: argo-workflows-data-secret
-                key: ARGO_WORKFLOWS_DB_PASSWORD
+            authModes:
+              - server
+          controller:
+            metricsConfig:
+              enabled: true
+            workflowNamespaces:
+              - default
+            persistence:
+              postgresql:
+                host: ${DB_HOST}
+                port: ${DB_PORT}
+                database: argo-workflows
+                tableName: argo_workflows
+                # the database secrets must be in the same namespace of the controller
+                userNameSecret:
+                  name: argo-workflows-data-secret
+                  key: ARGO_WORKFLOWS_DB_USERNAME
+                passwordSecret:
+                  name: argo-workflows-data-secret
+                  key: ARGO_WORKFLOWS_DB_PASSWORD
 
 
   destination:
     server: "https://kubernetes.default.svc"
     namespace: argocd
-  syncPolicy: {}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
 
   info:
   - name: releasenotes
@@ -53,3 +61,33 @@ kind: Secret
 metadata:
   name: argo-workflows-data-secret
   namespace: argocd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: executor
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: executor
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtaskresults
+    verbs:
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: executor
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: executor
+subjects:
+- kind: ServiceAccount
+  name: executor

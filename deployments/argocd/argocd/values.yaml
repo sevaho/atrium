@@ -4,6 +4,9 @@ configs:
   cm:
     url: "https://${TELEPORT_ARGOCD_HOST}"
 
+    # Allow terminal access to pods
+    exec.enabled: "true"
+
     # Dex configuration
     dex.config: |
       connectors:

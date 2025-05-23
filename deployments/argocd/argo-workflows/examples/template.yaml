@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: hello-world-template-local-arg
+spec:
+  templates:
+    - name: print-message
+      inputs:
+        parameters:
+          - name: message
+            value: "hello world"
+      container:
+        image: busybox
+        command: [echo]
+        args: ["{{inputs.parameters.message}}"]
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: hello-world-local-arg-
+spec:
+  serviceAccountName: executor
+  entrypoint: print-message
+  templates:
+    - name: print-message
+      steps:
+        - - name: hello-world
+            templateRef:
+              name: hello-world-template-local-arg
+              template: print-message
+            arguments:                    # You can pass in arguments as normal
+              parameters:
+              - name: message
+                value: "hello asicli"
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Workflow
+# metadata:
+#   generateName: workflow-template-hello-world-
+# spec:
+#   serviceAccountName: executor
+#   entrypoint: hello-world
+#   templates:
+#   - name: hello-world
+#     dag:
+#       tasks:
+#         - name: call-print-message
+#           templateRef:
+#             name: hello-world-template-local-arg
+#             template: print-message
+#           arguments:
+#             parameters:
+#             - name: message
+#               value: "hello asicli"
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Workflow
+# metadata:
+#   generateName: workflow-template-hello-world-2-
+# spec:
+#   serviceAccountName: executor
+#   entrypoint: print-message
+#   arguments:
+#     parameters:
+#       - name: message
+#         value: "hello asicli"
+#   workflowTemplateRef:
+#     name: hello-world-template-local-arg
