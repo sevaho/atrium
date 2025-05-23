@@ -12,7 +12,10 @@ spec:
     targetRevision: HEAD
     helm:
       releaseName: cert-manager
-      valuesObject: {}
+      valuesObject:
+        cert-manager:
+          crds:
+            enabled: true
   destination:
     server: "https://kubernetes.default.svc"
     namespace: cert-manager
