@@ -108,6 +108,9 @@ spec:
             - name: workflows
               uri: http://argo-workflows-server.argocd.svc:2746
               public_addr: ${TELEPORT_ARGO_WORKFLOWS_HOST}
+            - name: vault
+              uri: http://vault.tooling.svc.cluster.local:8200
+              public_addr: ${TELEPORT_VAULT_WORKFLOWS_HOST}
             - name: grafana
               uri: http://grafana.observability.svc:80
               public_addr: ${TELEPORT_GRAFANA_HOST}
