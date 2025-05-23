@@ -1,0 +1,54 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/tooling/vault
+    targetRevision: HEAD
+    helm:
+      releaseName: vault
+      valuesObject:
+        vault:
+          global:
+            enabled: false
+            namespace: vault
+          server:
+            enabled: true
+            standalone:
+              enabled: true
+              config: |-
+                ui = true
+
+                listener "tcp" {
+                  tls_disable = 1
+                  address = "[::]:8200"
+                  cluster_address = "[::]:8201"
+
+                  # Enable unauthenticated metrics access (necessary for Prometheus Operator)
+                  telemetry {
+                    unauthenticated_metrics_access = "true"
+                  }
+                }
+
+                storage "postgresql" {
+                  connection_url = "${VAULT_DB_DSN}"
+                }
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+  info:
+  - name: releasenotes
+    value: https://github.com/hashicorp/vault/releases
+  - name: values.yaml
+    value: https://github.com/hashicorp/vault-helm/blob/main/values.yaml
