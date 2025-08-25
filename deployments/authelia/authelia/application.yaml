@@ -1,0 +1,30 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: authelia
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/authelia/authelia
+    targetRevision: HEAD
+    helm:
+      releaseName: authelia
+      valuesObject: {}
+
+
+  destination:
+
+    server: "https://kubernetes.default.svc"
+    namespace: authelia
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/authelia/authelia/releases
+  - name: values.yaml
+    value: https://github.com/authelia/chartrepo/blob/master/charts/authelia/values.yaml
