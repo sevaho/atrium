@@ -12,7 +12,18 @@ spec:
     targetRevision: HEAD
     helm:
       releaseName: authelia
-      valuesObject: {}
+      valuesObject:
+        configMap:
+          file:
+            enabled: true
+          cookies:
+            - subdomain: 'auth'
+          storage:
+            local:
+              enabled: true
+          notifier:
+            filesystem:
+              enabled: true
 
 
   destination:
