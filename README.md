@@ -69,4 +69,3 @@ This contains the ansible configuration for underlying servers.
 - Be able to send mails / telegram as notification (alertmanager)
 - Have a good CI/CD flow (tekton, woodpecker, kargo, ...)
 - Be able to see releasenotes of new versions?
-test
