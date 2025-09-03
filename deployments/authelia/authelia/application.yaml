@@ -13,17 +13,21 @@ spec:
     helm:
       releaseName: authelia
       valuesObject:
-        configMap:
-          file:
-            enabled: true
-          cookies:
-            - subdomain: 'auth'
-          storage:
-            local:
-              enabled: true
-          notifier:
-            filesystem:
-              enabled: true
+        authelia:
+          configMap:
+            session:
+              cookies:
+                - subdomain: 'auth'
+                  domain: 'asic.li'
+            authentication_backend:
+              file:
+                enabled: true
+            storage:
+              local:
+                enabled: true
+            notifier:
+              filesystem:
+                enabled: true
 
 
   destination:

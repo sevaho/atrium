@@ -27,6 +27,8 @@ spec:
     automated:
       prune: false
       selfHeal: false
+    syncOptions:
+    - ServerSideApply=true 
 
   info:
   - name: releasenotes
