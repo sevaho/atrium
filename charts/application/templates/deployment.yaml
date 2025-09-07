@@ -99,6 +99,10 @@ spec:
         {{ if .Values.envFromSecret }}
         {{- toYaml .Values.envFromSecret | nindent 8 }}
         {{- end }}
+        {{- if .Values.envFrom }}
+        envFrom:
+        {{- toYaml .Values.envFrom | nindent 8 }}
+        {{- end }}
 
 {{- if .Values.pvc.enabled }}
         volumeMounts:
