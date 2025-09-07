@@ -25,14 +25,7 @@ ingress:
   tls:
     secretName: goforms-certs
 
-
-initContainers:
-  - name: init-migration
-    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-    command: ["--migrate"]
-    envFrom:
-      - secretRef:
-          name: goforms
+# autoMigrate: true
 
 envFrom:
   - secretRef:
