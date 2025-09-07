@@ -2,7 +2,7 @@
 fullnameOverride: goforms
 image:
   repository: cr.asic.li/applications/goforms
-  tag: 0.0.10
+  tag: 0.0.11
 
 args:
   - --serve
@@ -27,7 +27,7 @@ ingress:
 
 envFrom:
   - secretRef:
-      name: goforms
+      name: goforms-data-secret
 
 jobs:
   autoMigrate:
@@ -36,4 +36,4 @@ jobs:
       - --migrate
     envFrom:
       - secretRef:
-          name: goforms
+          name: goforms-data-secret

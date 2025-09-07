@@ -12,4 +12,4 @@ help: ## Show this help message (default)
 
 up: ## Up
 	kubectl apply -f ./application.yaml
-	kubectl apply -f ./goforms-data-secret.sealedsecrets.yaml
+	kubectl apply -f ./goforms-data-secret.yaml
