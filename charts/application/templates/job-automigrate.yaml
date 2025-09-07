@@ -1,0 +1,39 @@
+{{- if .Values.jobs.autoMigrate }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "app.fullname" . }}-automigrate
+  {{- if .Release.Namespace }}
+  namespace: {{ .Release.Namespace }}
+  {{- end }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    helm.sh/hook-weight: "1"
+    helm.sh/hook: "pre-install, pre-upgrade"
+    helm.sh/hook-delete-policy: "before-hook-creation,hook-succeeded"
+spec:
+  template:
+    {{- with .Values.jobs.autoMigrate.annotations }}
+    metadata:
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    spec:
+      containers:
+      - name: {{ include "app.fullname" . }}-automigrate
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.jobs.autoMigrate.args }}
+        args:
+        {{- range .Values.jobs.autoMigrate.args }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.jobs.autoMigrate.envFrom }}
+        envFrom:
+        {{- toYaml .Values.jobs.autoMigrate.envFrom | nindent 8 }}
+        {{- end }}
+      restartPolicy: Never
+  backoffLimit: 10
+{{- end }}

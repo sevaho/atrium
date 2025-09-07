@@ -36,6 +36,11 @@ envFrom: {}
   # - secretRef:
   #     name: my-app-secrets
 
+jobs: {}
+  # autoMigrate:
+  #   enabled: true
+
+
 resources:
   limits:
     memory: 200Mi
