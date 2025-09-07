@@ -2,7 +2,7 @@
 fullnameOverride: goforms
 image:
   repository: cr.asic.li/applications/goforms
-  tag: 0.0.6
+  tag: 0.0.7
 
 args:
   - --serve
@@ -25,24 +25,37 @@ ingress:
   tls:
     secretName: goforms-certs
 
-envFromSecret:
-  - name: MAILERSEND_API_KEY
-    valueFrom:
-      secretKeyRef:
-        name: goforms-data-secret
-        key: MAILERSEND_API_KEY
-  - name: TELEGRAM_BOT_API_KEY
-    valueFrom:
-      secretKeyRef:
-        name: goforms-data-secret
-        key: TELEGRAM_BOT_API_KEY
-  - name: TELEGRAM_BOT_CHAT_ID
-    valueFrom:
-      secretKeyRef:
-        name: goforms-data-secret
-        key: TELEGRAM_BOT_CHAT_ID
-  - name: GOOGLE_RECAPTCHA_SECRET_KEY
-    valueFrom:
-      secretKeyRef:
-        name: goforms-data-secret
-        key: GOOGLE_RECAPTCHA_SECRET_KEY
+
+initContainers:
+  - name: init-migration
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+    command: ["--migrate"]
+    envFrom:
+      - secretRef:
+          name: goforms
+
+envFrom:
+  - secretRef:
+      name: goforms
+
+# envFromSecret:
+#   - name: MAILERSEND_API_KEY
+#     valueFrom:
+#       secretKeyRef:
+#         name: goforms-data-secret
+#         key: MAILERSEND_API_KEY
+#   - name: TELEGRAM_BOT_API_KEY
+#     valueFrom:
+#       secretKeyRef:
+#         name: goforms-data-secret
+#         key: TELEGRAM_BOT_API_KEY
+#   - name: TELEGRAM_BOT_CHAT_ID
+#     valueFrom:
+#       secretKeyRef:
+#         name: goforms-data-secret
+#         key: TELEGRAM_BOT_CHAT_ID
+#   - name: GOOGLE_RECAPTCHA_SECRET_KEY
+#     valueFrom:
+#       secretKeyRef:
+#         name: goforms-data-secret
+#         key: GOOGLE_RECAPTCHA_SECRET_KEY
