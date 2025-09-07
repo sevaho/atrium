@@ -11,6 +11,7 @@ metadata:
     {{- include "app.labels" . | nindent 4 }}
     helm.sh/hook-weight: "1"
     helm.sh/hook: "pre-install"
+    helm.sh/hook-delete-policy: "before-hook-creation,hook-succeeded"
 spec:
   template:
     {{- with .Values.jobs.autoMigrate.annotations }}
