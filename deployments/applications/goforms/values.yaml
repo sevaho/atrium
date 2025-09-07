@@ -2,7 +2,7 @@
 fullnameOverride: goforms
 image:
   repository: cr.asic.li/applications/goforms
-  tag: 0.0.8
+  tag: 0.0.9
 
 args:
   - --serve
