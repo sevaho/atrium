@@ -1,0 +1,64 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: oauth2-proxy
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/tooling/oauth2-proxy
+    targetRevision: HEAD
+    helm:
+      releaseName: oauth2-proxy
+      valuesObject:
+        oauth2-proxy:
+          envFrom:
+            - secretRef:
+                name: oauth2-proxy-data-secret
+          extraEnv:
+            - name: OAUTH2_PROXY_PROVIDER
+              value: github
+            - name: OAUTH2_PROXY_GITHUB_ORG
+              value: ${GITHUB_ORG}
+            - name: OAUTH2_PROXY_GITHUB_TEAM
+              value: admin
+            - name: OAUTH2_PROXY_REDIRECT_URL
+              value: "https://${OAUTH2_PROXY_HOST}/oauth2/callback"
+            - name: OAUTH2_PROXY_COOKIE_DOMAINS
+              value: ${OAUTH2_PROXY_HOST}
+
+          # Ingress configuration
+          ingress:
+            enabled: true
+            className: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/ssl-redirect: "true"
+              nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+            hosts:
+              - host: ${OAUTH2_PROXY_HOST}
+                paths:
+                  - path: /
+                    pathType: Prefix
+            tls:
+              - secretName: oauth2-proxy-ingress
+                hosts:
+                  - ${OAUTH2_PROXY_HOST}
+
+          config: {}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tooling
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+  info:
+  - name: releasenotes
+    value: https://github.com/oauth2-proxy/manifests/releases/tag/oauth2-proxy-8.2.0
+  - name: values.yaml
+    value: https://github.com/oauth2-proxy/manifests/blob/main/helm/oauth2-proxy/values.yaml
