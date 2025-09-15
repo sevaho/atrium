@@ -1,0 +1,56 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pghero
+  namespace: argocd
+spec:
+  project: default
+  source:
+    path: charts/application
+    repoURL: 'https://github.com/sevaho/atrium'
+    targetRevision: HEAD
+    helm:
+      releaseName: pghero
+      valuesObject:
+        nameOverride: pghero
+        image:
+          repository: cr.asic.li/dockercache/ankane/pghero
+          tag: latest
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 8080
+
+        envFrom:
+          - secretRef:
+              name: pghero-data-secret
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tooling
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: pghero-data-secret
+  namespace: tooling
+spec:
+  refreshInterval: "15s"
+  secretStoreRef:
+    name: vault-secret-store
+    kind: ClusterSecretStore
+  target:
+    name: pghero-data-secret
+  data:
+  - secretKey: DATABASE_URL
+    remoteRef:
+      key: tooling/pghero
+      property: DATABASE_URL
+---
+# TODO:  <15-09-25, Sebastiaan Van Hoecke> # JOBS see https://github.com/ankane/pghero/blob/master/guides/Docker.md
