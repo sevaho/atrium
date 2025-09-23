@@ -11,7 +11,7 @@ service:
   targetPort: 8080
 
 ingress:
-  enabled: true
+  enabled: false
   hosts:
     - foo.bar
   ingressClass: nginx
