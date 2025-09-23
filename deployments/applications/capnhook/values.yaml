@@ -18,6 +18,7 @@ extraAnnotations:
   reloader.stakater.com/auto: "true"
 
 ingress:
+  enabled: true
   hosts:
     - alpha.capnhook.dev
   tls:
