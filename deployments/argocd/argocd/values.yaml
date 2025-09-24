@@ -2,7 +2,7 @@
 
 configs:
   cm:
-    url: "https://${TELEPORT_ARGOCD_HOST}"
+    url: "https://${ARGOCD_HOST}"
 
     # Allow terminal access to pods
     exec.enabled: "true"
