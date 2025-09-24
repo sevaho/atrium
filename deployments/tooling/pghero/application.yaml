@@ -14,9 +14,20 @@ spec:
       releaseName: pghero
       valuesObject:
         nameOverride: pghero
+
+        replicaCount: 1
+
         image:
           repository: cr.asic.li/dockercache/ankane/pghero
           tag: latest
+
+        imagePullSecrets: [regcred]
+
+        resources:
+          limits:
+            memory: 500Mi
+          requests:
+            memory: 100Mi
 
         service:
           type: ClusterIP
@@ -41,7 +52,7 @@ metadata:
   name: pghero-data-secret
   namespace: tooling
 spec:
-  refreshInterval: "15s"
+  refreshInterval: 1h
   secretStoreRef:
     name: vault-secret-store
     kind: ClusterSecretStore
@@ -53,4 +64,76 @@ spec:
       key: tooling/pghero
       property: DATABASE_URL
 ---
-# TODO:  <15-09-25, Sebastiaan Van Hoecke> # JOBS see https://github.com/ankane/pghero/blob/master/guides/Docker.md
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: capture-historical-query-stats
+  namespace: tooling
+spec:
+  schedule: "*/5 * * * *" # Every 5 minutes
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: capture-query-stats
+            image: cr.asic.li/dockercache/ankane/pghero:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - bin/rake
+            - pghero:capture_query_stats
+
+            envFrom:
+              - secretRef:
+                  name: pghero-data-secret
+          - name: cleanup-query-stats
+            image: cr.asic.li/dockercache/ankane/pghero:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - bin/rake
+            - pghero:clean_query_stats
+            - KEEP_DAYS=14
+
+            envFrom:
+              - secretRef:
+                  name: pghero-data-secret
+          restartPolicy: OnFailure
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: capture-historical-space-stats
+  namespace: tooling
+spec:
+  schedule: "0 1 * * *"  # Daily at 1 AM
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: capture-space-stats
+            image: cr.asic.li/dockercache/ankane/pghero:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - bin/rake
+            - pghero:capture_space_stats
+
+            envFrom:
+              - secretRef:
+                  name: pghero-data-secret
+
+          - name: cleanup-space-stats
+            image: cr.asic.li/dockercache/ankane/pghero:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - bin/rake
+            - pghero:clean_space_stats
+            - KEEP_DAYS=90
+
+            envFrom:
+              - secretRef:
+                  name: pghero-data-secret
+          restartPolicy: OnFailure
