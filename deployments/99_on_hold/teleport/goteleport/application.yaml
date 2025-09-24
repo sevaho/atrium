@@ -1,0 +1,141 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: teleport-cluster
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # chart: teleport-cluster
+    # repoURL: https://charts.releases.teleport.dev
+    # targetRevision: 15.0.1
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/teleport/goteleport/charts/teleport-cluster
+    targetRevision: HEAD
+    helm:
+      releaseName: teleport-cluster
+      valuesObject:
+        teleport-cluster:
+          authentication:
+            type: github
+            localAuth: false
+          clusterName: ${TELEPORT_HOST}
+          kubeClusterName: "k8s-asic-li-1"
+
+          annotations:
+            ingress:
+              nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+          proxyListenerMode: multiplex
+          service:
+            type: "ClusterIP"
+          highAvailability:
+            certManager:
+              enabled: true
+              issuerName: "letsencrypt-prod"
+              issuerKind: "ClusterIssuer"
+          ingress:
+            enabled: true,
+            spec:
+              ingressClassName: "nginx"
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: teleport
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+  info:
+  - name: releasenotes
+    value: https://github.com/gravitational/teleport/releases
+  - name: values.yaml
+    value: https://github.com/gravitational/teleport/blob/master/examples/chart/teleport-cluster/values.yaml
+
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: teleport-kube-agent
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # chart: teleport-kube-agent
+    # repoURL: https://charts.releases.teleport.dev
+    # targetRevision: 14.1.5
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/teleport/goteleport/charts/teleport-kube-agent
+    targetRevision: HEAD
+    helm:
+      releaseName: teleport-kube-agent
+      valuesObject:
+        teleport-kube-agent:
+          apps:
+            - name: cockpit
+              uri: http://${ASIC_SERVER_HETZNER_HOST}:9090
+              public_addr: ${TELEPORT_COCKPIT_HOST}
+            - name: harbor
+              uri: http://harbor-portal.harbor.svc.cluster.local
+              public_addr: ${TELEPORT_HARBOR_HOST}
+            - name: woodpecker
+              uri: http://woodpecker-server.woodpecker.svc.cluster.local
+              public_addr: ${TELEPORT_WOODPECKER_HOST}
+            - name: argocd
+              uri: https://argocd-server.argocd.svc.cluster.local
+              public_addr: ${TELEPORT_ARGOCD_HOST}
+            - name: metabase
+              uri: http://metabase.tooling.svc.cluster.local
+              public_addr: ${TELEPORT_METABASE_HOST}
+            - name: netdata
+              uri: http://netdata.observability.svc:19999
+              public_addr: ${TELEPORT_NETDATA_HOST}
+            - name: coroot
+              uri: http://coroot.observability.svc:8080
+              public_addr: ${TELEPORT_COROOT_HOST}
+            - name: keep
+              uri: http://keep-nginx.observability.svc:80
+              public_addr: ${TELEPORT_KEEP_HOST}
+            - name: uptime
+              uri: http://uptime-kuma.observability.svc:80
+              public_addr: ${TELEPORT_UPTIME_KUMA_HOST}
+            - name: firefly
+              uri: http://firefly-iii.applications.svc:80
+              public_addr: ${TELEPORT_FIREFLY_HOST}
+            - name: workflows
+              uri: http://argo-workflows-server.argocd.svc:2746
+              public_addr: ${TELEPORT_ARGO_WORKFLOWS_HOST}
+            - name: vault
+              uri: http://vault.tooling.svc.cluster.local:8200
+              public_addr: ${TELEPORT_VAULT_WORKFLOWS_HOST}
+            - name: grafana
+              uri: http://grafana.observability.svc:80
+              public_addr: ${TELEPORT_GRAFANA_HOST}
+              rewrite:
+                headers:
+                - "Host: ${TELEPORT_GRAFANA_HOST}"
+                - "Origin: https://${TELEPORT_GRAFANA_HOST}"
+          insecureSkipProxyTLSVerify: true
+          roles: kube,app.discovery
+          kubeClusterName: k8s-asic-li-1
+          authToken: ${TELEPORT_AUTH_TOKEN}
+          joinParams:
+            method: token
+            tokenName: ${TELEPORT_AUTH_TOKEN}
+          proxyAddr: ${TELEPORT_HOST}:443
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: teleport
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/gravitational/teleport/releases
+  - name: values.yaml
+    value: https://github.com/gravitational/teleport/blob/master/examples/chart/teleport-kube-agent/values.yaml

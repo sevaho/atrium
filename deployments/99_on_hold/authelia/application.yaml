@@ -1,0 +1,55 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: authelia
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/authelia/authelia
+    targetRevision: HEAD
+    helm:
+      releaseName: authelia
+      valuesObject:
+        authelia:
+          service:
+            type: ClusterIP
+            externalTrafficPolicy: "~"
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: ${AUTHELIA_HOST}
+          configMap:
+            session:
+              cookies:
+                - subdomain: 'auth'
+                  domain: 'asic.li'
+            access_control:
+              default_policy: deny
+              rules:
+                - domain: "test.asic.li"
+                  policy: one_factor
+            authentication_backend:
+              file:
+                enabled: true
+            storage:
+              local:
+                enabled: true
+            notifier:
+              filesystem:
+                enabled: true
+
+
+  destination:
+
+    server: "https://kubernetes.default.svc"
+    namespace: authelia
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/authelia/authelia/releases
+  - name: values.yaml
+    value: https://github.com/authelia/chartrepo/blob/master/charts/authelia/values.yaml

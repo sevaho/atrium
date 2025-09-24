@@ -1,0 +1,47 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/sevaho/atrium'
+    path: charts/application
+    targetRevision: HEAD
+    helm:
+      releaseName: test
+      valuesObject:
+        image:
+          repository: inanimate/echo-server
+          tag: latest
+          pullPolicy: Always
+
+        env:
+          PORT: 8080
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 8080
+
+        ingress:
+          hosts:
+            - test.asic.li
+          tls:
+            secretName: test-certs
+          extraAnnotations:
+            nginx.ingress.kubernetes.io/auth-url: "https://login.asic.li/oauth2/auth"
+            nginx.ingress.kubernetes.io/auth-signin: "https://login.asic.li/oauth2/start?rd=https://test.asic.li"
+            nginx.ingress.kubernetes.io/auth-url: https://login.asic.li/oauth2/auth
+            nginx.ingress.kubernetes.io/auth-signin: "https://login.asic.li/oauth2/start?rd=$scheme%3A%2F%2F$host$escaped_request_uri"
+            nginx.ingress.kubernetes.io/auth-response-headers: "X-Forwarded-User"
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tooling
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

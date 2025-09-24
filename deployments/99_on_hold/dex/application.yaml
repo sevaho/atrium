@@ -1,0 +1,82 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dex
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/tooling/dex
+    targetRevision: HEAD
+    helm:
+      releaseName: dex
+      valuesObject:
+        dex:
+          envFrom:
+            - secretRef:
+                name: dex-data-secret
+
+          # Ingress configuration
+          ingress:
+            enabled: true
+            className: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/ssl-redirect: "true"
+              nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+            hosts:
+              - host: ${DEX_HOST}
+                paths:
+                  - path: /
+                    pathType: Prefix
+            tls:
+              - secretName: dex-ingress
+                hosts:
+                  - ${DEX_HOST}
+
+          config:
+            issuer: https://${DEX_HOST}
+
+            storage:
+              type: kubernetes
+              config:
+                inCluster: true
+
+            connectors:
+              - type: github
+                id: github
+                name: GitHub
+                config:
+                  clientID: $GITHUB_CLIENT_ID
+                  clientSecret: $GITHUB_CLIENT_SECRET
+                  redirectURI: https://${DEX_HOST}/dex/callback
+                  orgs:
+                    - name: asic-li
+                      teams:
+                        - admin
+            staticClients:
+              - id: authelia
+                redirectURIs:
+                  - 'https://auth.asic.li/api/oidc/callback'
+                name: 'Authelia'
+                secret: authelia-client-secret
+
+            frontend:
+              issuer: dex
+              theme: light
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tooling
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+  info:
+  - name: releasenotes
+    value: https://github.com/dexidp/helm-charts/releases
+  - name: values.yaml
+    value: https://github.com/dexidp/helm-charts/blob/master/charts/dex/values.yaml
