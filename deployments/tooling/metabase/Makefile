@@ -12,4 +12,4 @@ help: ## Show this help message (default)
 
 up: ## Up
 	envvar application.yaml | kubectl apply -f -
-	kubectl apply -f ./metabase-data-secret.sealedsecrets.yaml
+	kubectl apply -f ./metabase-data-secret.yaml

@@ -13,5 +13,4 @@ help: ## Show this help message (default)
 up: ## Up
 	helm repo add argo https://argoproj.github.io/argo-helm
 	envvar values.yaml | helm upgrade --install argocd argo/argo-cd --create-namespace --namespace argocd -f -
-	kubectl apply -f ./secret_argocd_sealed.yaml
-	kubectl apply -f ./secret_repository_infrastructure.yaml
+	kubectl apply -f ./argocd-data-secret.yaml
