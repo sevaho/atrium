@@ -12,3 +12,4 @@ help: ## Show this help message (default)
 
 up: ## Up
 	envvar application.yaml | kubectl apply -f -
+	kubectl apply -f ./capnhook-data-secret.yaml

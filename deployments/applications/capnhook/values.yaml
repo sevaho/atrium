@@ -27,14 +27,7 @@ ingress:
 env:
   ENVIRONMENT: ALPHA
 
-envFromSecret:
-  - name: DB_DSN
-    valueFrom:
-      secretKeyRef:
-        name: capnhook
-        key: DB_DSN
-  - name: JWT_SECRET
-    valueFrom:
-      secretKeyRef:
-        name: capnhook
-        key: JWT_SECRET
+
+envFrom:
+  - secretRef:
+      name: capnhook-data-secret
