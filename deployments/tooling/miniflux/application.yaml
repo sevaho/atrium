@@ -45,6 +45,7 @@ spec:
                 key: ADMIN_PASSWORD
 
         ingress:
+          enabled: true
           hosts:
             - ${MINIFLUX_HOST}
           tls:
