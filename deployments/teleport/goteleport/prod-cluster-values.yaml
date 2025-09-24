@@ -1,6 +1,0 @@
-roles: kube,app,discovery
-authToken: ${TELEPORT_AUTH_TOKEN}
-proxyAddr: ${TELEPORT_HOST}:443
-kubeClusterName: hetzner
-labels:
-    teleport.internal/resource-id: ${TELEPORT_INTERNAL_RESOURCE_ID}
