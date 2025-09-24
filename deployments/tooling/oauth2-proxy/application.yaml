@@ -14,9 +14,9 @@ spec:
       releaseName: oauth2-proxy
       valuesObject:
         oauth2-proxy:
-          envFrom:
-            - secretRef:
-                name: oauth2-proxy-data-secret
+          config:
+            existingSecret: oauth2-proxy-data-secret
+
           extraEnv:
             - name: OAUTH2_PROXY_PROVIDER
               value: github
@@ -26,8 +26,14 @@ spec:
               value: admin
             - name: OAUTH2_PROXY_REDIRECT_URL
               value: "https://${OAUTH2_PROXY_HOST}/oauth2/callback"
+            - name: OAUTH2_PROXY_WHITELIST_DOMAINS
+              value: ".${ROOT_DOMAIN}"
             - name: OAUTH2_PROXY_COOKIE_DOMAINS
-              value: ${OAUTH2_PROXY_HOST}
+              value: ".${ROOT_DOMAIN}"
+            - name: OAUTH2_PROXY_REVERSE_PROXY
+              value: "true"
+            - name: OAUTH2_PROXY_UPSTREAMS
+              value: file:///dev/null
 
           # Ingress configuration
           ingress:
@@ -38,16 +44,11 @@ spec:
               nginx.ingress.kubernetes.io/ssl-redirect: "true"
               nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
             hosts:
-              - host: ${OAUTH2_PROXY_HOST}
-                paths:
-                  - path: /
-                    pathType: Prefix
+              - ${OAUTH2_PROXY_HOST}
             tls:
               - secretName: oauth2-proxy-ingress
                 hosts:
                   - ${OAUTH2_PROXY_HOST}
-
-          config: {}
 
   destination:
     server: "https://kubernetes.default.svc"

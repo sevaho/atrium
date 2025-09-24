@@ -1,0 +1,320 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: firefly-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: firefly-iii.applications.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uptime-kuma-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: uptime-kuma.observability.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: woodpecker-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: woodpecker-server.woodpecker.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metabase-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: metabase.tooling.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: vault.tooling.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 8200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: netdata-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: netdata.observability.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 19999
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coroot-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: coroot.observability.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: grafana.observability.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: argocd-server.argocd.svc.cluster.local
+  ports:
+    - port: 443
+      targetPort: 443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argo-workflows-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: argo-workflows-server.argocd.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 2746
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-proxy-internal-ingress
+  namespace: tooling
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/auth-url: https://${OAUTH2_PROXY_HOST}/oauth2/auth
+    nginx.ingress.kubernetes.io/auth-signin: "https://${OAUTH2_PROXY_HOST}/oauth2/start?rd=$scheme%3A%2F%2F$host$escaped_request_uri"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-Forwarded-User"
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - "*.${OAUTH2_PROXY_INTERNAL_HOST}"
+        - "${OAUTH2_PROXY_INTERNAL_HOST}"
+      secretName: oauth2-proxy-internal-ingress
+  rules:
+    - host: ${OAUTH2_PROXY_INTERNAL_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: theonepager
+                port:
+                  number: 80
+    - host: ${PGHERO_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: pghero
+                port:
+                  number: 80
+    - host: ${COROOT_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: coroot-svc-bridge
+                port:
+                  number: 80
+    - host: ${GRAFANA_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: grafana-svc-bridge
+                port:
+                  number: 80
+    - host: ${NETDATA_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: netdata-svc-bridge
+                port:
+                  number: 80
+    - host: ${VAULT_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: vault-svc-bridge
+                port:
+                  number: 80
+    - host: ${METABASE_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: metabase-svc-bridge
+                port:
+                  number: 80
+    - host: ${HARBOR_INTERNAL_HOST}
+      http:
+        paths:
+          - backend:
+              service:
+                name: harbor-core
+                port:
+                  number: 80
+            path: /api/
+            pathType: Prefix
+          - backend:
+              service:
+                name: harbor-core
+                port:
+                  number: 80
+            path: /service/
+            pathType: Prefix
+          - backend:
+              service:
+                name: harbor-core
+                port:
+                  number: 80
+            path: /v2/
+            pathType: Prefix
+          - backend:
+              service:
+                name: harbor-core
+                port:
+                  number: 80
+            path: /c/
+            pathType: Prefix
+          - backend:
+              service:
+                name: harbor-portal
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+
+
+    - host: ${WOODPECKER_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: woodpecker-svc-bridge
+                port:
+                  number: 80
+    - host: ${UPTIME_KUMA_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: uptime-kuma-svc-bridge
+                port:
+                  number: 80
+    - host: ${FIREFLY_III_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: firefly-svc-bridge
+                port:
+                  number: 80
+    - host: ${ARGO_WORKFLOWS_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: argo-workflows-svc-bridge
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-proxy-internal-ingress-https
+  namespace: tooling
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/auth-url: https://${OAUTH2_PROXY_HOST}/oauth2/auth
+    nginx.ingress.kubernetes.io/auth-signin: "https://${OAUTH2_PROXY_HOST}/oauth2/start?rd=$scheme%3A%2F%2F$host$escaped_request_uri"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-Forwarded-User"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - "*.${OAUTH2_PROXY_INTERNAL_HOST}"
+      secretName: oauth2-proxy-internal-ingress-https
+  rules:
+    - host: ${ARGOCD_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: argocd-svc-bridge
+                port:
+                  number: 443
