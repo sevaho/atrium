@@ -31,7 +31,7 @@
 # TOOLING ACCESS
 # ==========================================================
 
-NAMESPACES=tooling,applications
+NAMESPACES=tooling,applications,argocd,redis,woodpecker,observability,longhorn-system
 
 # Create a policy
 vault policy write external-secrets-policy - <<EOF
