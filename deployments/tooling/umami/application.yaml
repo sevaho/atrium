@@ -1,0 +1,67 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: umami
+  namespace: argocd
+spec:
+  project: default
+  source:
+    path: charts/application
+    repoURL: 'https://github.com/sevaho/atrium'
+    targetRevision: HEAD
+    helm:
+      releaseName: umami
+      valuesObject:
+        nameOverride: umami
+        replicaCount: 1
+
+        image:
+          repository: docker.umami.is/umami-software/umami
+          tag: postgresql-latest
+
+        imagePullSecrets: [regcred]
+
+        resources:
+          limits:
+            memory: 500Mi
+          requests:
+            memory: 100Mi
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 3000
+
+        envFrom:
+          - secretRef:
+              name: umami-data-secret
+
+        env:
+          DEBUG: "umami:*"
+          DISABLE_TELEMETRY: "1"
+          PORT: "3000"
+          TRACKER_SCRIPT_NAME: "x"
+          COLLECT_API_ENDPOINT: "/events"
+          APP_SECRET: "random string"
+          DATABASE_TYPE: "postgresql"
+
+
+
+
+
+        security:
+          enabled: false
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tooling
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  info:
+  - name: releasenotes
+    value: https://github.com/umami-software/umami/releases
+  - name: environment-variables
+    value: https://umami.is/docs/environment-variables
