@@ -148,6 +148,26 @@ spec:
                 name: theonepager
                 port:
                   number: 80
+    - host: ${HEADLAMP_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: headlamp
+                port:
+                  number: 80
+    - host: ${UMAMI_INTERNAL_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: umami
+                port:
+                  number: 80
     - host: ${PGHERO_HOST}
       http:
         paths:
