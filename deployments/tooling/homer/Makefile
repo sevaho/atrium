@@ -12,5 +12,3 @@ help: ## Show this help message (default)
 
 up: ## Up
 	envvar application.yaml | kubectl apply -f -
-	kubectl apply -f ./oauth2-proxy-data-secret.yaml
-	envvar ingress.yaml | kubectl apply -f -

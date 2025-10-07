@@ -5,6 +5,6 @@ description: Homer
 name: homer
 version: 1.0
 dependencies:
-  - name: djjudas21
+  - name: homer
     version: "*"
-    repository: https://djjudas21.github.io/charts/
+    repository: https://djjudas21.github.io/charts
