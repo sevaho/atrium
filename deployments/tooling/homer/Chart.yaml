@@ -6,4 +6,4 @@ version: 1.0
 dependencies:
   - name: example
     version: "*"
-    repository: "file://../../../../charts/application"
+    repository: "file://../../../charts/application"

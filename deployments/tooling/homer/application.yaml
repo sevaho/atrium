@@ -105,7 +105,7 @@ metadata:
 spec:
   project: default
   source:
-    path: deployments/tooling/homer/chart
+    path: deployments/tooling/homer
     repoURL: 'https://github.com/sevaho/atrium'
     targetRevision: HEAD
     helm:
