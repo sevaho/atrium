@@ -12,4 +12,4 @@ metadata:
   name: homer-config
 data:
   config.yml: |-
-    {{ .Files.Get "config.yml" }}
+    {{ .Files.Get "config.yml" | nindent 4 }}
