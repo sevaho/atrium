@@ -1,0 +1,55 @@
+title: "my App dashboard"
+
+header: false
+footer: ''
+
+defaults:
+  layout: columns
+  colorTheme: auto
+
+message:
+  style: "is-warning"
+  title: "Optional message!"
+  icon: "fa fa-exclamation-triangle"
+  content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+
+links:
+  - name: "Link 1"
+    icon: "fab fa-github"
+    url: "https://github.com/bastienwirtz/homer"
+    target: "_blank" # optional html tag target attribute
+  - name: "link 2"
+    icon: "fas fa-book"
+    url: "https://github.com/bastienwirtz/homer"
+
+services:
+  - name: "Application"
+    icon: "fas fa-code-branch"
+    items:
+      - name: "Awesome app"
+        logo: "assets/tools/sample.png"
+        # Alternatively a fa icon can be provided:
+        icon: "fab fa-jenkins"
+        subtitle: "Bookmark example"
+        tag: "app"
+        keywords: "self hosted reddit" # optional keyword used for searching purpose
+        url: "https://www.reddit.com/r/selfhosted/"
+      - name: "Another one"
+        logo: "assets/tools/sample2.png"
+        subtitle: "Another application"
+        tag: "app"
+        # Optional tagstyle
+        tagstyle: "is-success"
+        url: "#"
+  - name: "Other group"
+    icon: "fas fa-heartbeat"
+    items:
+      - name: "Pi-hole"
+        logo: "assets/tools/sample.png"
+        # subtitle: "Network-wide Ad Blocking" # optional, if no subtitle is defined, PiHole statistics will be shown
+        tag: "other"
+        url: "http://192.168.0.151/admin"
+        type: "PiHole"
+        target: "_blank" # optional html a tag target attribute
+        # class: "green" # optional custom CSS class for card, useful with custom stylesheet
+# background: red # optional color for card to set color directly without custom stylesheet

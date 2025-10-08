@@ -1,3 +1,101 @@
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: homer
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     repoURL: https://github.com/sevaho/atrium
+#     path: deployments/tooling/homer
+#     targetRevision: HEAD
+#     helm:
+#       releaseName: homer
+#       valuesObject:
+#         homer:
+#           env:
+#             TZ: "Europe/Brussels"
+#           configmap:
+#             config:
+#               # -- Store homer configuration as a ConfigMap
+#               enabled: true
+#               # -- Homer configuration. See [image documentation](https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md) for more information.
+#               # @default -- See values.yaml
+#               data:
+#                 config.yml: |
+#                   title: "my App dashboard"
+#
+#                   header: false
+#                   footer: ''
+#
+#                   defaults:
+#                     layout: columns
+#                     colorTheme: auto
+#
+#                   message:
+#                     style: "is-warning"
+#                     title: "Optional message!"
+#                     icon: "fa fa-exclamation-triangle"
+#                     content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+#
+#                   links:
+#                     - name: "Link 1"
+#                       icon: "fab fa-github"
+#                       url: "https://github.com/bastienwirtz/homer"
+#                       target: "_blank" # optional html tag target attribute
+#                     - name: "link 2"
+#                       icon: "fas fa-book"
+#                       url: "https://github.com/bastienwirtz/homer"
+#
+#                   services:
+#                     - name: "Application"
+#                       icon: "fas fa-code-branch"
+#                       items:
+#                         - name: "Awesome app"
+#                           logo: "assets/tools/sample.png"
+#                           # Alternatively a fa icon can be provided:
+#                           icon: "fab fa-jenkins"
+#                           subtitle: "Bookmark example"
+#                           tag: "app"
+#                           keywords: "self hosted reddit" # optional keyword used for searching purpose
+#                           url: "https://www.reddit.com/r/selfhosted/"
+#                         - name: "Another one"
+#                           logo: "assets/tools/sample2.png"
+#                           subtitle: "Another application"
+#                           tag: "app"
+#                           # Optional tagstyle
+#                           tagstyle: "is-success"
+#                           url: "#"
+#                     - name: "Other group"
+#                       icon: "fas fa-heartbeat"
+#                       items:
+#                         - name: "Pi-hole"
+#                           logo: "assets/tools/sample.png"
+#                           # subtitle: "Network-wide Ad Blocking" # optional, if no subtitle is defined, PiHole statistics will be shown
+#                           tag: "other"
+#                           url: "http://192.168.0.151/admin"
+#                           type: "PiHole"
+#                           target: "_blank" # optional html a tag target attribute
+#                           # class: "green" # optional custom CSS class for card, useful with custom stylesheet
+#         # background: red # optional color for card to set color directly without custom stylesheet
+#
+#   destination:
+#     server: "https://kubernetes.default.svc"
+#     namespace: tooling
+#   syncPolicy:
+#     automated:
+#       prune: false
+#       selfHeal: false
+#
+#   info:
+#   - name: releasenotes
+#     value: https://github.com/bastienwirtz/homer/releases
+#   - name: values.yaml
+#     value: https://github.com/djjudas21/charts/blob/main/charts/homer/values.yaml
+#   - name: configuration
+#     value: https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md
+
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -7,13 +105,42 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/sevaho/atrium
-    path: deployments/tooling/homer
+    path: deployments/tooling/homer/chart
+    repoURL: 'https://github.com/sevaho/atrium'
     targetRevision: HEAD
     helm:
       releaseName: homer
       valuesObject:
-        homer: {}
+        nameOverride: homer
+        replicaCount: 1
+
+        env:
+          TZ: "Europe/Brussels"
+
+        image:
+          repository: cr.asic.li/dockercache/b4bz/homer
+          tag: latest
+
+        imagePullSecrets: [regcred]
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 8080
+
+        volumeMounts:
+          - name: homer-config
+            mountPath: "/www/assets/config.yml"
+            subPath: config.yml
+            readOnly: true
+
+        volumes:
+          - name: homer-config
+            configMap:
+              name: homer-config
+              items:
+                - key: config.yml
+                  path: config.yml
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -28,3 +155,14 @@ spec:
     value: https://github.com/bastienwirtz/homer/releases
   - name: values.yaml
     value: https://github.com/djjudas21/charts/blob/main/charts/homer/values.yaml
+  - name: configuration
+    value: https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md
+
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: configmap-test
+# data:
+#   config.yml: |-
+# {{ .Files.Get "config.yml" | indent 4}}

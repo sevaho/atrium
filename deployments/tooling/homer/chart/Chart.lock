@@ -1,0 +1,6 @@
+dependencies:
+- name: application
+  repository: file://../../../../charts/application
+  version: 0.0.0
+digest: sha256:3879f586c2b45c60cf517cf41659e2286e6b6654d052889947d2c2473c6d9fe7
+generated: "2025-10-08T18:13:33.464579344+02:00"
