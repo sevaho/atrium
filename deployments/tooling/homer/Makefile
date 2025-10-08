@@ -12,5 +12,5 @@ help: ## Show this help message (default)
 
 up: ## Up
 	envvar application.yaml | kubectl apply -f -
-	kubectl -n tooling create configmap homer-config --from-file=config.yml=config.yml --dry-run=client -o yaml | kubectl apply -f -
-	kubectl -n tooling rollout restart deployment homer
+	# kubectl -n tooling create configmap homer-config --from-file=config.yml=config.yml --dry-run=client -o yaml | kubectl apply -f -
+	# kubectl -n tooling rollout restart deployment homer

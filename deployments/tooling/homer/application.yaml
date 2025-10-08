@@ -111,36 +111,37 @@ spec:
     helm:
       releaseName: homer
       valuesObject:
-        nameOverride: homer
-        replicaCount: 1
+        example:
+          nameOverride: homer
+          replicaCount: 1
 
-        env:
-          TZ: "Europe/Brussels"
+          env:
+            TZ: "Europe/Brussels"
 
-        image:
-          repository: cr.asic.li/dockercache/b4bz/homer
-          tag: latest
+          image:
+            repository: cr.asic.li/dockercache/b4bz/homer
+            tag: latest
 
-        imagePullSecrets: [regcred]
+          imagePullSecrets: [regcred]
 
-        service:
-          type: ClusterIP
-          port: 80
-          targetPort: 8080
+          service:
+            type: ClusterIP
+            port: 80
+            targetPort: 8080
 
-        volumeMounts:
-          - name: homer-config
-            mountPath: "/www/assets/config.yml"
-            subPath: config.yml
-            readOnly: true
-
-        volumes:
-          - name: homer-config
-            configMap:
-              name: homer-config
-              items:
-                - key: config.yml
-                  path: config.yml
+          # volumeMounts:
+          #   - name: homer-config
+          #     mountPath: "/www/assets/config.yml"
+          #     subPath: config.yml
+          #     readOnly: true
+          #
+          # volumes:
+          #   - name: homer-config
+          #     configMap:
+          #       name: homer-config
+          #       items:
+          #         - key: config.yml
+          #           path: config.yml
 
   destination:
     server: "https://kubernetes.default.svc"
