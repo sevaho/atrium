@@ -38,16 +38,16 @@ spec:
               readOnly: true
 
             - name: homer-assets-logos
-              mountPath: "/www/assets/logos"
+              mountPath: "/www/assets/data"
               readOnly: true
 
           volumes:
             - name: homer-config
               configMap:
                 name: homer-config
-            - name: homer-assets-logos
+            - name: homer-assets-data
               configMap:
-                name: homer-assets-logos
+                name: homer-assets-data
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -78,6 +78,9 @@ data:
     header: false
     footer: ''
 
+    stylesheet:
+      - 'assets/data/catppuccin-macchiato.css'
+
     defaults:
       layout: columns
       colorTheme: auto
@@ -103,11 +106,19 @@ data:
         items:
           - name: "Gatus"
             logo: "assets/logos/gatus.svg"
-            icon: "fab fa-jenkins"
             subtitle: "Status page"
             tag: "internal"
             keywords: "status page"
             url: https://${GATUS_HOST}
+
+          - name: "Gatus as type"
+            type: "gatus"
+            logo: "assets/logos/gatus.svg"
+            subtitle: "Status page"
+            tag: "internal"
+            keywords: "status page"
+            url: http://gatus.observability.svc.cluster.local
+
 
           - name: "Another one"
             logo: "assets/tools/sample2.png"
