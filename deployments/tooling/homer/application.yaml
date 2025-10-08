@@ -129,19 +129,19 @@ spec:
             port: 80
             targetPort: 8080
 
-          # volumeMounts:
-          #   - name: homer-config
-          #     mountPath: "/www/assets/config.yml"
-          #     subPath: config.yml
-          #     readOnly: true
-          #
-          # volumes:
-          #   - name: homer-config
-          #     configMap:
-          #       name: homer-config
-          #       items:
-          #         - key: config.yml
-          #           path: config.yml
+          volumeMounts:
+            - name: homer-config
+              mountPath: "/www/assets/config.yml"
+              subPath: config.yml
+              readOnly: true
+
+          volumes:
+            - name: homer-config
+              configMap:
+                name: homer-config
+                items:
+                  - key: config.yml
+                    path: config.yml
 
   destination:
     server: "https://kubernetes.default.svc"
