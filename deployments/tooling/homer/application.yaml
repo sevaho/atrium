@@ -21,7 +21,7 @@ spec:
             TZ: "Europe/Brussels"
 
           image:
-            repository: cr.asic.li/dockercache/b4bz/homer
+            repository: ${HARBOR_HOST}/dockercache/b4bz/homer
             tag: latest
 
           imagePullSecrets: [regcred]
@@ -37,7 +37,7 @@ spec:
               subPath: config.yml
               readOnly: true
 
-            - name: homer-assets-logos
+            - name: homer-assets-data
               mountPath: "/www/assets/data"
               readOnly: true
 
@@ -73,23 +73,25 @@ metadata:
   namespace: tooling
 data:
   config.yml: |-
-    title: "App dashboard"
+    title: "The One Pager"
 
     header: false
     footer: ''
+
+    columns: "4"
 
     stylesheet:
       - 'assets/data/catppuccin-macchiato.css'
 
     defaults:
       layout: columns
-      colorTheme: auto
+      colorTheme: dark
 
-    message:
-      style: "is-warning"
-      title: "Optional message!"
-      icon: "fa fa-exclamation-triangle"
-      content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    # message:
+    #   style: "is-warning"
+    #   title: "Optional message!"
+    #   icon: "fa fa-exclamation-triangle"
+    #   content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 
     links:
       - name: "Link 1"
@@ -101,41 +103,109 @@ data:
         url: "https://github.com/bastienwirtz/homer"
 
     services:
-      - name: "Application"
-        icon: "fas fa-code-branch"
+      - name: "Public"
+        items:
+          - name: "Goforms"
+            subtitle: "Posting forms as mail"
+            tag: "application"
+            keywords: "insights"
+            url: https://goforms.dev
+          - name: "RSS"
+            subtitle: "Miniflux RSS."
+            tag: "application"
+            keywords: "rss"
+            url: https://rss.asic.li
+      - name: "Tools"
+        items:
+          - name: "Metabase"
+            logo: "assets/data/metabase.svg"
+            subtitle: "Analytics and Insights"
+            tag: "internal"
+            keywords: "insights"
+            url: https://${METABASE_HOST}
+          - name: "Harbor"
+            logo: "assets/data/harbor.svg"
+            subtitle: "Status page"
+            tag: "internal"
+            keywords: "insights"
+            url: https://${HARBOR_INTERNAL_HOST}
+          - name: "ArgoCD"
+            logo: "assets/data/argo-cd.svg"
+            subtitle: "CD platform"
+            tag: "internal"
+            keywords: "cd"
+            url: https://${ARGOCD_HOST}
+          - name: "ArgoCD Workflows"
+            logo: "assets/data/argo-cd.svg"
+            subtitle: "Workflow engine"
+            tag: "internal"
+            keywords: "workflow"
+            url: https://${ARGO_WORKFLOWS_HOST}
+          - name: "Vault"
+            logo: "assets/data/vault.svg"
+            subtitle: "Hashicorp Vault"
+            tag: "internal"
+            keywords: "vault"
+            url: https://${VAULT_HOST}
+          - name: "FireFly"
+            logo: "assets/data/firefly.svg"
+            subtitle: "Personal finance"
+            tag: "internal"
+            keywords: "finance"
+            url: https://${FIREFLY_III_HOST}
+          - name: "PGhero"
+            logo: "assets/data/pghero.svg"
+            subtitle: "Insights into postgres queries"
+            tag: "internal"
+            keywords: "postgres"
+            url: https://${PGHERO_HOST}
+          - name: "WoodPecker CI"
+            logo: "assets/data/woodpecker-ci.svg"
+            subtitle: "CI"
+            tag: "internal"
+            keywords: "ci"
+            url: https://${WOODPECKER_HOST}
+
+      - name: "Observability"
         items:
           - name: "Gatus"
-            logo: "assets/logos/gatus.svg"
+            logo: "assets/data/gatus.svg"
             subtitle: "Status page"
             tag: "internal"
             keywords: "status page"
             url: https://${GATUS_HOST}
 
-          - name: "Gatus as type"
-            type: "gatus"
-            logo: "assets/logos/gatus.svg"
-            subtitle: "Status page"
+          - name: "Grafana"
+            logo: "assets/data/grafana.svg"
+            subtitle: "Metrics"
             tag: "internal"
-            keywords: "status page"
-            url: http://gatus.observability.svc.cluster.local
+            keywords: "grafana metrics"
+            url: https://${GRAFANA_HOST}
 
+          - name: "Netdata"
+            logo: "assets/data/netdata.svg"
+            subtitle: "Netdata"
+            tag: "internal"
+            keywords: "netdata metrics"
+            url: https://${NETDATA_HOST}
 
-          - name: "Another one"
-            logo: "assets/tools/sample2.png"
-            subtitle: "Another application"
-            tag: "app"
-            # Optional tagstyle
-            tagstyle: "is-success"
-            url: "#"
-      - name: "Other group"
-        icon: "fas fa-heartbeat"
-        items:
-          - name: "Pi-hole"
-            logo: "assets/tools/sample.png"
-            # subtitle: "Network-wide Ad Blocking" # optional, if no subtitle is defined, PiHole statistics will be shown
-            tag: "other"
-            url: "http://192.168.0.151/admin"
-            type: "PiHole"
-            target: "_blank" # optional html a tag target attribute
-            # class: "green" # optional custom CSS class for card, useful with custom stylesheet
-    # background: red # optional color for card to set color directly without custom stylesheet
+          - name: "Coroot"
+            logo: "assets/data/coroot.png"
+            subtitle: "Coroot"
+            tag: "internal"
+            keywords: "coroot metrics"
+            url: https://${COROOT_HOST}
+
+          - name: "Umami"
+            logo: "assets/data/umami.svg"
+            subtitle: "Website analytics"
+            tag: "internal"
+            keywords: "website analytics"
+            url: https://${UMAMI_INTERNAL_HOST}
+
+          - name: "Headlmap"
+            logo: "assets/data/headlamp.svg"
+            subtitle: "Kubernetes insights"
+            tag: "internal"
+            keywords: "kubernetes analytics"
+            url: https://${HEADLAMP_HOST}
