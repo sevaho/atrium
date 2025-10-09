@@ -1,0 +1,29 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: drone-docker-runner
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/drone/drone-docker-runner
+    targetRevision: HEAD
+    helm:
+      releaseName: drone-docker-runner
+      valuesObject:
+        drone-docker-runner:
+          env:
+            DRONE_RPC_SECRET: ${DRONE_RPC_SECRET}
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: drone
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+  info:
+  - name: values.yaml
+    value: https://github.com/drone/charts/blob/master/charts/drone/values.yaml
