@@ -190,7 +190,7 @@ data:
             url: https://${NETDATA_HOST}
 
           - name: "Coroot"
-            logo: "assets/data/coroot.png"
+            logo: "assets/data/coroot.svg"
             subtitle: "Coroot"
             tag: "internal"
             keywords: "coroot metrics"
