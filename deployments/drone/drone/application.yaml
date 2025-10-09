@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: drone
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/tooling/drone
+    targetRevision: HEAD
+    helm:
+      releaseName: drone
+      valuesObject: {}
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: drone
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+  info:
+  - name: values.yaml
+    value: https://github.com/drone/charts/blob/master/charts/drone/values.yaml
