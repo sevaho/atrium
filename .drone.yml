@@ -9,7 +9,7 @@ steps:
   - echo hello
   - echo world
 
-- name: greeting 2
+- name: greeting 3
   image: cr.asic.li/dockercache/alpine
   commands:
   - echo hello
