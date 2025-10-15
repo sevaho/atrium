@@ -44,11 +44,6 @@ spec:
             sources:
               kubernetes:
                 type: kubernetes_logs
-              demo_syslogs:
-                type: "demo_logs"
-                format: "syslog"
-                count: 100000
-                interval: 0.1
 
             transforms:
               remap_kubernetes_otel:
@@ -69,40 +64,54 @@ spec:
                   .attributes = .kubernetes
                   .resource_attributes.file = .file
 
+                  .body.stream = .stream
+                  .body.message = .message
+
                   parsed_json, err = parse_json(.message)
                   if err != null {
-                      .body.message = .message
-                      .body.stream = .stream
-                      .severity_text = "INFO"
-                  } else {
-                      .body = parsed_json
-
-                      levelinfo = null
-                      if exists(parsed_json.level) {
-                          levelinfo = parsed_json.level
-                      } else if exists(.body.level) {
-                          levelinfo = parsed_json.levelname
-                      }
-                      .severity_text = if includes(["emerg", "err", "crit", "alert", "error", "ERR", "ERROR"], levelinfo) {
-                          "ERROR"
-                      } else if includes(["warn", "warning", "WARN", "WARNING"], levelinfo) {
-                          "WARNING"
-                      } else if includes(["debug", "DEBUG"], levelinfo) {
-                          "DEBUG"
-                      } else if includes(["info", "INFO"], levelinfo) {
-                          "INFO"
+                      if .stream == "stderr" {
+                        .severity_text = "error"
                       } else {
-                          levelinfo
+                        .severity_text = "unknown"
                       }
+                  } else {
+                      # .body.message = parsed_json.message ||
+                      #                 parsed_json.msg ||
+                      #                 .message
 
+                      .body.stream = parsed_json.stream ||
+                                     .stream
+
+                      # Extract log level from multiple possible fields
+                      levelinfo = parsed_json.level ||
+                                  parsed_json.levelname ||
+                                  parsed_json.severity ||
+                                  parsed_json.log_level ||
+                                  null
+
+                      if levelinfo == null {
+                          .severity_text = "unknown"
+                      } else if includes(["emerg", "fatal", "crit", "alert", "FATAL", "critical", "ALERT", "CRITICAL", "0", "1", "2"], levelinfo) {
+                          .severity_text = "critical"
+                      } else if includes(["err", "eror", "error", "ERR", "ERROR", "3"], levelinfo) {
+                          .severity_text = "error"
+                      } else if includes(["warn", "warning", "WARN", "WARNING", "4"], levelinfo) {
+                          .severity_text = "warning"
+                      } else if includes(["info", "INFO", "notice", "NOTICE", "5", "6"], levelinfo) {
+                          .severity_text = "info"
+                      } else if includes(["debug", "DEBUG", "7"], levelinfo) {
+                          .severity_text = "debug"
+                      } else {
+                          .severity_text = "unknown"
+                      }
                   }
+
                   .id = uuid_v7()
 
                   del(.kubernetes)
                   del(.timestamp)
                   del(.source_type)
                   del(.stream)
-                  del(.message)
                   del(.file)
 
 
