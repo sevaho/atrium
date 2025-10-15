@@ -2,11 +2,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: observability
-  name: grafana-dashboard-3
+  name: grafana-dashboards-views-global
   labels:
     grafana_dashboard: "1"
 data:
-  grafana-dashboard-3.json: |-
+  dashboard.json: |-
     {
       "annotations": {
         "list": [

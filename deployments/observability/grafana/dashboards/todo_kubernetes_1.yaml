@@ -3,14 +3,14 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: observability
-  name: grafana-dashboard-4
+  name: grafana-dashboards-kubernetes-todo-2
   labels:
     grafana_dashboard: "1"
 data:
   grafana-dashboard-4.json: |-
     {
     "id": null,
-    "title": "Kubernetes cluster monitoring (via Prometheus)",
+    "title": "[TODO] Kubernetes cluster monitoring (via Prometheus)",
     "description": "Monitors Kubernetes cluster using Prometheus. Shows overall cluster CPU / Memory / Filesystem usage as well as individual pod, containers, systemd services statistics. Uses cAdvisor metrics only.",
     "tags": [
         "kubernetes"

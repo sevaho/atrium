@@ -37,7 +37,7 @@ spec:
                 typeLogoUrl: public/plugins/quickwit-quickwit-datasource/img/logo.svg
                 jsonData:
                   index: vector-otel-0.8
-                  logMessageField: body
+                  logMessageField: message
                   logLevelField: severity_text
                 access: proxy
           sidecar:

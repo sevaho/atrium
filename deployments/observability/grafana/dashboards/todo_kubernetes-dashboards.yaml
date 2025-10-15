@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: observability
-  name: grafana-dashboard-1
+  name: grafana-dashboards-kubernetes-todo-1
   labels:
     grafana_dashboard: "1"
 data:
@@ -2451,7 +2451,7 @@ data:
         ]
       },
       "timezone": "browser",
-      "title": "Kubernetes Monitoring Dashboard",
+      "title": "[TODO] Kubernetes Monitoring Dashboard",
       "uid": "msqzbWjWk",
       "variables": {
         "list": []
