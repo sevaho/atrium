@@ -1,0 +1,59 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: theonepager
+  namespace: argocd
+spec:
+  project: default
+  source:
+    path: charts/application
+    repoURL: 'https://github.com/sevaho/atrium'
+    targetRevision: HEAD
+    helm:
+      releaseName: theonepager
+      valuesObject:
+        nameOverride: theonepager
+        replicaCount: 1
+
+        image:
+          repository: cr.asic.li/dockercache/nginx
+          tag: latest
+
+        imagePullSecrets: [regcred]
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 8080
+
+        volumeMounts:
+          - name: html
+            mountPath: /usr/share/nginx/html
+            readOnly: true
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
+
+        volumes:
+          - name: html
+            configMap:
+              name: theonepager
+              items:
+                - key: index.html
+                  path: index.html
+          - name: nginx-config
+            configMap:
+              name: theonepager
+              items:
+                - key: nginx.conf
+                  path: nginx.conf
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tooling
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

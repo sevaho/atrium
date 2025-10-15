@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <title>TheOnePager</title>
+  </head>
+  <body>
+    <main class="container">
+        <nav>
+            <ul>
+                <li><strong><h1>TheOnePager</h1></strong></li>
+            </ul>
+            <ul>
+            <li>
+                <details class="dropdown">
+                <summary role="button" class="secondary">Theme</summary>
+                <ul>
+                    <li><a href="#" data-theme-switcher="auto">Auto</a></li>
+                    <li><a href="#" data-theme-switcher="light">Light</a></li>
+                    <li><a href="#" data-theme-switcher="dark">Dark</a></li>
+                </ul>
+                </details>
+            </li>
+            </ul>
+        </nav>
+
+        <h2>Everything is public</h2>
+
+        <h2>Tools</h2>
+        <div class="grid">
+            <div>
+                <a href="https://workflows.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Argo Workflows
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://cd.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Argo CD
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://vault.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Vault
+                        </header>
+                    </article>
+                </a>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div>
+                <a href="https://firefly.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            FireFly
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://pghero.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            PgHero
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://cr.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Harbor
+                        </header>
+                    </article>
+                </a>
+            </div>
+        </div>
+        <div class="grid">
+            <div>
+                <a href="https://uptime.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Uptime Kuma
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://metabase.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Metabase
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://ci.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Woodpecker CI
+                        </header>
+                    </article>
+                </a>
+            </div>
+        </div>
+
+        <h3>Observability</h3>
+        <div class="grid">
+            <div>
+                <a href="https://grafana.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Grafana
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://netdata.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Netdata
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://coroot.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Coroot
+                        </header>
+                    </article>
+                </a>
+            </div>
+        </div>
+        <div class="grid">
+            <div>
+                <a href="https://umami.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                          Umami
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://headlamp.internal.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Headlamp
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+            </div>
+        </div>
+
+        <h3>Public</h3>
+        <div class="grid">
+            <div>
+                <a href="https://rss.asic.li">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                          RSS (miniflux)
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+                <a href="https://goforms.dev">
+                    <article style="cursor: pointer; transition: transform 0.2s ease;">
+                        <header>
+                            Goforms
+                        </header>
+                    </article>
+                </a>
+            </div>
+            <div>
+            </div>
+        </div>
+
+        <h2>How to Docker</h2>
+
+        <div>
+            <pre><code>$ docker pull cr.asic.li/dockercache/alpine</code></pre>
+            <pre><code>$ docker pull cr.asic.li/applications/goforms:0.0.4</code></pre>
+        </div>
+
+    </main>
+  </body>
+  <script charset="utf-8">
+        /*!
+        * Minimal theme switcher
+        *
+        * Pico.css - https://picocss.com
+        * Copyright 2019-2024 - Licensed under MIT
+        */
+
+        const themeSwitcher = {
+        // Config
+        _scheme: "auto",
+        menuTarget: "details.dropdown",
+        buttonsTarget: "a[data-theme-switcher]",
+        buttonAttribute: "data-theme-switcher",
+        rootAttribute: "data-theme",
+        localStorageKey: "picoPreferredColorScheme",
+
+        // Init
+        init() {
+            this.scheme = this.schemeFromLocalStorage;
+            this.initSwitchers();
+        },
+
+        // Get color scheme from local storage
+        get schemeFromLocalStorage() {
+            return window.localStorage?.getItem(this.localStorageKey) ?? this._scheme;
+        },
+
+        // Preferred color scheme
+        get preferredColorScheme() {
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        },
+
+        // Init switchers
+        initSwitchers() {
+            const buttons = document.querySelectorAll(this.buttonsTarget);
+            buttons.forEach((button) => {
+            button.addEventListener(
+                "click",
+                (event) => {
+                event.preventDefault();
+                // Set scheme
+                this.scheme = button.getAttribute(this.buttonAttribute);
+                // Close dropdown
+                document.querySelector(this.menuTarget)?.removeAttribute("open");
+                },
+                false
+            );
+            });
+        },
+
+        // Set scheme
+        set scheme(scheme) {
+            if (scheme == "auto") {
+            this._scheme = this.preferredColorScheme;
+            } else if (scheme == "dark" || scheme == "light") {
+            this._scheme = scheme;
+            }
+            this.applyScheme();
+            this.schemeToLocalStorage();
+        },
+
+        // Get scheme
+        get scheme() {
+            return this._scheme;
+        },
+
+        // Apply scheme
+        applyScheme() {
+            document.querySelector("html")?.setAttribute(this.rootAttribute, this.scheme);
+        },
+
+        // Store scheme to local storage
+        schemeToLocalStorage() {
+            window.localStorage?.setItem(this.localStorageKey, this.scheme);
+        },
+        };
+
+        // Init
+        themeSwitcher.init();
+  </script>
+</html>
