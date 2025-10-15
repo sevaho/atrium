@@ -38,6 +38,18 @@ spec:
                       - argocd-application-controller-metrics.argocd.svc.cluster.local:8082
 
                 # ==========================================================================
+                - job_name: ingress-nginx
+                # This was enabled for rke2 by using a helmChartConfig
+                # More info:
+                # - https://docs.rke2.io/networking/networking_services#ingress-controller
+                # - https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/templates/controller-service-metrics.yaml
+                # - https://docs.nginx.com/nginx-ingress-controller/logging-and-monitoring/prometheus/
+                # ==========================================================================
+                  static_configs:
+                    - targets:
+                      - rke2-ingress-nginx-controller-metrics.kube-system.svc.cluster.local:10254
+
+                # ==========================================================================
                 - job_name: quickwit
                 # ==========================================================================
                   static_configs:
