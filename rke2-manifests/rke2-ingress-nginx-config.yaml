@@ -1,0 +1,12 @@
+# See: https://docs.rke2.io/helm#customizing-packaged-components-with-helmchartconfig
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: rke2-ingress-nginx
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    controller:
+      metrics:
+        enabled: true
