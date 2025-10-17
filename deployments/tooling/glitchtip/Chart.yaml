@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+appVersion: "1.0"
+description: GlitchTip
+name: glitchtip
+version: 1.0
+dependencies:
+  - name: glitchtip
+    version: "*"
+    repository: https://gitlab.com/api/v4/projects/16325141/packages/helm/stable
