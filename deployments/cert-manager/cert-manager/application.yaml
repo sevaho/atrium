@@ -50,6 +50,10 @@ spec:
         dnsZones:
           - "${CERT_MANAGER_DNS_ZONE_1}"
           - "*.${CERT_MANAGER_DNS_ZONE_1}"
+          - "${CERT_MANAGER_DNS_ZONE_2}"
+          - "*.${CERT_MANAGER_DNS_ZONE_2}"
+          - "${CERT_MANAGER_DNS_ZONE_3}"
+          - "*.${CERT_MANAGER_DNS_ZONE_3}"
 ---
 apiVersion: v1
 data:
