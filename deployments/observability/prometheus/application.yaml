@@ -14,9 +14,29 @@ spec:
       releaseName: prometheus
       valuesObject:
         prometheus:
+
           alertmanager:
-            enabled: false
+            # values.yaml: https://github.com/prometheus-community/helm-charts/blob/main/charts/alertmanager/values.yaml
+            enabled: True
+
+            config:
+              enabled: true
+              global: {}
+                # slack_api_url: ''
+
+              templates:
+                - '/etc/alertmanager/*.tmpl'
+
+              # receivers:
+              #   - name: default-receiver
+                  # slack_configs:
+                  #  - channel: '@you'
+                  #    send_resolved: true
           server:
+            # Prometheus data retention period (default if not specified is 15 days)
+            retention: "30d"
+            # Prometheus' data retention size. Supported units: B, KB, MB, GB, TB, PB, EB.
+            retentionSize: "60GB"
             tcpSocketProbeEnabled: true
             extraArgs:
               web.config.file: /etc/config/web.config.yml
@@ -24,11 +44,104 @@ spec:
               - name: Authorization
                 value: Basic ${PROMETHEUS_ADMIN_USERNAME_PASSWORD_BASE64}
           serverFiles:
+            ## Ref: https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/
+            alerting_rules.yml:
+              groups:
+                - name: Host and hardware
+                  # See: https://samber.github.io/awesome-prometheus-alerts/rules#host-and-hardware
+                  labels:
+                    team: devops
+                  rules:
+                  - alert: HostOutOfMemory
+                    expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < .10)
+                    for: 0m
+                    labels:
+                      severity: warning
+                    annotations:
+                      summary: Host out of memory.
+                      description: Node memory is filling up.
+
+                # - name: Prometheus self-monitoring
+                #   # See: https://samber.github.io/awesome-prometheus-alerts/rules.html#prometheus-self-monitoring
+                #   labels:
+                #     team: devops
+                #   rules:
+                #   - alert: PrometheusJobMissing
+                #     expr: absent(up{job="prometheus"})
+                #     for: 0m
+                #     labels:
+                #       severity: warning
+                #     annotations:
+                #       summary: Prometheus job missing (instance {{ $labels.instance }})
+                #       description: "A Prometheus job has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+                #   - alert: PrometheusTargetMissing
+                #     expr: up == 0
+                #     for: 0m
+                #     labels:
+                #       severity: critical
+                #     annotations:
+                #       summary: Prometheus target missing (instance {{ $labels.instance }})
+                #       description: "A Prometheus target has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+                #
+                #   - alert: PrometheusConfigurationReloadFailure
+                #     expr: prometheus_config_last_reload_successful != 1
+                #     for: 0m
+                #     labels:
+                #       severity: warning
+                #     annotations:
+                #       summary: Prometheus configuration reload failure (instance {{ $labels.instance }})
+                #       description: "Prometheus configuration reload error\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+                #
+                #   - alert: PrometheusAlertmanagerJobMissing
+                #     expr: absent(up{job="alertmanager"})
+                #     for: 0m
+                #     labels:
+                #       severity: warning
+                #     annotations:
+                #       summary: Prometheus AlertManager job missing (instance {{ $labels.instance }})
+                #       description: "A Prometheus AlertManager job has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+                #
+                #   - alert: PrometheusAlertmanagerConfigurationReloadFailure
+                #     expr: alertmanager_config_last_reload_successful != 1
+                #     for: 0m
+                #     labels:
+                #       severity: warning
+                #     annotations:
+                #       summary: Prometheus AlertManager configuration reload failure (instance {{ $labels.instance }})
+                #       description: "AlertManager configuration reload error\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+                #
+                #   - alert: PrometheusNotConnectedToAlertmanager
+                #     expr: prometheus_notifications_alertmanagers_discovered < 1
+                #     for: 0m
+                #     labels:
+                #       severity: critical
+                #     annotations:
+                #       summary: Prometheus not connected to alertmanager (instance {{ $labels.instance }})
+                #       description: "Prometheus cannot connect the alertmanager\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+                #
+                #   - alert: PrometheusTargetScrapingSlow
+                #     expr: prometheus_target_interval_length_seconds{quantile="0.9"} / on (interval, instance, job) prometheus_target_interval_length_seconds{quantile="0.5"} > 1.05
+                #     for: 5m
+                #     labels:
+                #       severity: warning
+                #     annotations:
+                #       summary: Prometheus target scraping slow (instance {{ $labels.instance }})
+                #       description: "Prometheus is scraping exporters slowly since it exceeded the requested interval time. Your Prometheus server is under-provisioned.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+
+
             web.config.yml:
               basic_auth_users:
                 ${PROMETHEUS_ADMIN_USERNAME}: ${PROMETHEUS_ADMIN_PASSWORD_BCRYPT}
             prometheus.yml:
               scrape_configs:
+                # ==========================================================================
+                - job_name: longhorn
+                # ==========================================================================
+                  static_configs:
+                    - targets:
+                      - longhorn-backend.longhorn-system.svc.cluster.local:9500
+
 
                 # ==========================================================================
                 - job_name: argocd
