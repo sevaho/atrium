@@ -31,6 +31,10 @@ spec:
                 secureJsonData:
                   basicAuthPassword: ${PROMETHEUS_ADMIN_PASSWORD}
                 isDefault: true
+              - name: Alertmanager
+                type: camptocamp-prometheus-alertmanager-datasource
+                url: http://prometheus-alertmanager:9093
+                access: proxy
               - name: Quickwit
                 type: quickwit-quickwit-datasource
                 url: http://quickwit-control-plane:7280/api/v1
@@ -45,6 +49,7 @@ spec:
               enabled: true
           plugins:
             - quickwit-quickwit-datasource
+            - camptocamp-prometheus-alertmanager-datasource
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -57,7 +62,7 @@ spec:
   - name: releasenotes
     value: https://github.com/grafana/grafana/releases
   - name: values.yaml
-    value: https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md
+    value: https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ---
 apiVersion: v1
 data:

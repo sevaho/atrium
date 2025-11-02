@@ -1,0 +1,1077 @@
+# See: https://grafana.com/grafana/dashboards/12947-open-alerts-of-alertmanager/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: observability
+  name: grafana-dashboards-alertmanager
+  labels:
+    grafana_dashboard: "1"
+data:
+  dashboard.json: |-
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "showIn": 0,
+            "type": "dashboard"
+          }
+        ]
+      },
+      "description": "Dashboard to visualize only Open(LIVE) Alerts of AlertManager instead of looking in Slack, Teams, and Emails.",
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 10,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {
+            "uid": "$alertmanager"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "displayName": "",
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "color": "red",
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 0,
+            "y": 0
+          },
+          "id": 8,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "annotations": false,
+              "datasource": {
+                "uid": "$alertmanager"
+              },
+              "expr": "region=~\"$region\", severity=~\"$severity\",alertname=~\".*\", team=~\"$team\",env=~\"$env\"",
+              "labelSelector": "*",
+              "legendFormat": "",
+              "refId": "A",
+              "target": "Query",
+              "type": "single"
+            }
+          ],
+          "title": "Total",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "$alertmanager"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "displayName": "",
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "color": "red",
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 3,
+            "y": 0
+          },
+          "id": 20,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "annotations": false,
+              "datasource": {
+                "uid": "$alertmanager"
+              },
+              "expr": "region=~\"$region\", severity=~\"critical\",alertname=~\".*\", team=~\"$team\",env=~\"$env\"",
+              "labelSelector": "*",
+              "legendFormat": "",
+              "refId": "A",
+              "target": "Query",
+              "type": "single"
+            }
+          ],
+          "title": "Total Critical",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "$alertmanager"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "displayName": "",
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "color": "orange",
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "orange",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 6,
+            "y": 0
+          },
+          "id": 21,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "annotations": false,
+              "datasource": {
+                "uid": "$alertmanager"
+              },
+              "expr": "region=~\"$region\", severity=~\"warning\",alertname=~\".*\", team=~\"$team\",env=~\"$env\"",
+              "labelSelector": "*",
+              "legendFormat": "",
+              "refId": "A",
+              "target": "Query",
+              "type": "single"
+            }
+          ],
+          "title": "Total Warning",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "$alertmanager"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "displayName": "",
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "color": "red",
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 9,
+            "y": 0
+          },
+          "id": 18,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "annotations": false,
+              "datasource": {
+                "uid": "$alertmanager"
+              },
+              "expr": "region=~\"$region\", severity=~\"$severity\",alertname=~\"InstanceDown\", team=~\"$team\",env=~\"$env\"",
+              "labelSelector": "*",
+              "legendFormat": "",
+              "refId": "A",
+              "target": "Query",
+              "type": "single"
+            }
+          ],
+          "title": "Instance Down",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "$alertmanager"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "color": "red",
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 12,
+            "y": 0
+          },
+          "id": 15,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "annotations": false,
+              "datasource": {
+                "uid": "$alertmanager"
+              },
+              "expr": "region=~\"$region\", severity=~\"$severity\",alertname=~\"ServiceDown\", team=~\"$team\",env=~\"$env\"",
+              "labelSelector": "*",
+              "legendFormat": "",
+              "refId": "A",
+              "target": "Query",
+              "type": "single"
+            }
+          ],
+          "title": "Service Down",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "$alertmanager"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "color": "orange",
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "orange",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 15,
+            "y": 0
+          },
+          "id": 16,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "annotations": false,
+              "datasource": {
+                "uid": "$alertmanager"
+              },
+              "expr": "region=~\"$region\", severity=~\"$severity\",alertname=~\".*MemoryUtilization-WARN\", team=~\"$team\",env=~\"$env\"",
+              "labelSelector": "*",
+              "legendFormat": "",
+              "refId": "A",
+              "target": "Query",
+              "type": "single"
+            }
+          ],
+          "title": "MemoryUtilization-WARN",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "$alertmanager"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "color": "orange",
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "orange",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 18,
+            "y": 0
+          },
+          "id": 17,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "annotations": false,
+              "datasource": {
+                "uid": "$alertmanager"
+              },
+              "expr": "region=~\"$region\", severity=~\"$severity\",alertname=~\".*CpuUtilization-WARN\", team=~\"$team\",env=~\"$env\"",
+              "labelSelector": "*",
+              "legendFormat": "",
+              "refId": "A",
+              "target": "Query",
+              "type": "single"
+            }
+          ],
+          "title": "CpuUtilization-WARN",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "$alertmanager"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "color": "orange",
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "orange",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 21,
+            "y": 0
+          },
+          "id": 19,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "annotations": false,
+              "datasource": {
+                "uid": "$alertmanager"
+              },
+              "expr": "region=~\"$region\", severity=~\"$severity\",alertname=~\".*DiskUtilization - WARN\", team=~\"$team\",env=~\"$env\"",
+              "labelSelector": "*",
+              "legendFormat": "",
+              "refId": "A",
+              "target": "Query",
+              "type": "single"
+            }
+          ],
+          "title": "DiskUtilization - WARN",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "$alertmanager"
+          },
+          "description": "MAKE SURE TO SCROLL TO BOTTOM AND CHECK FOR MORE ALERTS",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "right",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "footer": {
+                  "reducers": []
+                },
+                "inspect": false
+              },
+              "decimals": 2,
+              "displayName": "",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Time"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "TIME"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "time: YYYY-MM-DD HH:mm:ss"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "alertname"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "ALERT"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "short"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  },
+                  {
+                    "id": "custom.align"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "data"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "DESCRIPTION"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "short"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  },
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "Click to view detail metrics",
+                        "url": "/d/LINK_TO_YOUR_NODE_SPECIFIC_DASHBOARD_GOES_HERE?var-host=${__cell_2}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.align"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "severity"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "SEVERITY"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "short"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-background"
+                    }
+                  },
+                  {
+                    "id": "custom.align"
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "rgba(50, 172, 45, 0.97)",
+                          "value": 0
+                        },
+                        {
+                          "color": "rgba(237, 129, 40, 0.89)",
+                          "value": 2
+                        },
+                        {
+                          "color": "rgba(245, 54, 54, 0.9)",
+                          "value": 4
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "region"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "REGION"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "short"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  },
+                  {
+                    "id": "custom.align"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "env"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "ENV"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "short"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  },
+                  {
+                    "id": "custom.align"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "host"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "HOST"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "short"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  },
+                  {
+                    "id": "custom.align"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 98,
+            "w": 24,
+            "x": 0,
+            "y": 4
+          },
+          "id": 14,
+          "options": {
+            "cellHeight": "sm",
+            "showHeader": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "annotations": false,
+              "datasource": {
+                "uid": "$alertmanager"
+              },
+              "expr": "region=~\"$region\", severity=~\"$severity\",alertname=~\"$alertname\", team=~\"$team\",env=~\"$env\"",
+              "labelSelector": "*",
+              "legendFormat": "{{ msg }}",
+              "refId": "A",
+              "target": "Query",
+              "type": "table"
+            }
+          ],
+          "title": "OPEN ALERTS",
+          "transformations": [
+            {
+              "id": "merge",
+              "options": {
+                "reducers": []
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "preload": false,
+      "refresh": "30s",
+      "schemaVersion": 42,
+      "tags": [
+        "alertmanager",
+        "open-alerts",
+        "shubhamc183"
+      ],
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "text": "Alertmanager",
+              "value": "P7647F508D5F54FCB"
+            },
+            "includeAll": false,
+            "label": "Alertmanager",
+            "name": "alertmanager",
+            "options": [],
+            "query": "camptocamp-prometheus-alertmanager-datasource",
+            "refresh": 1,
+            "regex": "",
+            "type": "datasource"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "uid": "$alertmanager"
+            },
+            "definition": "label_values(region)",
+            "includeAll": true,
+            "label": "Region",
+            "multi": true,
+            "name": "region",
+            "options": [],
+            "query": "label_values(region)",
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "uid": "$alertmanager"
+            },
+            "definition": "label_values(region=~\"$region\")",
+            "includeAll": true,
+            "label": "Severity",
+            "multi": true,
+            "name": "severity",
+            "options": [],
+            "query": "label_values(region=~\"$region\")",
+            "refresh": 1,
+            "regex": "/\"severity\":\"(.*?)\"/",
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "uid": "$alertmanager"
+            },
+            "definition": "label_values(region=~\"$region\", severity=~\"$severity\")",
+            "includeAll": true,
+            "label": "Alert",
+            "multi": true,
+            "name": "alertname",
+            "options": [],
+            "query": "label_values(region=~\"$region\", severity=~\"$severity\")",
+            "refresh": 1,
+            "regex": "/\"alertname\":\"(.*?)\"/",
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "uid": "$alertmanager"
+            },
+            "definition": "label_values(region=~\"$region\", severity=~\"$severity\", alertname=~\"$alertname\")",
+            "includeAll": true,
+            "label": "Product",
+            "multi": true,
+            "name": "team",
+            "options": [],
+            "query": "label_values(region=~\"$region\", severity=~\"$severity\", alertname=~\"$alertname\")",
+            "refresh": 1,
+            "regex": "/\"team\":\"(.*?)\"/",
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "uid": "$alertmanager"
+            },
+            "definition": "label_values(region=~\"$region\", severity=~\"$severity\", alertname=~\"$alertname\", team=~\"$team\")",
+            "includeAll": true,
+            "label": "ENV",
+            "multi": true,
+            "name": "env",
+            "options": [],
+            "query": "label_values(region=~\"$region\", severity=~\"$severity\", alertname=~\"$alertname\", team=~\"$team\")",
+            "refresh": 1,
+            "regex": "/\"env\":\"(.*?)\"/",
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "uid": "$alertmanager"
+            },
+            "definition": "label_values(region=~\"$region\", severity=~\"$severity\", alertname=~\"$alertname\", team=~\"$team\", env=~\"$env\")",
+            "hide": 2,
+            "includeAll": true,
+            "label": "Node",
+            "multi": true,
+            "name": "host",
+            "options": [],
+            "query": "label_values(region=~\"$region\", severity=~\"$severity\", alertname=~\"$alertname\", team=~\"$team\", env=~\"$env\")",
+            "refresh": 1,
+            "regex": "/\"host\":\"(.*?)\"/",
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "OPEN ALERTS OF ALERTMANAGER",
+      "uid": "WojOgXTmk",
+      "version": 1
+    }
