@@ -14,6 +14,9 @@ spec:
       releaseName: longhorn
       valuesObject:
         longhorn:
+          metrics:
+            serviceMonitor:
+              enabled: true
           defaultSettings:
             backupTarget: "s3://${AWS_S3_BUCKET}@${AWS_S3_REGION}/longhorn/backups/"
             backupTargetCredentialSecret: digitalocean-s3
