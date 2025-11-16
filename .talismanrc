@@ -9,4 +9,6 @@ fileignoreconfig:
   checksum: fe9541cf134d4439f2fb87b6111c61a58021ffb2928fd09effccfe2ea55d5080
 - filename: deployments/observability/uptime-kuma/charts/uptime-kuma/values.yaml
   checksum: 5bfcc4bd16032c7abaa5d1b2894b6b465522a077f423b6b6c1b27219846b1109
+- filename: deployments/tooling/theonepager/application.yaml
+  checksum: 2b7f04181a30ec824c52db5696bf4312fef4931c99dc355df9c64a751b1c5f1c
 version: ""
