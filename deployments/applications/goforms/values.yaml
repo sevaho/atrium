@@ -1,7 +1,8 @@
 ---
 fullnameOverride: goforms
 image:
-  repository: cr.asic.li/dockercache/sevaho/goforms
+  # repository: cr.asic.li/dockercache/sevaho/goforms
+  repository: cr.asic.li/applications/goforms
   tag: latest
 
 imagePullSecrets: [regcred]
