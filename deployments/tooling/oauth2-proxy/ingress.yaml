@@ -2,6 +2,30 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: drone-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: drone.drone.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: longhorn-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: longhorn-frontend.longhorn-system.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: firefly-svc-bridge
   namespace: tooling
 spec:
@@ -14,23 +38,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: uptime-kuma-svc-bridge
+  name: gatus-svc-bridge
   namespace: tooling
 spec:
   type: ExternalName
-  externalName: uptime-kuma.observability.svc.cluster.local
-  ports:
-    - port: 80
-      targetPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: woodpecker-svc-bridge
-  namespace: tooling
-spec:
-  type: ExternalName
-  externalName: woodpecker-server.woodpecker.svc.cluster.local
+  externalName: gatus.observability.svc.cluster.local
   ports:
     - port: 80
       targetPort: 80
@@ -127,8 +139,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/auth-url: https://${OAUTH2_PROXY_HOST}/oauth2/auth
-    nginx.ingress.kubernetes.io/auth-signin: "https://${OAUTH2_PROXY_HOST}/oauth2/start?rd=$scheme%3A%2F%2F$host$escaped_request_uri"
-    nginx.ingress.kubernetes.io/auth-response-headers: "X-Forwarded-User"
+    nginx.ingress.kubernetes.io/auth-signin: "https://${OAUTH2_PROXY_HOST}/oauth2/start?rd=$escaped_request_uri"
 
 spec:
   ingressClassName: nginx
@@ -138,7 +149,7 @@ spec:
         - "${OAUTH2_PROXY_INTERNAL_HOST}"
       secretName: oauth2-proxy-internal-ingress
   rules:
-    - host: ${OAUTH2_PROXY_INTERNAL_HOST}
+    - host: ${THEONEPAGER_HOST}
       http:
         paths:
           - pathType: Prefix
@@ -146,6 +157,16 @@ spec:
             backend:
               service:
                 name: theonepager
+                port:
+                  number: 80
+    - host: ${GATUS_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: gatus-svc-bridge
                 port:
                   number: 80
     - host: ${HEADLAMP_HOST}
@@ -268,26 +289,6 @@ spec:
             pathType: Prefix
 
 
-    - host: ${WOODPECKER_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: woodpecker-svc-bridge
-                port:
-                  number: 80
-    - host: ${UPTIME_KUMA_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: uptime-kuma-svc-bridge
-                port:
-                  number: 80
     - host: ${FIREFLY_III_HOST}
       http:
         paths:
@@ -298,6 +299,16 @@ spec:
                 name: firefly-svc-bridge
                 port:
                   number: 80
+    - host: ${LONGHORN_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: longhorn-svc-bridge
+                port:
+                  number: 80
     - host: ${ARGO_WORKFLOWS_HOST}
       http:
         paths:
@@ -306,6 +317,16 @@ spec:
             backend:
               service:
                 name: argo-workflows-svc-bridge
+                port:
+                  number: 80
+    - host: ${DRONE_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: drone-svc-bridge
                 port:
                   number: 80
 ---
