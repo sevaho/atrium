@@ -1,7 +1,0 @@
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: homer-assets-data
-data:
-  {{- (.Files.Glob "assets/data/*").AsConfig | nindent 2 }}
