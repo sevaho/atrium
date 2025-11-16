@@ -11,4 +11,6 @@ fileignoreconfig:
   checksum: 5bfcc4bd16032c7abaa5d1b2894b6b465522a077f423b6b6c1b27219846b1109
 - filename: deployments/tooling/theonepager/application.yaml
   checksum: 2b7f04181a30ec824c52db5696bf4312fef4931c99dc355df9c64a751b1c5f1c
+- filename: deployments/0_archive/homer/assets/data/firefly.svg
+  checksum: 9feb42e97051591e2aa8f174c174436593655fc78d2ead3015826681561d28b2
 version: ""
