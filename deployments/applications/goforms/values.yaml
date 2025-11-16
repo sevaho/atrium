@@ -4,6 +4,8 @@ image:
   repository: cr.asic.li/dockercache/sevaho/goforms
   tag: latest
 
+imagePullSecrets: [regcred]
+
 args:
   - --serve
 
