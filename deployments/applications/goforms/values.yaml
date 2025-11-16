@@ -1,8 +1,8 @@
 ---
 fullnameOverride: goforms
 image:
-  repository: cr.asic.li/applications/goforms
-  tag: 0.0.11
+  repository: cr.asic.li/dockercache/sevaho/goforms
+  tag: latest
 
 args:
   - --serve
