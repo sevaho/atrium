@@ -20,6 +20,7 @@ spec:
           defaultSettings:
             backupTarget: "s3://${AWS_S3_BUCKET}@${AWS_S3_REGION}/longhorn/backups/"
             backupTargetCredentialSecret: digitalocean-s3
+            storageMinimalAvailablePercentage: 10  # Default is 25
           persistence:
             defaultClassReplicaCount: 1
           longhornManager:
