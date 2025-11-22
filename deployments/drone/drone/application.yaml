@@ -8,11 +8,19 @@ spec:
   project: default
   source:
     repoURL: https://github.com/sevaho/atrium
-    path: deployments/tooling/drone
+    path: deployments/drone/drone
     targetRevision: HEAD
     helm:
       releaseName: drone
-      valuesObject: {}
+      valuesObject:
+        drone:
+          env:
+            DRONE_SERVER_HOST: ${DRONE_PUBLIC_HOST}
+            DRONE_RPC_SECRET: ${DRONE_RPC_SECRET}
+            DRONE_SERVER_PROTO: https
+            DRONE_GITHUB_CLIENT_ID: ${DRONE_GITHUB_CLIENT_ID}
+            DRONE_GITHUB_CLIENT_SECRET: ${DRONE_GITHUB_CLIENT_SECRET}
+            DRONE_DEBUG: true
 
   destination:
     server: "https://kubernetes.default.svc"

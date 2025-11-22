@@ -2,20 +2,39 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: drone-docker-runner
+  name: drone-runner-docker
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/sevaho/atrium
-    path: deployments/drone/drone-docker-runner
+    path: deployments/drone/drone-runner-docker
     targetRevision: HEAD
     helm:
-      releaseName: drone-docker-runner
+      releaseName: drone-runner-docker
       valuesObject:
-        drone-docker-runner:
+        drone-runner-docker:
+          imagePullSecrets:
+            - name: regcred
+          replicaCount: 2
           env:
             DRONE_RPC_SECRET: ${DRONE_RPC_SECRET}
+            DRONE_DEBUG: true
+            DRONE_RPC_HOST: drone:8080
+          autoscaling:
+            enabled: true
+            minReplicas: 1
+            maxReplicas: 10
+            targetCPUUtilizationPercentage: 80
+
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+
   destination:
     server: "https://kubernetes.default.svc"
     namespace: drone

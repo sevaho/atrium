@@ -12,3 +12,4 @@ help: ## Show this help message (default)
 
 up: ## Up
 	envvar application.yaml | kubectl apply -f -
+	envvar ingress.yaml | kubectl apply -f -

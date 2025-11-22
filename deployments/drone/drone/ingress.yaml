@@ -1,0 +1,29 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: drone-ingress
+  namespace: drone
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - ${DRONE_PUBLIC_HOST}
+      secretName: drone-ingress
+  rules:
+    - host: ${DRONE_PUBLIC_HOST}
+      http:
+        paths:
+          - pathType: Exact
+            path: /hook
+            backend:
+              service:
+                name: drone
+                port:
+                  number: 8080
