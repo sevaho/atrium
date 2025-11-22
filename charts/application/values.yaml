@@ -73,6 +73,7 @@ security:
     # Only using 1000 for safety. Never add 0 (= root)
     runAsUser: 1000
     runAsGroup: 1000
+    fsGroup: 1000
 
   # SecurityContext of the container
   containerSecurityContext:
