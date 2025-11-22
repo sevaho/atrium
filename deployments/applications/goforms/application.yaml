@@ -6,17 +6,54 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  sources:
-    - repoURL: 'https://github.com/sevaho/atrium'
-      path: charts/application
-      targetRevision: HEAD
-      helm:
-        releaseName: goforms
-        valueFiles:
-          - $values/deployments/applications/goforms/values.yaml
-    - repoURL: 'https://github.com/sevaho/atrium'
-      targetRevision: HEAD
-      ref: values
+  source:
+    path: charts/application
+    repoURL: 'https://github.com/sevaho/atrium'
+    targetRevision: HEAD
+    helm:
+      releaseName: goforms
+      valuesObject:
+        nameOverride: goforms
+        image:
+          repository: ${HARBOR_HOST}/dockercache/sevaho/goforms
+          tag: latest
+
+        imagePullSecrets: [regcred]
+
+        args:
+          - --serve
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 3000
+
+        replicaCount: 1
+
+        extraAnnotations:
+          reloader.stakater.com/auto: "true"
+
+        ingress:
+          enabled: true
+          hosts:
+            - forms.asic.li
+            - goforms.asic.li
+            - goforms.dev
+          tls:
+            secretName: goforms-certs
+
+        envFrom:
+          - secretRef:
+              name: goforms-data-secret
+
+        jobs:
+          autoMigrate:
+            enabled: true
+            args:
+              - --migrate
+            envFrom:
+              - secretRef:
+                  name: goforms-data-secret
 
   destination:
     server: "https://kubernetes.default.svc"
