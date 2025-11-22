@@ -18,7 +18,7 @@ spec:
           replicaCount: 1
 
           env:
-            WF_DB_PATH: "/data/wealthfolio.db"
+            WF_DB_PATH: /data2
             WF_SECRET_KEY: ${WF_SECRET_KEY}
             WF_AUTH_PASSWORD_HASH: ${WF_AUTH_PASSWORD_HASH}
             WF_CORS_ALLOW_ORIGINS: "*"
@@ -40,6 +40,9 @@ spec:
             name: data
             size: 10Gi
             mountPath: /data
+
+        security:
+          enabled: false
 
   destination:
     server: "https://kubernetes.default.svc"
