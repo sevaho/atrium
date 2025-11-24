@@ -38,6 +38,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: wealthfolio-svc-bridge
+  namespace: tooling
+spec:
+  type: ExternalName
+  externalName: wealthfolio.applications.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: gatus-svc-bridge
   namespace: tooling
 spec:
@@ -297,6 +309,16 @@ spec:
             backend:
               service:
                 name: firefly-svc-bridge
+                port:
+                  number: 80
+    - host: ${WEALTHFOLIO_HOST}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: wealthfolio-svc-bridge
                 port:
                   number: 80
     - host: ${LONGHORN_HOST}
