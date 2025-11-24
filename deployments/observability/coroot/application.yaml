@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: coroot
+  name: coroot-ce
   namespace: argocd
 spec:
   project: default
@@ -11,7 +11,7 @@ spec:
     path: deployments/observability/coroot
     targetRevision: HEAD
     helm:
-      releaseName: coroot
+      releaseName: coroot-ce
       valuesObject: {}
   destination:
     server: "https://kubernetes.default.svc"
@@ -20,6 +20,37 @@ spec:
     automated:
       prune: true
       selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+  info:
+  - name: releasenotes
+    value: https://github.com/coroot/coroot/releases
+  - name: values.yaml
+    value: https://github.com/coroot/helm-charts/blob/main/charts/coroot/values.yaml
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: coroot-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/observability/coroot
+    targetRevision: HEAD
+    helm:
+      releaseName: coroot-operator
+      valuesObject: {}
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
   info:
   - name: releasenotes
     value: https://github.com/coroot/coroot/releases
