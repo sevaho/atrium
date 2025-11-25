@@ -5,6 +5,6 @@ description: Argo
 name: argo
 version: 1.0
 dependencies:
-  - name: argo
+  - name: argo-cd
     version: "*"
     repository: https://argoproj.github.io/argo-helm
