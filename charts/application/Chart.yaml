@@ -1,7 +1,7 @@
 ---
 apiVersion: v2
 appVersion: example-1
-description: A Helm chart for Kubernetes
-name: example
+description: Application chart
+name: application
 type: application
 version: 0.0.0
