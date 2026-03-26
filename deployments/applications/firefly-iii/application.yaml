@@ -16,20 +16,15 @@ spec:
         firefly-iii:
           replicaCount: 1
           config:
+            existingSecret: "firefly-data-secret"
             env:
-              DB_HOST: ${DB_HOST}
               DB_CONNECTION: pgsql
               DB_PORT: "5432"
               DB_DATABASE: firefly
-              DB_USERNAME: ${FIREFLY_III_DB_USERNAME}
               DEFAULT_LANGUAGE: "en_US"
               DEFAULT_LOCALE: "equal"
               TZ: "Europe/Brussels"
               TRUSTED_PROXIES: "**"
-          secrets:
-            env:
-              APP_PASSWORD: ${FIREFLY_III_APP_PASSWORD}
-              DB_PASSWORD: ${FIREFLY_III_DB_PASSWORD}
 
 
   destination:
