@@ -7,53 +7,54 @@ metadata:
 spec:
   project: default
   source:
-    path: charts/application
+    path: deployments/applications/goforms
     repoURL: 'https://github.com/sevaho/atrium'
     targetRevision: HEAD
     helm:
       releaseName: goforms
       valuesObject:
-        nameOverride: goforms
-        image:
-          repository: ${HARBOR_HOST}/dockercache/sevaho/goforms
-          tag: latest
+        application:
+          nameOverride: goforms
+          image:
+            repository: cr.asic.li/dockercache/sevaho/goforms
+            tag: latest
 
-        imagePullSecrets: [regcred]
+          imagePullSecrets: [regcred]
 
-        args:
-          - --serve
+          args:
+            - --serve
 
-        service:
-          type: ClusterIP
-          port: 80
-          targetPort: 3000
+          service:
+            type: ClusterIP
+            port: 80
+            targetPort: 3000
 
-        replicaCount: 1
+          replicaCount: 1
 
-        extraAnnotations:
-          reloader.stakater.com/auto: "true"
+          extraAnnotations:
+            reloader.stakater.com/auto: "true"
 
-        ingress:
-          enabled: true
-          hosts:
-            - forms.asic.li
-            - goforms.asic.li
-            - goforms.dev
-          tls:
-            secretName: goforms-certs
-
-        envFrom:
-          - secretRef:
-              name: goforms-data-secret
-
-        jobs:
-          autoMigrate:
+          ingress:
             enabled: true
-            args:
-              - --migrate
-            envFrom:
-              - secretRef:
-                  name: goforms-data-secret
+            hosts:
+              - forms.asic.li
+              - goforms.asic.li
+              - goforms.dev
+            tls:
+              secretName: goforms-certs
+
+          envFrom:
+            - secretRef:
+                name: goforms-data-secret
+
+          jobs:
+            autoMigrate:
+              enabled: true
+              args:
+                - --migrate
+              envFrom:
+                - secretRef:
+                    name: goforms-data-secret
 
   destination:
     server: "https://kubernetes.default.svc"
