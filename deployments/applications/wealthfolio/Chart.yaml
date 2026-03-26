@@ -4,6 +4,6 @@ description: wealthfolio
 name: wealthfolio
 version: 1.0
 dependencies:
-  - name: example
+  - name: application
     version: "*"
     repository: "file://../../../charts/application"

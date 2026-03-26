@@ -17,15 +17,17 @@ spec:
           nameOverride: wealthfolio
           replicaCount: 1
 
+          envFrom:
+            - secretRef:
+                name: wealthfolio-data-secret
+
           env:
             WF_DB_PATH: /data/wealthfolio.db
-            WF_SECRET_KEY: ${WF_SECRET_KEY}
-            WF_AUTH_PASSWORD_HASH: ${WF_AUTH_PASSWORD_HASH}
-            WF_CORS_ALLOW_ORIGINS: "*"
             WF_LISTEN_ADDR: "0.0.0.0:8080"
+            WF_CORS_ALLOW_ORIGINS: "https://wealthfolio.internal.asic.li"
 
           image:
-            repository: ${HARBOR_HOST}/dockercache/afadil/wealthfolio
+            repository: cr.asic.li/dockercache/afadil/wealthfolio
             tag: latest
 
           imagePullSecrets: [regcred]
