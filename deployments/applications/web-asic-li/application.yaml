@@ -6,17 +6,35 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  sources:
-    - repoURL: 'https://github.com/sevaho/atrium'
-      path: charts/application
-      targetRevision: HEAD
-      helm:
-        releaseName: web-asic-li
-        valueFiles:
-          - $values/deployments/applications/web-asic-li/values.yaml
-    - repoURL: 'https://github.com/sevaho/atrium'
-      targetRevision: HEAD
-      ref: values
+  source:
+    path: deployments/applications/web-asic-li
+    repoURL: 'https://github.com/sevaho/atrium'
+    targetRevision: HEAD
+    helm:
+      releaseName: web-asic-li
+      valuesObject:
+        application:
+          nameOverride: web-asic-li
+
+          image:
+            repository: cr.asic.li/applications/web.asic.li
+            tag: latest
+
+          service:
+            type: ClusterIP
+            port: 80
+            targetPort: 3000
+
+          pvc:
+            enabled: true
+
+          ingress:
+            enabled: true
+            hosts:
+              - asic.li
+              - web.asic.li
+            tls:
+              secretName: web-asic-li-certs
 
   destination:
     server: "https://kubernetes.default.svc"

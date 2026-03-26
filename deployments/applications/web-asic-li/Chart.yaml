@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: "1.0"
+description: web-asic-li
+name: web-asic-li
+version: 1.0
+dependencies:
+  - name: application
+    version: "*"
+    repository: "file://../../../charts/application"
