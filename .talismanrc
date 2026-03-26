@@ -1,16 +1,6 @@
 threshold: medium
 
 fileignoreconfig:
-- filename: deployments/applications/goforms/goforms-data-secret.sealedsecrets.yaml
-  checksum: 28b2d16557363ece774ffb2e858d1b9a3f22e2ff6c981217d45b857d51a52277
-- filename: deployments/applications/goforms/goforms-data-secret.sealedsecrets.yaml
-  checksum: bb4a7aaffe2f3f8bdd7054bc237b1f3faccd5acfd80e81e18bcbafc3909a1519
-- filename: deployments/applications/goforms/goforms-data-secret.sealedsecrets.yaml
-  checksum: fe9541cf134d4439f2fb87b6111c61a58021ffb2928fd09effccfe2ea55d5080
-- filename: deployments/observability/uptime-kuma/charts/uptime-kuma/values.yaml
-  checksum: 5bfcc4bd16032c7abaa5d1b2894b6b465522a077f423b6b6c1b27219846b1109
-- filename: deployments/tooling/theonepager/application.yaml
-  checksum: 2b7f04181a30ec824c52db5696bf4312fef4931c99dc355df9c64a751b1c5f1c
-- filename: deployments/0_archive/homer/assets/data/firefly.svg
-  checksum: 9feb42e97051591e2aa8f174c174436593655fc78d2ead3015826681561d28b2
+- filename: 0_archive/coroot/application.yaml
+  checksum: 1b229017cb1a41abe9de04de1401f5ccd81960febea91384e5b5a4a2c21ac67d
 version: ""
