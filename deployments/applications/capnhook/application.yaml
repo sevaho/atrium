@@ -6,17 +6,47 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  sources:
-    - repoURL: 'https://github.com/sevaho/atrium'
-      path: charts/application
-      targetRevision: HEAD
-      helm:
-        releaseName: capnhook
-        valueFiles:
-          - $values/deployments/applications/capnhook/values.yaml
-    - repoURL: 'https://github.com/sevaho/atrium'
-      targetRevision: HEAD
-      ref: values
+  source:
+    path: deployments/applications/capnhook
+    repoURL: 'https://github.com/sevaho/atrium'
+    targetRevision: HEAD
+    helm:
+      releaseName: capnhook
+      valuesObject:
+        application:
+          nameOverride: capnhook
+
+          image:
+            repository: cr.asic.li/applications/capnhook
+            tag: 0.0.2
+
+          args:
+            - --serve
+
+          service:
+            type: ClusterIP
+            port: 80
+            targetPort: 3000
+
+          replicaCount: 1
+
+          extraAnnotations:
+            reloader.stakater.com/auto: "true"
+
+          ingress:
+            enabled: true
+            hosts:
+              - alpha.capnhook.dev
+            tls:
+              secretName: capnhook-dev-certs
+
+          env:
+            ENVIRONMENT: ALPHA
+
+
+          envFrom:
+            - secretRef:
+                name: capnhook-data-secret
 
   destination:
     server: "https://kubernetes.default.svc"

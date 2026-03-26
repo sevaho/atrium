@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: "1.0"
+description: capnhook
+name: capnhook
+version: 1.0
+dependencies:
+  - name: application
+    version: "*"
+    repository: "file://../../../charts/application"
