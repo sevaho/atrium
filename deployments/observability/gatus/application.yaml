@@ -14,16 +14,84 @@ spec:
       releaseName: gatus
       valuesObject:
         gatus:
+          annotations:
+            reloader.stakater.com/auto: "true"
+          envFrom:
+          - secretRef:
+              name: gatus-data-secret
           config:
-            # storage:
-            #   type: postgres
-            #   path: "postgres://user:password@127.0.0.1:5432/gatus?sslmode=disable"
+            ui:
+              default-sort-by: group
+
+            storage:
+              type: postgres
+              path: "${DB_DSN}"
+
+            alerting:
+              telegram:
+                token: "${TELEGRAM_BOT_TOKEN}"
+                id: "${TELEGRAM_CHAT_ID}"
+
             endpoints:
               - name: sevaho.io
+                group: websites
                 url: https://sevaho.io
                 interval: 60s
                 conditions:
                   - "[STATUS] == 200"
+                alerts:
+                - type: telegram
+                  send-on-resolved: true
+
+              - name: dheer.me
+                group: websites
+                url: https://dheer.me
+                interval: 60s
+                conditions:
+                  - "[STATUS] == 200"
+                alerts:
+                - type: telegram
+                  send-on-resolved: true
+
+              - name: goforms.dev
+                group: websites
+                url: https://goforms.dev
+                interval: 60s
+                conditions:
+                  - "[STATUS] == 200"
+                alerts:
+                - type: telegram
+                  send-on-resolved: true
+
+              - name: asic.li
+                group: websites
+                url: https://asic.li
+                interval: 60s
+                conditions:
+                  - "[STATUS] == 200"
+                alerts:
+                - type: telegram
+                  send-on-resolved: true
+
+              - name: TTC Teneramonda
+                group: websites
+                url: https://ttcteneramonda.be
+                interval: 60s
+                conditions:
+                  - "[STATUS] == 200"
+                alerts:
+                - type: telegram
+                  send-on-resolved: true
+
+              - name: Grafana
+                group: internal
+                url: http://grafana.observability.svc.cluster.local
+                interval: 60s
+                conditions:
+                  - "[STATUS] == 200"
+                alerts:
+                - type: telegram
+                  send-on-resolved: true
 
   destination:
     server: "https://kubernetes.default.svc"
