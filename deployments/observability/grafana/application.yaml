@@ -26,10 +26,6 @@ spec:
                 type: prometheus
                 url: http://prometheus-server
                 access: proxy
-                basicAuth: true
-                basicAuthUser: ${PROMETHEUS_ADMIN_USERNAME}
-                secureJsonData:
-                  basicAuthPassword: ${PROMETHEUS_ADMIN_PASSWORD}
                 isDefault: true
               - name: Alertmanager
                 type: camptocamp-prometheus-alertmanager-datasource
@@ -63,12 +59,3 @@ spec:
     value: https://github.com/grafana/grafana/releases
   - name: values.yaml
     value: https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
----
-apiVersion: v1
-data:
-  admin-username: ${GRAFANA_ADMIN_USERNAME::BASE64}
-  admin-password: ${GRAFANA_ADMIN_PASSWORD::BASE64}
-kind: Secret
-metadata:
-  name: grafana-data-secret
-  namespace: observability
