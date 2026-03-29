@@ -38,11 +38,8 @@ spec:
             # Prometheus' data retention size. Supported units: B, KB, MB, GB, TB, PB, EB.
             retentionSize: "60GB"
             tcpSocketProbeEnabled: true
-            extraArgs:
-              web.config.file: /etc/config/web.config.yml
-            probeHeaders:
-              - name: Authorization
-                value: Basic ${PROMETHEUS_ADMIN_USERNAME_PASSWORD_BASE64}
+            persistentVolume:
+              size: 50Gi
           serverFiles:
             ## Ref: https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/
             alerting_rules.yml:
@@ -61,291 +58,241 @@ spec:
                       summary: Host out of memory.
                       description: Node memory is filling up.
 
-                # - name: Prometheus self-monitoring
-                #   # See: https://samber.github.io/awesome-prometheus-alerts/rules.html#prometheus-self-monitoring
-                #   labels:
-                #     team: devops
-                #   rules:
-                #   - alert: PrometheusJobMissing
-                #     expr: absent(up{job="prometheus"})
-                #     for: 0m
-                #     labels:
-                #       severity: warning
-                #     annotations:
-                #       summary: Prometheus job missing (instance {{ $labels.instance }})
-                #       description: "A Prometheus job has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-                #   - alert: PrometheusTargetMissing
-                #     expr: up == 0
-                #     for: 0m
-                #     labels:
-                #       severity: critical
-                #     annotations:
-                #       summary: Prometheus target missing (instance {{ $labels.instance }})
-                #       description: "A Prometheus target has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-                #
-                #   - alert: PrometheusConfigurationReloadFailure
-                #     expr: prometheus_config_last_reload_successful != 1
-                #     for: 0m
-                #     labels:
-                #       severity: warning
-                #     annotations:
-                #       summary: Prometheus configuration reload failure (instance {{ $labels.instance }})
-                #       description: "Prometheus configuration reload error\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-                #
-                #   - alert: PrometheusAlertmanagerJobMissing
-                #     expr: absent(up{job="alertmanager"})
-                #     for: 0m
-                #     labels:
-                #       severity: warning
-                #     annotations:
-                #       summary: Prometheus AlertManager job missing (instance {{ $labels.instance }})
-                #       description: "A Prometheus AlertManager job has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-                #
-                #   - alert: PrometheusAlertmanagerConfigurationReloadFailure
-                #     expr: alertmanager_config_last_reload_successful != 1
-                #     for: 0m
-                #     labels:
-                #       severity: warning
-                #     annotations:
-                #       summary: Prometheus AlertManager configuration reload failure (instance {{ $labels.instance }})
-                #       description: "AlertManager configuration reload error\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-                #
-                #   - alert: PrometheusNotConnectedToAlertmanager
-                #     expr: prometheus_notifications_alertmanagers_discovered < 1
-                #     for: 0m
-                #     labels:
-                #       severity: critical
-                #     annotations:
-                #       summary: Prometheus not connected to alertmanager (instance {{ $labels.instance }})
-                #       description: "Prometheus cannot connect the alertmanager\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-                #
-                #   - alert: PrometheusTargetScrapingSlow
-                #     expr: prometheus_target_interval_length_seconds{quantile="0.9"} / on (interval, instance, job) prometheus_target_interval_length_seconds{quantile="0.5"} > 1.05
-                #     for: 5m
-                #     labels:
-                #       severity: warning
-                #     annotations:
-                #       summary: Prometheus target scraping slow (instance {{ $labels.instance }})
-                #       description: "Prometheus is scraping exporters slowly since it exceeded the requested interval time. Your Prometheus server is under-provisioned.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+          scrapeConfigs:
+
+            # ==========================================================================
+            longhorn:
+            # ==========================================================================
+              static_configs:
+                - targets:
+                  - longhorn-backend.longhorn-system.svc.cluster.local:9500
 
 
+            # ==========================================================================
+            argocd:
+            # ==========================================================================
+              static_configs:
+                - targets:
+                  - argocd-application-controller-metrics.argocd.svc.cluster.local:8082
 
-            web.config.yml:
-              basic_auth_users:
-                ${PROMETHEUS_ADMIN_USERNAME}: ${PROMETHEUS_ADMIN_PASSWORD_BCRYPT}
-            prometheus.yml:
-              scrape_configs:
-                # ==========================================================================
-                - job_name: longhorn
-                # ==========================================================================
-                  static_configs:
-                    - targets:
-                      - longhorn-backend.longhorn-system.svc.cluster.local:9500
+            # ==========================================================================
+            quickwit:
+            # ==========================================================================
+              static_configs:
+                - targets:
+                  - quickwit-control-plane.observability.svc.cluster.local:7280
 
+            # ==========================================================================
+            ingress-nginx:
+            # This was enabled for rke2 by using a helmChartConfig
+            # More info:
+            # - https://docs.rke2.io/networking/networking_services#ingress-controller
+            # - https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/templates/controller-service-metrics.yaml
+            # - https://docs.nginx.com/nginx-ingress-controller/logging-and-monitoring/prometheus/
+            # ==========================================================================
+              static_configs:
+                - targets:
+                  - rke2-ingress-nginx-controller-metrics.kube-system.svc.cluster.local:10254
 
-                # ==========================================================================
-                - job_name: argocd
-                # ==========================================================================
-                  static_configs:
-                    - targets:
-                      - argocd-application-controller-metrics.argocd.svc.cluster.local:8082
+            # ==========================================================================
+            kubernetes-api-servers:
+            # ==========================================================================
+              enabled: true
+              kubernetes_sd_configs:
+                - role: endpoints
+              scheme: https
+              tls_config:
+                ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
 
-                # ==========================================================================
-                - job_name: ingress-nginx
-                # This was enabled for rke2 by using a helmChartConfig
-                # More info:
-                # - https://docs.rke2.io/networking/networking_services#ingress-controller
-                # - https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/templates/controller-service-metrics.yaml
-                # - https://docs.nginx.com/nginx-ingress-controller/logging-and-monitoring/prometheus/
-                # ==========================================================================
-                  static_configs:
-                    - targets:
-                      - rke2-ingress-nginx-controller-metrics.kube-system.svc.cluster.local:10254
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+                  action: keep
+                  regex: default;kubernetes;https
 
-                # ==========================================================================
-                - job_name: quickwit
-                # ==========================================================================
-                  static_configs:
-                    - targets:
-                      - quickwit-control-plane:7280
+            # ==========================================================================
+            kubernetes-nodes:
+            # ==========================================================================
+              enabled: true
+              scheme: https
+              tls_config:
+                ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
 
-                # ==========================================================================
-                - job_name: prometheus
-                # ==========================================================================
-                  basic_auth:
-                    username: ${PROMETHEUS_ADMIN_USERNAME}
-                    password: ${PROMETHEUS_ADMIN_PASSWORD}
-                  static_configs:
-                    - targets:
-                      - localhost:9090
+              kubernetes_sd_configs:
+                - role: node
 
-                # ==========================================================================
-                - job_name: 'kubernetes-apiservers'
-                # ==========================================================================
-                  kubernetes_sd_configs:
-                    - role: endpoints
+              relabel_configs:
+                - action: labelmap
+                  regex: __meta_kubernetes_node_label_(.+)
+                - target_label: __address__
+                  replacement: kubernetes.default.svc:443
+                - source_labels: [__meta_kubernetes_node_name]
+                  regex: (.+)
+                  target_label: __metrics_path__
+                  replacement: /api/v1/nodes/$1/proxy/metrics
 
-                  scheme: https
+            # ==========================================================================
+            kubernetes-nodes-cadvisor:
+            # ==========================================================================
+              enabled: true
+              scheme: https
+              tls_config:
+                ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
 
-                  tls_config:
-                    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-                  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+              kubernetes_sd_configs:
+                - role: node
 
-                  relabel_configs:
-                    - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
-                      action: keep
-                      regex: default;kubernetes;https
+              relabel_configs:
+                - action: labelmap
+                  regex: __meta_kubernetes_node_label_(.+)
+                - target_label: __address__
+                  replacement: kubernetes.default.svc:443
+                - source_labels: [__meta_kubernetes_node_name]
+                  regex: (.+)
+                  target_label: __metrics_path__
+                  replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
 
-                # ==========================================================================
-                - job_name: 'kubernetes-nodes'
-                # ==========================================================================
-                  scheme: https
-                  tls_config:
-                    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-                  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+            # ==========================================================================
+            kubernetes-service-endpoints:
+            # ==========================================================================
+              enabled: true
+              honor_labels: true
 
-                  kubernetes_sd_configs:
-                    - role: node
+              kubernetes_sd_configs:
+                - role: endpoints
 
-                  relabel_configs:
-                    - action: labelmap
-                      regex: __meta_kubernetes_node_label_(.+)
-                    - target_label: __address__
-                      replacement: kubernetes.default.svc:443
-                    - source_labels: [__meta_kubernetes_node_name]
-                      regex: (.+)
-                      target_label: __metrics_path__
-                      replacement: /api/v1/nodes/\$1/proxy/metrics
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+                  action: keep
+                  regex: true
+                - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape_slow]
+                  action: drop
+                  regex: true
+                - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+                  action: replace
+                  target_label: __scheme__
+                  regex: (https?)
+                - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+                  action: replace
+                  target_label: __metrics_path__
+                  regex: (.+)
+                - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+                  action: replace
+                  target_label: __address__
+                  regex: (.+?)(?::\d+)?;(\d+)
+                  replacement: $1:$2
+                - action: labelmap
+                  regex: __meta_kubernetes_service_annotation_prometheus_io_param_(.+)
+                  replacement: __param_$1
+                - action: labelmap
+                  regex: __meta_kubernetes_service_label_(.+)
+                - source_labels: [__meta_kubernetes_namespace]
+                  action: replace
+                  target_label: namespace
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: replace
+                  target_label: service
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  action: replace
+                  target_label: node
 
+            # ==========================================================================
+            kubernetes-service-endpoints-slow:
+            # ==========================================================================
+              enabled: false
 
-                # ==========================================================================
-                - job_name: 'kubernetes-nodes-cadvisor'
-                # ==========================================================================
-                  scheme: https
-                  tls_config:
-                    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-                  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+            # ==========================================================================
+            prometheus-pushgateway:
+            # ==========================================================================
+              enabled: false
 
-                  kubernetes_sd_configs:
-                    - role: node
+            # ==========================================================================
+            kubernetes-services:
+            # ==========================================================================
+              enabled: true
+              job_name: ""
+              honor_labels: true
+              metrics_path: /probe
+              params:
+                module: [http_2xx]
+              kubernetes_sd_configs:
+                - role: service
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probe]
+                  action: keep
+                  regex: true
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - target_label: __address__
+                  replacement: blackbox
+                - source_labels: [__param_target]
+                  target_label: instance
+                - action: labelmap
+                  regex: __meta_kubernetes_service_label_(.+)
+                - source_labels: [__meta_kubernetes_namespace]
+                  target_label: namespace
+                - source_labels: [__meta_kubernetes_service_name]
+                  target_label: service
 
-                  relabel_configs:
-                    - action: labelmap
-                      regex: __meta_kubernetes_node_label_(.+)
-                    - target_label: __address__
-                      replacement: kubernetes.default.svc:443
-                    - source_labels: [__meta_kubernetes_node_name]
-                      regex: (.+)
-                      target_label: __metrics_path__
-                      replacement: /api/v1/nodes/\$1/proxy/metrics/cadvisor
+            # ==========================================================================
+            kubernetes-pods:
+            # ==========================================================================
+              enabled: true
+              honor_labels: true
 
+              kubernetes_sd_configs:
+                - role: pod
 
-                # ==========================================================================
-                - job_name: 'prometheus-pushgateway'
-                # ==========================================================================
-                  honor_labels: true
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                  action: keep
+                  regex: true
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape_slow]
+                  action: drop
+                  regex: true
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
+                  action: replace
+                  regex: (https?)
+                  target_label: __scheme__
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+                  action: replace
+                  target_label: __metrics_path__
+                  regex: (.+)
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+                  action: replace
+                  regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
+                  replacement: '[\$2]:$1'
+                  target_label: __address__
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+                  action: replace
+                  regex: (\d+);((([0-9]+?)(\.|\$)){4})
+                  replacement: $2:$1
+                  target_label: __address__
+                - action: labelmap
+                  regex: __meta_kubernetes_pod_annotation_prometheus_io_param_(.+)
+                  replacement: __param_$1
+                - action: labelmap
+                  regex: __meta_kubernetes_pod_label_(.+)
+                - source_labels: [__meta_kubernetes_namespace]
+                  action: replace
+                  target_label: namespace
+                - source_labels: [__meta_kubernetes_pod_name]
+                  action: replace
+                  target_label: pod
+                - source_labels: [__meta_kubernetes_pod_phase]
+                  regex: Pending|Succeeded|Failed|Completed
+                  action: drop
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  action: replace
+                  target_label: node
 
-                  kubernetes_sd_configs:
-                    - role: service
-
-                  relabel_configs:
-                    - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probe]
-                      action: keep
-                      regex: pushgateway
-
-                # ==========================================================================
-                - job_name: 'kubernetes-service-endpoints'
-                # ==========================================================================
-                  honor_labels: true
-
-                  kubernetes_sd_configs:
-                    - role: endpoints
-
-                  relabel_configs:
-                    - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
-                      action: keep
-                      regex: true
-                    - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape_slow]
-                      action: drop
-                      regex: true
-                    - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
-                      action: replace
-                      target_label: __scheme__
-                      regex: (https?)
-                    - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
-                      action: replace
-                      target_label: __metrics_path__
-                      regex: (.+)
-                    - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
-                      action: replace
-                      target_label: __address__
-                      regex: (.+?)(?::\d+)?;(\d+)
-                      replacement: \$1:\$2
-                    - action: labelmap
-                      regex: __meta_kubernetes_service_annotation_prometheus_io_param_(.+)
-                      replacement: __param_\$1
-                    - action: labelmap
-                      regex: __meta_kubernetes_service_label_(.+)
-                    - source_labels: [__meta_kubernetes_namespace]
-                      action: replace
-                      target_label: namespace
-                    - source_labels: [__meta_kubernetes_service_name]
-                      action: replace
-                      target_label: service
-                    - source_labels: [__meta_kubernetes_pod_node_name]
-                      action: replace
-                      target_label: node
-
-                # ==========================================================================
-                - job_name: 'kubernetes-pods'
-                # ==========================================================================
-                  honor_labels: true
-
-                  kubernetes_sd_configs:
-                    - role: pod
-
-                  relabel_configs:
-                    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-                      action: keep
-                      regex: true
-                    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape_slow]
-                      action: drop
-                      regex: true
-                    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
-                      action: replace
-                      regex: (https?)
-                      target_label: __scheme__
-                    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-                      action: replace
-                      target_label: __metrics_path__
-                      regex: (.+)
-                    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
-                      action: replace
-                      regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
-                      replacement: '[\$2]:\$1'
-                      target_label: __address__
-                    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
-                      action: replace
-                      regex: (\d+);((([0-9]+?)(\.|\$)){4})
-                      replacement: \$2:\$1
-                      target_label: __address__
-                    - action: labelmap
-                      regex: __meta_kubernetes_pod_annotation_prometheus_io_param_(.+)
-                      replacement: __param_\$1
-                    - action: labelmap
-                      regex: __meta_kubernetes_pod_label_(.+)
-                    - source_labels: [__meta_kubernetes_namespace]
-                      action: replace
-                      target_label: namespace
-                    - source_labels: [__meta_kubernetes_pod_name]
-                      action: replace
-                      target_label: pod
-                    - source_labels: [__meta_kubernetes_pod_phase]
-                      regex: Pending|Succeeded|Failed|Completed
-                      action: drop
-                    - source_labels: [__meta_kubernetes_pod_node_name]
-                      action: replace
-                      target_label: node
+            # ==========================================================================
+            kubernetes-pods-slow:
+            # ==========================================================================
+              enabled: false
 
 
 
