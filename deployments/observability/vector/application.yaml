@@ -14,17 +14,6 @@ spec:
       releaseName: vector
       valuesObject:
         vector:
-          env:
-            - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  name: vector-data-secret
-                  key: AWS_ACCESS_KEY_ID
-            - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: vector-data-secret
-                  key: AWS_SECRET_ACCESS_KEY
           podAnnotations:
             vector.dev/exclude: 'true'
           role: Agent
@@ -62,48 +51,76 @@ spec:
                   .service_name = .kubernetes.pod_name
 
                   .attributes = .kubernetes
+                  .attributes.cluster = "wegroup-hetzner-server-1"
                   .resource_attributes.file = .file
 
                   .body.stream = .stream
-                  .body.message = .message
 
+                  level = null
+                  msg = slice(.message, 0, 100) ?? ""
+
+                  # 1. Try json
                   parsed_json, err = parse_json(.message)
-                  if err != null {
-                      if .stream == "stderr" {
+                  if err == null {
+                      level = parsed_json.level || parsed_json.levelname || parsed_json.severity || parsed_json.log_level || null
+                      .body.message = .message
+                      .message = parsed_json.message || parsed_json.msg || parsed_json.log
+                  }
+
+                  # 2. Try logfmt
+                  if level == null {
+                      parsed = parse_logfmt(msg) ?? {}
+                      level = parsed.level ||  parsed.severity || null
+                  }
+
+                  # 3. Try syslog
+                  if level == null {
+                      parsed = parse_syslog(msg) ?? {}
+                      level = parsed.severity || null
+                  }
+
+                  # 4. Try klog
+                  if level == null {
+                      parsed = parse_klog(msg) ?? {}
+                      level = parsed.level || null
+                  }
+
+
+                  # 5. Try parse groks
+                  if level == null {
+                      parsed = parse_groks(msg,
+                      	patterns: [
+                          "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:level} %{GREEDYDATA:message}",
+                          "%{DATA:timestamp} %{LOGLEVEL:level} %{GREEDYDATA:message}"
+
+                        ]
+                      ) ?? {}
+                      level = parsed.level || null
+                  }
+
+                  # 6. Normalize
+                  if level != null {
+                    if includes(["info", "INFO", "inf", "INF", "notice", "NOTICE", "[info]", "[INFO]", "5", "6"], level) {
+                        .severity_text = "info"
+                    } else if includes(["emerg", "fatal", "crit", "alert", "FATAL", "critical", "ALERT", "CRITICAL", "[critical]", "[CRITICAL]", "0", "1", "2"], level) {
+                        .severity_text = "critical"
+                    } else if includes(["err", "eror", "error", "ERR", "ERROR", "[error]", "[ERROR]", "3"], level) {
                         .severity_text = "error"
-                      } else {
+                    } else if includes(["warn", "warning", "war", "WARN", "WARNING", "WAR", "[WARN]", "[WARNING]", "[warn]", "4"], level) {
+                        .severity_text = "warning"
+                    } else if includes(["debug", "DEBUG", "deb", "DEB", "[debug]", "[DEBUG]", "7"], level) {
+                        .severity_text = "debug"
+                    } else {
                         .severity_text = "unknown"
-                      }
+                    }
+                  } else if .stream == "stderr" {
+                    .severity_text = "error"
                   } else {
-                      # .body.message = parsed_json.message ||
-                      #                 parsed_json.msg ||
-                      #                 .message
+                    .severity_text = "unknown"
+                  }
 
-                      .body.stream = parsed_json.stream ||
-                                     .stream
-
-                      # Extract log level from multiple possible fields
-                      levelinfo = parsed_json.level ||
-                                  parsed_json.levelname ||
-                                  parsed_json.severity ||
-                                  parsed_json.log_level ||
-                                  null
-
-                      if levelinfo == null {
-                          .severity_text = "unknown"
-                      } else if includes(["emerg", "fatal", "crit", "alert", "FATAL", "critical", "ALERT", "CRITICAL", "0", "1", "2"], levelinfo) {
-                          .severity_text = "critical"
-                      } else if includes(["err", "eror", "error", "ERR", "ERROR", "3"], levelinfo) {
-                          .severity_text = "error"
-                      } else if includes(["warn", "warning", "WARN", "WARNING", "4"], levelinfo) {
-                          .severity_text = "warning"
-                      } else if includes(["info", "INFO", "notice", "NOTICE", "5", "6"], levelinfo) {
-                          .severity_text = "info"
-                      } else if includes(["debug", "DEBUG", "7"], levelinfo) {
-                          .severity_text = "debug"
-                      } else {
-                          .severity_text = "unknown"
-                      }
+                  if .body.message != null {
+                    .message = upcase(.severity_text) + " " + to_string(.message) ?? "NO MESSAGE BODY"
                   }
 
                   .id = uuid_v7()
@@ -116,16 +133,6 @@ spec:
 
 
             sinks:
-              s3:
-                type: aws_s3
-                inputs:
-                  - kubernetes
-                endpoint: ${AWS_S3_ENDPOINT}
-                bucket: ${AWS_S3_BUCKET}
-                region: ${AWS_S3_REGION}
-                key_prefix: vector/logs/kubernetes/hetzner/year=%Y/month=%m/day=%d
-                encoding:
-                  codec: json
               quickwit_logs:
                 type: "http"
                 method: "post"
@@ -149,13 +156,3 @@ spec:
     value: https://github.com/vectordotdev/vector/releases
   - name: values.yaml
     value: https://github.com/vectordotdev/helm-charts/blob/develop/charts/vector/values.yaml
----
-apiVersion: v1
-data:
-  AWS_ACCESS_KEY_ID: ${AWS_S3_ACCESS_KEY::BASE64}
-  AWS_SECRET_ACCESS_KEY: ${AWS_S3_SECRET_KEY::BASE64}
-kind: Secret
-metadata:
-  name: vector-data-secret
-  namespace: observability
-type: Opaque
