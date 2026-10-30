@@ -269,7 +269,7 @@ data:
               "format": "time_series",
               "interval": "2m",
               "intervalFactor": 1,
-              "legendFormat": "{{ingress}}",
+              "legendFormat": "{{ "{{" }}ingress{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -821,7 +821,7 @@ data:
               "format": "time_series",
               "interval": "2m",
               "intervalFactor": 1,
-              "legendFormat": "{{ingress}}",
+              "legendFormat": "{{ "{{" }}ingress{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1105,7 +1105,7 @@ data:
               "format": "time_series",
               "interval": "2m",
               "intervalFactor": 1,
-              "legendFormat": "HTTP {{status}}",
+              "legendFormat": "HTTP {{ "{{" }}status{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1233,7 +1233,7 @@ data:
               "format": "time_series",
               "interval": "5m",
               "intervalFactor": 1,
-              "legendFormat": "{{ingress}}",
+              "legendFormat": "{{ "{{" }}ingress{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1805,7 +1805,7 @@ data:
               "hide": false,
               "interval": "5m",
               "intervalFactor": 1,
-              "legendFormat": "{{le}}",
+              "legendFormat": "{{ "{{" }}le{{ "}}" }}",
               "refId": "D"
             }
           ],
@@ -2255,7 +2255,7 @@ data:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ingress}}",
+              "legendFormat": "{{ "{{" }}ingress{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2360,7 +2360,7 @@ data:
               "expr": "histogram_quantile(0.99, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{status!=\"404\",status!=\"500\", controller_class=~\"$controller_class\", ingress=~\"$ingress\", namespace=~\"$namespace\", controller_pod=~\"$pod\"}[5m])) by (le, ingress))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "p99 {{ ingress }}",
+              "legendFormat": "p99 {{ "{{" }} ingress {{ "}}" }}",
               "refId": "A"
             },
             {
@@ -2371,7 +2371,7 @@ data:
               "expr": "histogram_quantile(0.95, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{status!=\"404\",status!=\"500\", controller_class=~\"$controller_class\", ingress=~\"$ingress\", namespace=~\"$namespace\", controller_pod=~\"$pod\"}[5m])) by (le, ingress))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "p95 {{ ingress }}",
+              "legendFormat": "p95 {{ "{{" }} ingress {{ "}}" }}",
               "refId": "B"
             },
             {
@@ -2382,7 +2382,7 @@ data:
               "expr": "histogram_quantile(0.90, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{status!=\"404\",status!=\"500\", controller_class=~\"$controller_class\", ingress=~\"$ingress\", namespace=~\"$namespace\", controller_pod=~\"$pod\"}[5m])) by (le, ingress))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "p90 {{ ingress }}",
+              "legendFormat": "p90 {{ "{{" }} ingress {{ "}}" }}",
               "refId": "C"
             }
           ],

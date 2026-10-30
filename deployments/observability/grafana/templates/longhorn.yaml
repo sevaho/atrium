@@ -278,7 +278,7 @@ data:
               "expr": "( (avg by (pvc) (longhorn_volume_actual_size_bytes))/ (avg by (pvc) (longhorn_volume_capacity_bytes)) ) *100",
               "format": "time_series",
               "interval": "",
-              "legendFormat": "{{volume}}",
+              "legendFormat": "{{ "{{" }}volume{{ "}}" }}",
               "range": true,
               "refId": "A"
             }
@@ -520,7 +520,7 @@ data:
               "instant": true,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{volume}}",
+              "legendFormat": "{{ "{{" }}volume{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -917,7 +917,7 @@ data:
               },
               "expr": "(longhorn_node_storage_usage_bytes/longhorn_node_storage_capacity_bytes) * 100",
               "interval": "",
-              "legendFormat": "{{node}}",
+              "legendFormat": "{{ "{{" }}node{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1126,7 +1126,7 @@ data:
               "format": "table",
               "instant": true,
               "interval": "",
-              "legendFormat": "{{node}}",
+              "legendFormat": "{{ "{{" }}node{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1246,7 +1246,7 @@ data:
               },
               "expr": "count by (node) (longhorn_volume_state==2)",
               "interval": "",
-              "legendFormat": "{{node}}",
+              "legendFormat": "{{ "{{" }}node{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1373,7 +1373,7 @@ data:
               },
               "expr": "(longhorn_disk_usage_bytes/longhorn_disk_capacity_bytes)*100",
               "interval": "",
-              "legendFormat": "{{disk}}",
+              "legendFormat": "{{ "{{" }}disk{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1452,7 +1452,7 @@ data:
               "format": "table",
               "instant": true,
               "interval": "",
-              "legendFormat": "{{disk}}",
+              "legendFormat": "{{ "{{" }}disk{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1599,7 +1599,7 @@ data:
               },
               "expr": "(longhorn_node_cpu_usage_millicpu / longhorn_node_cpu_capacity_millicpu) * 100",
               "interval": "",
-              "legendFormat": "{{node}}",
+              "legendFormat": "{{ "{{" }}node{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1697,7 +1697,7 @@ data:
               },
               "expr": "( longhorn_node_memory_usage_bytes / longhorn_node_memory_capacity_bytes ) * 100",
               "interval": "",
-              "legendFormat": "{{node}}",
+              "legendFormat": "{{ "{{" }}node{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1795,7 +1795,7 @@ data:
               },
               "expr": "longhorn_instance_manager_cpu_usage_millicpu",
               "interval": "",
-              "legendFormat": "{{instance_manager}}",
+              "legendFormat": "{{ "{{" }}instance_manager{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1893,7 +1893,7 @@ data:
               },
               "expr": "(longhorn_instance_manager_cpu_usage_millicpu/longhorn_instance_manager_cpu_requests_millicpu)*100",
               "interval": "",
-              "legendFormat": "{{instance_manager}}",
+              "legendFormat": "{{ "{{" }}instance_manager{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1991,7 +1991,7 @@ data:
               },
               "expr": "longhorn_instance_manager_memory_usage_bytes",
               "interval": "",
-              "legendFormat": "{{instance_manager}}",
+              "legendFormat": "{{ "{{" }}instance_manager{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2089,7 +2089,7 @@ data:
               },
               "expr": "longhorn_manager_cpu_usage_millicpu",
               "interval": "",
-              "legendFormat": "{{manager}}",
+              "legendFormat": "{{ "{{" }}manager{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2187,7 +2187,7 @@ data:
               },
               "expr": "longhorn_manager_memory_usage_bytes",
               "interval": "",
-              "legendFormat": "{{manager}}",
+              "legendFormat": "{{ "{{" }}manager{{ "}}" }}",
               "refId": "A"
             }
           ],

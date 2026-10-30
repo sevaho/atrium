@@ -578,7 +578,7 @@ data:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{sync_status}}",
+              "legendFormat": "{{ "{{" }}sync_status{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -884,7 +884,7 @@ data:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{namespace}}",
+              "legendFormat": "{{ "{{" }}namespace{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -1439,7 +1439,7 @@ data:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{health_status}}",
+              "legendFormat": "{{ "{{" }}health_status{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2144,7 +2144,7 @@ data:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{sync_status}}",
+              "legendFormat": "{{ "{{" }}sync_status{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2316,7 +2316,7 @@ data:
               "expr": "sum(round(increase(argocd_app_sync_total{namespace=~\"$namespace\",dest_server=~\"$cluster\"}[$interval]))) by ($grouping)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{$grouping}}",
+              "legendFormat": "{{ "{{" }}$grouping{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2441,7 +2441,7 @@ data:
               "expr": "sum(round(increase(argocd_app_sync_total{namespace=~\"$namespace\",phase=~\"Error|Failed\",dest_server=~\"$cluster\"}[$interval]))) by ($grouping, phase)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{phase}}: {{$grouping}}",
+              "legendFormat": "{{ "{{" }}phase{{ "}}" }}: {{ "{{" }}$grouping{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2559,7 +2559,7 @@ data:
               "expr": "sum(increase(argocd_app_reconcile_count{namespace=~\"$namespace\",dest_server=~\"$cluster\"}[$interval])) by ($grouping)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{$grouping}}",
+              "legendFormat": "{{ "{{" }}$grouping{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2644,7 +2644,7 @@ data:
               "format": "heatmap",
               "instant": false,
               "intervalFactor": 10,
-              "legendFormat": "{{le}}",
+              "legendFormat": "{{ "{{" }}le{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2789,7 +2789,7 @@ data:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{verb}} {{resource_kind}}",
+              "legendFormat": "{{ "{{" }}verb{{ "}}" }} {{ "{{" }}resource_kind{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -2915,7 +2915,7 @@ data:
               "expr": "sum(workqueue_depth{namespace=~\"$namespace\",name=~\"app_.*\"}) by (name)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{name}}",
+              "legendFormat": "{{ "{{" }}name{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -3021,7 +3021,7 @@ data:
               "expr": "sum(argocd_kubectl_exec_pending{namespace=~\"$namespace\"}) by (command)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{command}}",
+              "legendFormat": "{{ "{{" }}command{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -3136,7 +3136,7 @@ data:
               "expr": "sum(argocd_cluster_api_resource_objects{namespace=~\"$namespace\",server=~\"$cluster\"}) by (server)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{server}}",
+              "legendFormat": "{{ "{{" }}server{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -3259,7 +3259,7 @@ data:
               "expr": "  sum(argocd_cluster_api_resources{namespace=~\"$namespace\",server=~\"$cluster\"}) by (server)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{server}}",
+              "legendFormat": "{{ "{{" }}server{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -3362,7 +3362,7 @@ data:
               "expr": "sum(increase(argocd_cluster_events_total{namespace=~\"$namespace\",server=~\"$cluster\"}[$interval])) by (server)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{server}}",
+              "legendFormat": "{{ "{{" }}server{{ "}}" }}",
               "refId": "A"
             }
           ],

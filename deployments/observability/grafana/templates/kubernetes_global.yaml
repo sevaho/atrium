@@ -1520,7 +1520,7 @@ data:
               "format": "time_series",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{ "{{" }} namespace {{ "}}" }}",
               "range": true,
               "refId": "A"
             }
@@ -1625,7 +1625,7 @@ data:
               "exemplar": true,
               "expr": "sum(container_memory_working_set_bytes{image!=\"\", cluster=\"$cluster\"}) by (namespace)\n+ on (namespace)\n(sum(windows_container_memory_usage_commit_bytes{container_id!=\"\", cluster=\"$cluster\"} * on (container_id) group_left (container, pod, namespace) max by ( container, container_id, pod, namespace) (kube_pod_container_info{container_id!=\"\", cluster=\"$cluster\"}) OR kube_namespace_created{cluster=\"$cluster\"} * 0) by (namespace))",
               "interval": "$resolution",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{ "{{" }} namespace {{ "}}" }}",
               "range": true,
               "refId": "A"
             }
@@ -1731,7 +1731,7 @@ data:
               "exemplar": true,
               "expr": "avg(sum by (instance, cpu) (rate(node_cpu_seconds_total{mode!~\"idle|iowait|steal\", cluster=\"$cluster\", job=\"$job\"}[$__rate_interval]))) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "{{ node }}",
+              "legendFormat": "{{ "{{" }} node {{ "}}" }}",
               "range": true,
               "refId": "Linux"
             },
@@ -1745,7 +1745,7 @@ data:
               "expr": "avg(sum by (instance,core) (rate(windows_cpu_time_total{mode!=\"idle\", cluster=\"$cluster\"}[$__rate_interval]))) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "{{ node }}",
+              "legendFormat": "{{ "{{" }} node {{ "}}" }}",
               "range": true,
               "refId": "Windows"
             }
@@ -1851,7 +1851,7 @@ data:
               "expr": "sum(node_memory_MemTotal_bytes{cluster=\"$cluster\", job=\"$job\"} - node_memory_MemAvailable_bytes{cluster=\"$cluster\", job=\"$job\"}) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "Linux"
             },
@@ -1865,7 +1865,7 @@ data:
               "expr": "sum(windows_os_visible_memory_bytes{cluster=\"$cluster\"} - windows_memory_available_bytes{cluster=\"$cluster\"}) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "Windows"
             }
@@ -1975,7 +1975,7 @@ data:
               "exemplar": true,
               "expr": "sum(rate(container_cpu_cfs_throttled_seconds_total{image!=\"\", cluster=\"$cluster\"}[$__rate_interval])) by (namespace) > 0",
               "interval": "$resolution",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{ "{{" }} namespace {{ "}}" }}",
               "range": true,
               "refId": "A"
             }
@@ -2085,7 +2085,7 @@ data:
               "exemplar": true,
               "expr": "sum(rate(node_cpu_core_throttles_total{cluster=\"$cluster\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "A"
             }
@@ -2203,7 +2203,7 @@ data:
               "exemplar": true,
               "expr": "sum(kube_pod_status_qos_class{cluster=\"$cluster\"}) by (qos_class)",
               "interval": "",
-              "legendFormat": "{{ qos_class }} pods",
+              "legendFormat": "{{ "{{" }} qos_class {{ "}}" }} pods",
               "range": true,
               "refId": "A"
             },
@@ -2320,7 +2320,7 @@ data:
               "exemplar": true,
               "expr": "sum(kube_pod_status_reason{cluster=\"$cluster\"}) by (reason)",
               "interval": "",
-              "legendFormat": "{{ reason }}",
+              "legendFormat": "{{ "{{" }} reason {{ "}}" }}",
               "range": true,
               "refId": "A"
             }
@@ -2426,7 +2426,7 @@ data:
               "exemplar": true,
               "expr": "sum(increase(container_oom_events_total{cluster=\"$cluster\"}[$__rate_interval])) by (namespace) > 0",
               "interval": "",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{ "{{" }} namespace {{ "}}" }}",
               "range": true,
               "refId": "A"
             }
@@ -2532,7 +2532,7 @@ data:
               "exemplar": true,
               "expr": "sum(increase(kube_pod_container_status_restarts_total{cluster=\"$cluster\"}[$__rate_interval])) by (namespace) > 0",
               "interval": "",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{ "{{" }} namespace {{ "}}" }}",
               "range": true,
               "refId": "A"
             }
@@ -2649,7 +2649,7 @@ data:
               "exemplar": true,
               "expr": "sum(rate(node_network_receive_bytes_total{device!~\"(veth|azv|lxc).*\", cluster=\"$cluster\", job=\"$job\"}[$__rate_interval])) by (device)",
               "interval": "$resolution",
-              "legendFormat": "Received : {{ device }}",
+              "legendFormat": "Received : {{ "{{" }} device {{ "}}" }}",
               "range": true,
               "refId": "Linux Received"
             },
@@ -2662,7 +2662,7 @@ data:
               "exemplar": true,
               "expr": "- sum(rate(node_network_transmit_bytes_total{device!~\"(veth|azv|lxc).*\", cluster=\"$cluster\", job=\"$job\"}[$__rate_interval])) by (device)",
               "interval": "$resolution",
-              "legendFormat": "Transmitted : {{ device }}",
+              "legendFormat": "Transmitted : {{ "{{" }} device {{ "}}" }}",
               "range": true,
               "refId": "Linux Transmitted"
             },
@@ -2676,7 +2676,7 @@ data:
               "expr": "sum(rate(windows_net_bytes_received_total{cluster=\"$cluster\"}[$__rate_interval])) by (nic)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Received : {{ nic }}",
+              "legendFormat": "Received : {{ "{{" }} nic {{ "}}" }}",
               "range": true,
               "refId": "Windows Received"
             },
@@ -2690,7 +2690,7 @@ data:
               "expr": "- sum(rate(windows_net_bytes_sent_total{cluster=\"$cluster\"}[$__rate_interval])) by (nic)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted : {{ device }}",
+              "legendFormat": "Transmitted : {{ "{{" }} device {{ "}}" }}",
               "range": true,
               "refId": "Windows Transmitted"
             }
@@ -2974,7 +2974,7 @@ data:
               "exemplar": true,
               "expr": "sum(rate(container_network_receive_bytes_total{cluster=\"$cluster\"}[$__rate_interval])) by (namespace)\n+ on (namespace)\n(sum(rate(windows_container_network_receive_bytes_total{container_id!=\"\", cluster=\"$cluster\"}[$__rate_interval]) * on (container_id) group_left (container, pod, namespace) max by ( container, container_id, pod, namespace) (kube_pod_container_info{container_id!=\"\", cluster=\"$cluster\"}) OR kube_namespace_created{cluster=\"$cluster\"} * 0) by (namespace))",
               "interval": "$resolution",
-              "legendFormat": "Received : {{ namespace }}",
+              "legendFormat": "Received : {{ "{{" }} namespace {{ "}}" }}",
               "range": true,
               "refId": "A"
             },
@@ -2987,7 +2987,7 @@ data:
               "expr": "- (sum(rate(container_network_transmit_bytes_total{cluster=\"$cluster\"}[$__rate_interval])) by (namespace)\n+ on (namespace)\n(sum(rate(windows_container_network_transmit_bytes_total{container_id!=\"\", cluster=\"$cluster\"}[$__rate_interval]) * on (container_id) group_left (container, pod, namespace) max by ( container, container_id, pod, namespace) (kube_pod_container_info{container_id!=\"\", cluster=\"$cluster\"}) OR kube_namespace_created{cluster=\"$cluster\"} * 0) by (namespace)))",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted : {{ namespace }}",
+              "legendFormat": "Transmitted : {{ "{{" }} namespace {{ "}}" }}",
               "range": true,
               "refId": "B"
             }
@@ -3086,7 +3086,7 @@ data:
               "exemplar": true,
               "expr": "sum(rate(node_network_receive_bytes_total{cluster=\"$cluster\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "Linux Received bytes"
             },
@@ -3099,7 +3099,7 @@ data:
               "expr": "- sum(rate(node_network_transmit_bytes_total{cluster=\"$cluster\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "Linux Transmitted bytes"
             },
@@ -3113,7 +3113,7 @@ data:
               "expr": "sum(rate(windows_net_bytes_received_total{cluster=\"$cluster\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "Windows Received bytes"
             },
@@ -3126,7 +3126,7 @@ data:
               "expr": "- sum(rate(windows_net_bytes_sent_total{cluster=\"$cluster\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "Windows Transmitted bytes"
             }
@@ -3226,7 +3226,7 @@ data:
               "exemplar": true,
               "expr": "sum(rate(node_network_receive_bytes_total{device!~\"(veth|azv|lxc|lo).*\", cluster=\"$cluster\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "A"
             },
@@ -3239,7 +3239,7 @@ data:
               "expr": "- sum(rate(node_network_transmit_bytes_total{device!~\"(veth|azv|lxc|lo).*\", cluster=\"$cluster\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "B"
             },
@@ -3253,7 +3253,7 @@ data:
               "expr": "sum(rate(windows_net_bytes_received_total{nic!~\".*Virtual.*\",cluster=\"$cluster\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "C"
             },
@@ -3267,7 +3267,7 @@ data:
               "expr": "- sum(rate(windows_net_bytes_sent_total{nic!~\".*Virtual.*\",cluster=\"$cluster\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "D"
             }
@@ -3367,7 +3367,7 @@ data:
               "exemplar": true,
               "expr": "sum(rate(node_network_receive_bytes_total{device=\"lo\", cluster=\"$cluster\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "A"
             },
@@ -3380,7 +3380,7 @@ data:
               "expr": "- sum(rate(node_network_transmit_bytes_total{device=\"lo\", cluster=\"$cluster\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{ "{{" }} instance {{ "}}" }}",
               "range": true,
               "refId": "B"
             }
