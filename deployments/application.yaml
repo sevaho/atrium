@@ -14,7 +14,7 @@ spec:
       recurse: true
       # Opt in one app at a time. Add a path here once its ${VAR} placeholders
       # are gone, its secrets come from Vault, and its chart version is pinned.
-      include: '{tooling/external-secrets,redis/redis,tooling/reloader,kube-system/metrics-server,kube-system/kube-state-metrics,observability/prometheus}/application.yaml'
+      include: '{tooling/external-secrets,redis/redis,tooling/reloader,kube-system/metrics-server,kube-system/kube-state-metrics,observability/prometheus,observability/gatus,nats/nats}/application.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

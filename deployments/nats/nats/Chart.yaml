@@ -6,5 +6,5 @@ name: nats
 version: 1.0
 dependencies:
   - name: nats
-    version: "*"
+    version: "2.15.2"
     repository: https://nats-io.github.io/k8s/helm/charts
