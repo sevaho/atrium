@@ -1,0 +1,26 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments
+    targetRevision: HEAD
+    directory:
+      recurse: true
+      # Opt in one app at a time. Add a path here once its ${VAR} placeholders
+      # are gone, its secrets come from Vault, and its chart version is pinned.
+      include: '{tooling/external-secrets,redis/redis}/application.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
