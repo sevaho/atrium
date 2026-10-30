@@ -32,12 +32,3 @@ spec:
     value: https://github.com/redis/redis/releases
   - name: values.yaml
     value: https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
----
-apiVersion: v1
-data:
-  redis-password: ${REDIS_PASSWORD::BASE64}
-kind: Secret
-metadata:
-  name: redis-data-secret
-  namespace: redis
-type: Opaque
