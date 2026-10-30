@@ -13,7 +13,7 @@ spec:
     helm:
       releaseName: wealthfolio
       valuesObject:
-        example:
+        application:
           nameOverride: wealthfolio
           replicaCount: 1
 

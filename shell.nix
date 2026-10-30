@@ -1,41 +1,28 @@
-{pkgs ? import <nixpkgs> {} }:
+# shell.nix
+let
+  pkgs = import <nixpkgs> {};
+  unstable = import (fetchTarball https://nixos.org/channels/nixpkgs-unstable/nixexprs.tar.xz) {};
+in pkgs.mkShell {
+  shellHook = ''
+    if [ -f .venv/bin/activate ]; then
+      source .venv/bin/activate
 
-pkgs.mkShell {
-    packages = [
-        pkgs.envsubst
-        pkgs.kubernetes-helm
-        pkgs.kubeseal
-        pkgs.pulumi-bin
-        pkgs.pulumiPackages.pulumi-language-python
+      set -a; source .env; set +a
+      echo "SHELLHOOK LOG: .env loaded to ENV variables"
+    fi
+  '';
 
-        pkgs.python312
+  packages = with pkgs; [
+    envsubst
+    kubernetes-helm
+    kubeseal
+    pulumi-bin
+    pulumiPackages.pulumi-language-python
 
-        (pkgs.poetry.override { python3 = pkgs.python312; })
-
-        (pkgs.python312.withPackages (p: with p; [
-            pip
-            pipx
-            cryptography
-
-            # Ansible
-            ansible
-            ansible-core
-            hvac
-
-            # IDE config
-            python-lsp-server
-            pynvim
-            pyls-isort
-            python-lsp-black
-        ]))
-    ];
+    python314
+  ];
 
     LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath [
         pkgs.stdenv.cc.cc
     ]}";
-
-    shellHook = ''
-        set -a; source .env; set +a
-        echo "SHELLHOOK LOG: .env loaded to ENV variables"
-    '';
 }

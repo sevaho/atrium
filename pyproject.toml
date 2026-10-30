@@ -1,0 +1,21 @@
+[project]
+name = "atrium"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "sevaho", email = "sebastiaan@sevaho.io" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "ansible>=14.5.0",
+    "ansible-core>=2.21.5",
+    "hvac>=2.4.0",
+]
+
+[project.scripts]
+atrium = "atrium:main"
+
+[build-system]
+requires = ["uv_build>=0.12.11,<0.13.0"]
+build-backend = "uv_build"

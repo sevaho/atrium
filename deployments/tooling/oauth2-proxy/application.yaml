@@ -33,7 +33,7 @@ spec:
             - name: OAUTH2_PROXY_REVERSE_PROXY
               value: "true"
             - name: OAUTH2_PROXY_UPSTREAMS
-              value: file:///dev/null
+              value: static://200
 
           # Ingress configuration
           ingress:
