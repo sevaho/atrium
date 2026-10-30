@@ -23,12 +23,20 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: tooling
+  # The API server populates the token, so ArgoCD would see this as drift forever.
+  ignoreDifferences:
+  - group: ""
+    kind: Secret
+    name: external-secrets-sa-secret
+    namespace: tooling
+    jsonPointers:
+    - /data
   syncPolicy:
     automated:
       prune: false
       selfHeal: false
     syncOptions:
-    - ServerSideApply=true 
+    - ServerSideApply=true
 
   info:
   - name: releasenotes
