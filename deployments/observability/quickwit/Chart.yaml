@@ -6,5 +6,5 @@ name: quickwit
 version: 1.0
 dependencies:
   - name: quickwit
-    version: "*"
+    version: "0.8.17"
     repository: https://helm.quickwit.io
