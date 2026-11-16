@@ -38,7 +38,10 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: tooling
-  syncPolicy: {}
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
 
   info:
   - name: releasenotes
