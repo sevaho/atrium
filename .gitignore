@@ -41,3 +41,4 @@ vagrant
 # helm dependency build artifacts (deployments/*/*/charts/*.tgz, Chart.lock)
 deployments/**/charts/
 deployments/**/Chart.lock
+uv.lock

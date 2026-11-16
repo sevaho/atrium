@@ -1,0 +1,20 @@
+[project]
+name = "hetzner"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "sevaho", email = "sebastiaan@sevaho.io" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "ansible>=14.6.0",
+    "ansible-core>=2.21.6",
+]
+
+[project.scripts]
+hetzner = "hetzner:main"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"

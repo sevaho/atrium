@@ -1,0 +1,38 @@
+- name: Install WireGuard
+  apt:
+    name: wireguard
+    state: present
+
+- name: Generate WireGuard server key
+  shell: umask 077 && wg genkey > /etc/wireguard/server.key
+  args:
+    creates: /etc/wireguard/server.key
+
+- name: Read WireGuard server public key
+  shell: wg pubkey < /etc/wireguard/server.key
+  register: wireguard_server_public_key
+  changed_when: false
+
+- name: Show WireGuard server public key
+  debug:
+    msg: "{{ wireguard_server_public_key.stdout }}"
+
+- name: Configure WireGuard
+  template:
+    src: wg0.conf
+    dest: /etc/wireguard/wg0.conf
+    mode: "0600"
+  notify:
+    - restart wireguard
+
+- name: Allow traffic from WireGuard peers
+  ufw:
+    rule: allow
+    interface: wg0
+    direction: in
+
+- name: Enable and start WireGuard
+  systemd:
+    name: wg-quick@wg0
+    state: started
+    enabled: yes

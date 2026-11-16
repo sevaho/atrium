@@ -1,3 +1,5 @@
 ---
 - import_tasks: hetzner.yml
   become: yes
+- import_tasks: wireguard.yml
+  become: yes

@@ -3,4 +3,6 @@ threshold: medium
 fileignoreconfig:
 - filename: 0_archive/coroot/application.yaml
   checksum: 1b229017cb1a41abe9de04de1401f5ccd81960febea91384e5b5a4a2c21ac67d
+- filename: server-configuration-automation/instances/hetzner/host_vars/hetzner/vars.yml
+  allowed_patterns: ["public_key: .+"]
 version: ""
