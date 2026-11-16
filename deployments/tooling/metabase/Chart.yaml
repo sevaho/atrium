@@ -6,5 +6,5 @@ name: metabase
 version: 1.0
 dependencies:
   - name: metabase
-    version: "*"
+    version: "2.24.1"
     repository: https://pmint93.github.io/helm-charts
