@@ -6,6 +6,7 @@ base_firewall_udp_ports:
   - 51820
 
 wireguard_address: 10.234.0.1/24
+wireguard_gateway_ip: 10.234.0.10
 wireguard_peers:
   - name: laptop
     public_key: F2taneo8vLdAOdhIym7FGR5h9aIz6Hw3NGm6zdEW128=

@@ -1,5 +1,7 @@
 ---
-# Pinned ClusterIP in the static band: DNS (*.wg.asic.li), client allowedIPs and wg-guard all point at it.
+# External IP inside the WireGuard subnet: DNS (*.wg.asic.li) and the wg0 rule point at it.
+# externalTrafficPolicy Local stops kube-proxy from masquerading, so Envoy sees the peer's
+# 10.234.0.x address and the SecurityPolicy can match on it.
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: EnvoyProxy
 metadata:
@@ -9,13 +11,17 @@ spec:
   provider:
     type: Kubernetes
     kubernetes:
+      envoyDeployment:
+        replicas: 2
       envoyService:
         type: ClusterIP
+        externalTrafficPolicy: Local
         patch:
           type: StrategicMerge
           value:
             spec:
-              clusterIP: 10.43.0.234
+              externalIPs:
+                - 10.234.0.10
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass

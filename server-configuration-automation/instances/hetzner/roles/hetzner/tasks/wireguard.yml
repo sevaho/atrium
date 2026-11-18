@@ -25,12 +25,6 @@
   notify:
     - restart wireguard
 
-- name: Allow traffic from WireGuard peers
-  ufw:
-    rule: allow
-    interface: wg0
-    direction: in
-
 - name: Enable and start WireGuard
   systemd:
     name: wg-quick@wg0
