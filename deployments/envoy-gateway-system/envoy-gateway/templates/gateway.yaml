@@ -15,11 +15,12 @@ spec:
         replicas: 2
       envoyService:
         type: ClusterIP
-        externalTrafficPolicy: Local
+        # Set via patch: Envoy Gateway only applies envoyService.externalTrafficPolicy to LoadBalancer services.
         patch:
           type: StrategicMerge
           value:
             spec:
+              externalTrafficPolicy: Local
               externalIPs:
                 - 10.234.0.10
 ---
