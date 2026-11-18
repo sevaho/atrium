@@ -1,0 +1,16 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: metabase
+  namespace: tooling
+spec:
+  parentRefs:
+    - name: wg
+      namespace: envoy-gateway-system
+  hostnames:
+    - metabase.wg.asic.li
+  rules:
+    - backendRefs:
+        - name: metabase
+          port: 80

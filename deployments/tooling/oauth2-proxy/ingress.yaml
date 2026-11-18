@@ -139,16 +139,6 @@ spec:
         - "${OAUTH2_PROXY_INTERNAL_HOST}"
       secretName: oauth2-proxy-internal-ingress
   rules:
-    - host: ${THEONEPAGER_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: theonepager
-                port:
-                  number: 80
     - host: ${GATUS_HOST}
       http:
         paths:
@@ -207,16 +197,6 @@ spec:
             backend:
               service:
                 name: vault-svc-bridge
-                port:
-                  number: 80
-    - host: ${METABASE_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: metabase-svc-bridge
                 port:
                   number: 80
     - host: ${HARBOR_INTERNAL_HOST}

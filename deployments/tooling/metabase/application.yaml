@@ -21,18 +21,6 @@ spec:
             existingSecret: metabase-data-secret
             existingSecretConnectionURIKey: connectionURI
             existingSecretEncryptionKeyKey: encryptionKey
-          ingress:
-            enabled: true
-            className: nginx
-            hosts:
-              - metabase.wg.asic.li
-            annotations:
-              cert-manager.io/cluster-issuer: letsencrypt-prod
-              nginx.ingress.kubernetes.io/whitelist-source-range: 10.234.0.0/24
-            tls:
-              - secretName: metabase-tls
-                hosts:
-                  - metabase.wg.asic.li
 
 
   destination:

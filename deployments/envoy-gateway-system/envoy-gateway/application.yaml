@@ -1,0 +1,34 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: envoy-gateway
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/envoy-gateway-system/envoy-gateway
+    targetRevision: HEAD
+    helm:
+      releaseName: envoy-gateway
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: envoy-gateway-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      # Gateway API CRDs are too large for client-side apply
+      - ServerSideApply=true
+      # Gateway/EnvoyProxy/SecurityPolicy are created in the same sync as their CRDs
+      - SkipDryRunOnMissingResource=true
+
+  info:
+  - name: releasenotes
+    value: https://github.com/envoyproxy/gateway/releases
+  - name: docs
+    value: https://gateway.envoyproxy.io/docs

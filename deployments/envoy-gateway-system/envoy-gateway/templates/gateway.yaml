@@ -1,0 +1,52 @@
+---
+# Pinned ClusterIP in the static band: DNS (*.wg.asic.li), client allowedIPs and wg-guard all point at it.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: wg
+  namespace: envoy-gateway-system
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: ClusterIP
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              clusterIP: 10.43.0.234
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: envoy-wg
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  parametersRef:
+    group: gateway.envoyproxy.io
+    kind: EnvoyProxy
+    name: wg
+    namespace: envoy-gateway-system
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: wg
+  namespace: envoy-gateway-system
+spec:
+  gatewayClassName: envoy-wg
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.wg.asic.li"
+      tls:
+        certificateRefs:
+          - name: wg-wildcard-tls
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              wg-gateway: "true"

@@ -5,3 +5,4 @@ metadata:
   name: tooling
   labels:
     vector.dev/exclude: "true"
+    wg-gateway: "true"
