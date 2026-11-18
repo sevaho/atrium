@@ -1,0 +1,17 @@
+---
+# Only Envoy (WireGuard gateway) may reach theonepager.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: theonepager-from-envoy
+  namespace: tooling
+spec:
+  podSelector:
+    matchLabels:
+      app: theonepager
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system
