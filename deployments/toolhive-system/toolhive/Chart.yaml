@@ -1,0 +1,15 @@
+---
+apiVersion: v2
+appVersion: "1.0"
+description: ToolHive operator and CRDs, runs MCP servers in the mcp namespace
+name: toolhive
+version: "1.0"
+dependencies:
+  # CRDs and operator share one release so the CRDs' release-namespace
+  # annotation always matches (the chart rejects a mismatch on upgrade).
+  - name: toolhive-operator-crds
+    version: "0.67.0"
+    repository: oci://ghcr.io/stacklok/toolhive
+  - name: toolhive-operator
+    version: "0.67.0"
+    repository: oci://ghcr.io/stacklok/toolhive

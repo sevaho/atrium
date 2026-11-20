@@ -1,0 +1,40 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: toolhive
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/toolhive-system/toolhive
+    targetRevision: HEAD
+    helm:
+      releaseName: toolhive
+      valuesObject:
+        toolhive-operator:
+          operator:
+            # Only manage MCP servers in the mcp namespace, no cluster-wide access.
+            rbac:
+              scope: namespace
+              allowedNamespaces: [mcp]
+            features:
+              storageVersionMigrator: false
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: toolhive-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      # CRDs are too large for client-side apply
+      - ServerSideApply=true
+  info:
+  - name: releasenotes
+    value: https://github.com/stacklok/toolhive/releases
+  - name: docs
+    value: https://docs.stacklok.com/toolhive/guides-k8s/
