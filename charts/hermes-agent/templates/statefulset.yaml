@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.name }}
+spec:
+  # Hermes must never run two gateways on the same data directory.
+  replicas: 1
+  serviceName: {{ .Values.name }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+      annotations:
+        # Restart when config or SOUL.md change in git.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 10000
+      initContainers:
+        # Copy config from git and hand the MCP tokens to Hermes via .env, which
+        # Hermes uses for ${VAR} expansion in config.yaml. The tokens are only
+        # mounted here, not in the hermes container.
+        - name: seed
+          image: busybox:1.37.0
+          securityContext:
+            runAsUser: 10000
+            runAsGroup: 10000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              cp /seed/config.yaml /seed/SOUL.md /opt/data/
+              umask 077
+              : > /opt/data/.env
+              {{- range .Values.mcpServers }}
+              printf 'MCP_{{ . | upper | replace "-" "_" }}_TOKEN=%s\n' "$(cat /var/run/secrets/mcp/{{ . }}-token)" >> /opt/data/.env
+              {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+            - name: seed
+              mountPath: /seed
+            {{- if .Values.mcpServers }}
+            - name: mcp-tokens
+              mountPath: /var/run/secrets/mcp
+              readOnly: true
+            {{- end }}
+      containers:
+        - name: hermes
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          # args, not command: overriding the entrypoint breaks s6-overlay init.
+          args: [gateway, run]
+          envFrom:
+            - secretRef:
+                name: {{ .Values.name }}-data-secret
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: seed
+          configMap:
+            name: {{ .Values.name }}-config
+        {{- with .Values.mcpServers }}
+        - name: mcp-tokens
+          projected:
+            sources:
+              {{- range . }}
+              - serviceAccountToken:
+                  path: {{ . }}-token
+                  # One audience per MCP server, so a token can't be replayed on another.
+                  audience: mcp-{{ . }}
+                  # Written into config once per start, so it must outlive the pod.
+                  # Replaced by a short-lived token sidecar later (PLAN.md phase 3).
+                  expirationSeconds: 31536000
+              {{- end }}
+        {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: {{ .Values.storage }}

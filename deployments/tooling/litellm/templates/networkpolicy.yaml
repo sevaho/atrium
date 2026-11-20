@@ -1,6 +1,5 @@
 ---
-# Only Envoy (WireGuard gateway) may reach litellm. Add in-cluster callers
-# (e.g. agents) here when they need it.
+# Only Envoy (WireGuard gateway) and the agents may reach litellm.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -17,3 +16,6 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: envoy-gateway-system
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: agents

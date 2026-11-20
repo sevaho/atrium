@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+appVersion: v0.23.3
+description: Hermes agent, Telegram chat layer over LiteLLM and ToolHive MCP servers
+name: hermes-agent
+type: application
+version: 0.0.0

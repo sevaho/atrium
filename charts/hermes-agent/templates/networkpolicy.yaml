@@ -1,0 +1,45 @@
+---
+# Egress only to DNS, LiteLLM, its own MCP servers and HTTPS on the internet (Telegram).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.name }}
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - { protocol: UDP, port: 53 }
+        - { protocol: TCP, port: 53 }
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: tooling
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: litellm
+      ports:
+        - { protocol: TCP, port: 4000 }
+    {{- range .Values.mcpServers }}
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: mcp
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: {{ . }}
+      ports:
+        - { protocol: TCP, port: 8080 }
+    {{- end }}
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16]
+      ports:
+        - { protocol: TCP, port: 443 }

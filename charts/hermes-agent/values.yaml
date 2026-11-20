@@ -1,0 +1,35 @@
+# Agent name: ServiceAccount, StatefulSet and the identity the MCP servers'
+# MCPOIDCConfig accepts. The agent's own chart must provide a Secret named
+# <name>-data-secret (see deployments/agents/<name>/templates/data-secret.yaml).
+name: ""
+
+image:
+  repository: nousresearch/hermes-agent
+  tag: v0.23.3
+
+model: mistral-large
+litellmUrl: http://litellm.tooling.svc.cluster.local:4000/v1
+
+# MCP servers this agent may call, by MCPServer name in the mcp namespace.
+# Each needs its MCPOIDCConfig to accept this agent's service account.
+mcpServers: []
+
+# Chat layer only: no shell, files, browser or code execution in the pod.
+disabledToolsets:
+  - terminal
+  - file
+  - browser
+  - code_execution
+  - web
+  - image_gen
+
+soul: ""
+
+storage: 5Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    memory: 2Gi

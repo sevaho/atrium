@@ -1,0 +1,31 @@
+---
+# Seeded onto the PVC at every start: git is the source of truth, changes made
+# from Telegram (e.g. /personality) don't survive a restart.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-config
+data:
+  config.yaml: |
+    model:
+      provider: custom
+      default: {{ .Values.model }}
+      base_url: {{ .Values.litellmUrl }}
+      api_key: ${LITELLM_API_KEY}
+
+    agent:
+      disabled_toolsets:
+        {{- toYaml .Values.disabledToolsets | nindent 8 }}
+    {{- with .Values.mcpServers }}
+
+    mcp_servers:
+      {{- range . }}
+      {{ . }}:
+        url: http://mcp-{{ . }}-proxy.mcp.svc.cluster.local:8080/mcp
+        headers:
+          Authorization: "Bearer ${MCP_{{ . | upper | replace "-" "_" }}_TOKEN}"
+      {{- end }}
+    {{- end }}
+
+  SOUL.md: |
+    {{- required "soul is required" .Values.soul | nindent 4 }}
