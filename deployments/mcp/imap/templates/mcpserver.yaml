@@ -26,6 +26,9 @@ spec:
           permit(
             principal,
             action == Action::"call_tool",
+            resource
+          )
+          when {
             resource in [
               Tool::"list_available_accounts",
               Tool::"list_mailboxes",
@@ -33,7 +36,7 @@ spec:
               Tool::"get_emails_content",
               Tool::"list_email_tags"
             ]
-          );
+          };
 
   env:
     - name: MCP_HOST
