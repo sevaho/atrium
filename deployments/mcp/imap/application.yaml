@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mcp-imap
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/mcp/imap
+    targetRevision: HEAD
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: mcp
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      # MCPServer/MCPOIDCConfig CRDs come from the toolhive app
+      - SkipDryRunOnMissingResource=true
+  info:
+  - name: server
+    value: https://github.com/ai-zerolab/mcp-email-server
+  - name: tools
+    value: https://mcp-email-server.wh1isper.top/tools/

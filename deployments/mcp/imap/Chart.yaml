@@ -1,0 +1,6 @@
+---
+apiVersion: v2
+appVersion: "1.0"
+description: Read-only IMAP MCP server (agents@agents.asic.li mailbox), run by ToolHive
+name: imap
+version: "1.0"

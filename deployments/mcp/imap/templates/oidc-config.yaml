@@ -1,0 +1,17 @@
+---
+# Callers authenticate with a Kubernetes service account token. Only the
+# hermes service account in the agents namespace is accepted.
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPOIDCConfig
+metadata:
+  name: imap-callers
+  namespace: mcp
+spec:
+  type: kubernetesServiceAccount
+  kubernetesServiceAccount:
+    serviceAccount: hermes
+    namespace: agents
+    # RKE2's service account issuer, not the default https://kubernetes.default.svc
+    issuer: https://kubernetes.default.svc.cluster.local
+    # Discovery points the JWKS at the node's public IP; stay in-cluster instead.
+    jwksUrl: https://kubernetes.default.svc/openid/v1/jwks
