@@ -1,0 +1,19 @@
+---
+# Only Envoy (WireGuard gateway) may reach litellm. Add in-cluster callers
+# (e.g. agents) here when they need it.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: litellm-from-envoy
+  namespace: tooling
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: litellm
+      app.kubernetes.io/instance: litellm
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system
