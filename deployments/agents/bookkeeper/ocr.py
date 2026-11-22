@@ -20,11 +20,13 @@ server = MCPServer("ocr")
 
 @server.tool()
 def ocr_file(path: str) -> str:
-    """Text of any file the user sent over Telegram, as markdown, read with Mistral OCR."""
+    """Text of a PDF or image the user sent over Telegram, as markdown, read with Mistral OCR."""
     file = Path(path).resolve()
     if not any(file.is_relative_to(allowed) for allowed in ALLOWED):
         raise ToolError(f"only files under {', '.join(map(str, ALLOWED))} can be read")
     mime = mimetypes.guess_type(file.name)[0] or "application/octet-stream"
+    if mime != "application/pdf" and not mime.startswith("image/"):
+        raise ToolError(f"{file.name} is not a PDF or image, read it with read_file")
     data_url = f"data:{mime};base64,{base64.b64encode(file.read_bytes()).decode()}"
     kind = "image_url" if mime.startswith("image/") else "document_url"
     request = urllib.request.Request(
