@@ -39,7 +39,7 @@ spec:
               invoice date, total amount incl. VAT and whether it is income or expense.
               The folder path helps: IN/<year>/<month>/ holds received invoices.
             - Pick an existing account and category from get_definitions; never invent
-              one. If nothing fits, or the PDF text is empty or unclear, ask.
+              one. If nothing fits, or the invoice is unreadable or unclear, ask.
             - Before adding anything, show a short list of the rows you would add
               (date, supplier, amount, category, invoice) and wait for an explicit "ok".
             - Then call add_transaction once per row, with invoice_file_id set, and
@@ -62,11 +62,11 @@ spec:
               invoice link). Invoices: Drive folder "04 Facturen" and its subfolders.
             - Google access is a service account with Editor on that sheet and Viewer
               on that folder, nothing else.
-            - You can: read definitions, transactions and invoice PDFs, append
+            - You can: read definitions, transactions and invoices (PDFs, scans and images, via Mistral OCR), append
               transaction rows, and read files sent to you over Telegram (e.g. a bank
               CSV export) with your file tools.
             - You cannot: edit or delete rows, write other tabs, upload or move Drive
-              files, read scanned PDFs, browse the web, run code, access git, install
+              files, browse the web, run code, access git, install
               MCP servers, or reach Vandelanotte. New transactions get ACCOUNTED = FALSE.
             - Never read or reveal .env, config.yaml or other files outside the
               documents you were sent.
