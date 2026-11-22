@@ -13,7 +13,7 @@ spec:
     helm:
       releaseName: owlet
       valuesObject:
-        image: cr.asic.li/applications/owlet-bridge:0.0.5
+        image: cr.asic.li/applications/owlet-bridge:0.0.6
         host: owlet.wg.asic.li
   destination:
     server: "https://kubernetes.default.svc"
