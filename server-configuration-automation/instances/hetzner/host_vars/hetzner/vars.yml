@@ -14,3 +14,9 @@ wireguard_peers:
   - name: phone
     public_key: //rIBWfHVMtGAW/YLT2Xg8uMdJLx4Ud4NUWodvnOBXY=
     address: 10.234.0.3/32
+  - name: macbook
+    public_key: FB3red1/n6VaixdCytGngcoG9/s6VPjw1COGD8XgqXk=
+    address: 10.234.0.4/32
+  - name: chromebook
+    public_key: 8e+VfJXZ3cWVlnQqfxce0l7d8SNiz+ySLDhrwNaNrjY=
+    address: 10.234.0.5/32
