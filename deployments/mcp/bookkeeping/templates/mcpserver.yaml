@@ -11,7 +11,7 @@ spec:
   args:
     - sh
     - -c
-    - pip install -q --no-cache-dir --target /tmp/deps mcp==1.20.0 google-api-python-client==2.179.0 pypdf==6.1.1 && PYTHONPATH=/tmp/deps exec python /app/server.py
+    - pip install -q --no-cache-dir --upgrade --target /tmp/deps mcp==1.20.0 pydantic==2.11.10 google-api-python-client==2.179.0 pypdf==6.1.1 && PYTHONPATH=/tmp/deps exec python /app/server.py
   mcpPort: 8000
   proxyPort: 8080
 
