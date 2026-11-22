@@ -25,6 +25,9 @@ data:
       candidates:
         # The WireGuard gateway IP, see the owlet-webrtc service
         - 10.234.0.10:8555
+    # The real camera name comes from Vault; the page and route only know this neutral alias
+    streams:
+      camera: rtsp://127.0.0.1:8554/${OWLET_CONFIG_CAMERA_NAME}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -71,6 +74,21 @@ spec:
           env:
             - name: OWLET_SECRETS_DIR
               value: /run/secrets/owlet
+            - name: OWLET_CONFIG_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: owlet-data-secret
+                  key: region
+            - name: OWLET_CONFIG_CAMERA_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: owlet-data-secret
+                  key: camera-dsn
+            - name: OWLET_CONFIG_CAMERA_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: owlet-data-secret
+                  key: camera-name
             - name: GO2RTC_EXTRA_CONFIG
               value: /etc/owlet/go2rtc.yaml
             - name: OWLET_VITALS_INTERVAL

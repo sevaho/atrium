@@ -31,14 +31,14 @@ spec:
         - path:
             type: Exact
             value: /video-rtc.js
-        # Only this camera's stream; go2rtc would otherwise serve any src (overlay, spares, …)
+        # Only the camera alias; go2rtc would otherwise serve any src (overlay, spares, …)
         - path:
             type: Exact
             value: /api/ws
           queryParams:
             - type: Exact
               name: src
-              value: {{ .Values.camera }}
+              value: camera
       backendRefs:
         - name: owlet
           port: 1984

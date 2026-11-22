@@ -13,9 +13,8 @@ spec:
     helm:
       releaseName: owlet
       valuesObject:
-        image: cr.asic.li/applications/owlet-bridge:0.0.3
+        image: cr.asic.li/applications/owlet-bridge:0.0.5
         host: owlet.wg.asic.li
-        camera: hector
   destination:
     server: "https://kubernetes.default.svc"
     namespace: applications
