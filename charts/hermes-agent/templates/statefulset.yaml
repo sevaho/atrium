@@ -3,10 +3,10 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Values.name }}
-  {{- if .Values.localMcpServers }}
+  {{- if .Values.secretFiles }}
   annotations:
-    # The scripts come from the agent's own chart, so the checksum below can't see them.
-    configmap.reloader.stakater.com/reload: {{ .Values.name }}-local-mcp
+    # Mounted secret files only refresh in place; restart so a new key is picked up at once.
+    secret.reloader.stakater.com/reload: {{ .Values.name }}-data-secret
   {{- end }}
 spec:
   # Hermes must never run two gateways on the same data directory.
@@ -72,9 +72,9 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /opt/data
-            {{- if .Values.localMcpServers }}
-            - name: local-mcp
-              mountPath: /opt/local-mcp
+            {{- if .Values.secretFiles }}
+            - name: secret-files
+              mountPath: /opt/secrets
               readOnly: true
             {{- end }}
           resources:
@@ -83,10 +83,14 @@ spec:
         - name: seed
           configMap:
             name: {{ .Values.name }}-config
-        {{- if .Values.localMcpServers }}
-        - name: local-mcp
-          configMap:
-            name: {{ .Values.name }}-local-mcp
+        {{- with .Values.secretFiles }}
+        - name: secret-files
+          secret:
+            secretName: {{ $.Values.name }}-data-secret
+            items:
+              {{- range . }}
+              - { key: {{ . }}, path: {{ . }} }
+              {{- end }}
         {{- end }}
         {{- with .Values.mcpServers }}
         - name: mcp-tokens

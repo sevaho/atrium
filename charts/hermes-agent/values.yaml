@@ -16,10 +16,9 @@ reasoningEffort: ""
 # Each needs its MCPOIDCConfig to accept this agent's service account.
 mcpServers: []
 
-# Stdio MCP servers run inside the agent pod, by name. The agent's own chart must
-# provide a ConfigMap <name>-local-mcp with a <server>.py per entry. They get the
-# agent's LiteLLM key, nothing else.
-localMcpServers: []
+# Keys of <name>-data-secret mounted as files under /opt/secrets. execute_code
+# scrubs secret env vars, so code the agent writes can only read secrets this way.
+secretFiles: []
 
 # Chat layer only: no shell, files, browser or code execution in the pod.
 disabledToolsets:
