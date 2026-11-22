@@ -1,0 +1,156 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: owlet-config
+  namespace: applications
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+# Merged on top of the go2rtc config the bridge generates
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: owlet-go2rtc
+  namespace: applications
+data:
+  go2rtc.yaml: |
+    api:
+      static_dir: /app/www
+    webrtc:
+      candidates:
+        # The WireGuard gateway IP, see the owlet-webrtc service
+        - 10.234.0.10:8555
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: owlet
+  namespace: applications
+spec:
+  replicas: 1
+  # The camera allows one session, so never run two pods at once
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: owlet
+  template:
+    metadata:
+      labels:
+        app: owlet
+    spec:
+      # The bridge never talks to the Kubernetes API
+      automountServiceAccountToken: false
+      securityContext:
+        # The app runs as uid/gid 1000 (system): group-readable secrets and a writable volume
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: owlet
+          image: {{ .Values.image }}
+          # The termux-based image starts as root and drops to uid 1000 itself, which is all
+          # SETUID/SETGID/DAC_OVERRIDE are needed for (tested); runAsNonRoot is not possible.
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - SETUID
+                - SETGID
+                - DAC_OVERRIDE
+          env:
+            - name: OWLET_SECRETS_DIR
+              value: /run/secrets/owlet
+            - name: GO2RTC_EXTRA_CONFIG
+              value: /etc/owlet/go2rtc.yaml
+            - name: OWLET_VITALS_INTERVAL
+              value: "5"
+            - name: OWLET_SESSION_CHECK
+              value: "1"
+            # Opening the camera in the Owlet app steals the session; in-place stream restarts then
+            # leave stale sessions behind, so go straight to a clean container restart
+            - name: OWLET_WATCHDOG_PRODUCER_RESTARTS
+              value: "0"
+            - name: OWLET_WATCHDOG_COOLDOWN
+              value: "120"
+            - name: OWLET_WATCHDOG_COOLDOWN_MAX
+              value: "600"
+          ports:
+            - name: go2rtc
+              containerPort: 1984
+            - name: panel
+              containerPort: 8088
+            - name: webrtc-udp
+              containerPort: 8555
+              protocol: UDP
+            - name: webrtc-tcp
+              containerPort: 8555
+              protocol: TCP
+          # Upstream's recovery can wedge with stale camera sessions; restarting the pod clears it
+          livenessProbe:
+            exec:
+              command:
+                - python3
+                - /app/watchdog.py
+                - --check
+            initialDelaySeconds: 90
+            periodSeconds: 60
+            timeoutSeconds: 25
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: libs
+              mountPath: /app/libs
+            - name: go2rtc
+              mountPath: /etc/owlet
+            - name: secrets
+              mountPath: /run/secrets/owlet
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            - name: termux-tmp
+              mountPath: /data/data/com.termux/files/usr/tmp
+            - name: termux-home
+              mountPath: /data/data/com.termux/files/home
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: owlet-config
+        # Re-extracted from the .apkm in /config on every start
+        - name: libs
+          emptyDir:
+        - name: go2rtc
+          configMap:
+            name: owlet-go2rtc
+        # Kubernetes keeps secret volumes in memory (tmpfs)
+        - name: secrets
+          secret:
+            secretName: owlet-data-secret
+            defaultMode: 0440
+        # Writable scratch space for the read-only root filesystem (FIFOs, temp files)
+        - name: tmp
+          emptyDir:
+            medium: Memory
+        - name: termux-tmp
+          emptyDir:
+            medium: Memory
+        - name: termux-home
+          emptyDir:
+            medium: Memory

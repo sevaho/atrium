@@ -1,0 +1,28 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: owlet
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sevaho/atrium
+    path: deployments/applications/owlet
+    targetRevision: HEAD
+    helm:
+      releaseName: owlet
+      valuesObject:
+        image: cr.asic.li/applications/owlet-bridge:0.0.3
+        host: owlet.wg.asic.li
+        camera: hector
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: applications
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  info:
+  - name: source
+    value: https://github.com/btoth525/Owlet-To-Rtsp

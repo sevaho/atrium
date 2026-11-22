@@ -1,0 +1,51 @@
+---
+# In: only Envoy may reach the page/vitals; WebRTC media only on 8555. The panel (8088 holds the
+# camera config) and the rest of go2rtc's API stay unreachable for other pods; use port-forward.
+# Out: DNS and the public internet (Owlet cloud, camera P2P), nothing in the cluster or private
+# ranges, and not Hetzner's metadata service.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: owlet
+  namespace: applications
+spec:
+  podSelector:
+    matchLabels:
+      app: owlet
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system
+      ports:
+        - protocol: TCP
+          port: 1984
+        - protocol: TCP
+          port: 8088
+    - ports:
+        - protocol: UDP
+          port: 8555
+        - protocol: TCP
+          port: 8555
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 100.64.0.0/10
+              - 169.254.0.0/16

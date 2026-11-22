@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: owlet
+  namespace: applications
+spec:
+  selector:
+    app: owlet
+  ports:
+    - name: go2rtc
+      port: 1984
+      targetPort: go2rtc
+    - name: panel
+      port: 8088
+      targetPort: panel
+---
+# WebRTC media can't go through the HTTP gateway, so it gets the gateway's WireGuard IP
+# directly; wg0 lets peers reach any port on that IP.
+apiVersion: v1
+kind: Service
+metadata:
+  name: owlet-webrtc
+  namespace: applications
+spec:
+  selector:
+    app: owlet
+  externalIPs:
+    - 10.234.0.10
+  ports:
+    - name: webrtc-udp
+      port: 8555
+      targetPort: webrtc-udp
+      protocol: UDP
+    - name: webrtc-tcp
+      port: 8555
+      targetPort: webrtc-tcp
+      protocol: TCP
