@@ -5,3 +5,4 @@ metadata:
   name: observability
   labels:
     vector.dev/exclude: "true"
+    wg-gateway: "true"
