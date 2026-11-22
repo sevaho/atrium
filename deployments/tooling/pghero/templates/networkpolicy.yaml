@@ -1,0 +1,17 @@
+---
+# Only Envoy (WireGuard gateway) may reach PgHero.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pghero-from-envoy
+  namespace: tooling
+spec:
+  podSelector:
+    matchLabels:
+      app: pghero
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system

@@ -113,16 +113,6 @@ spec:
                 name: headlamp
                 port:
                   number: 80
-    - host: ${PGHERO_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: pghero
-                port:
-                  number: 80
     - host: ${VAULT_HOST}
       http:
         paths:

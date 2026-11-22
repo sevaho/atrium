@@ -7,36 +7,37 @@ metadata:
 spec:
   project: default
   source:
-    path: charts/application
+    path: deployments/tooling/pghero
     repoURL: 'https://github.com/sevaho/atrium'
     targetRevision: HEAD
     helm:
       releaseName: pghero
       valuesObject:
-        nameOverride: pghero
+        application:
+          nameOverride: pghero
 
-        replicaCount: 1
+          replicaCount: 1
 
-        image:
-          repository: cr.asic.li/dockercache/ankane/pghero
-          tag: latest
+          image:
+            repository: cr.asic.li/dockercache/ankane/pghero
+            tag: latest
 
-        imagePullSecrets: [regcred]
+          imagePullSecrets: [regcred]
 
-        resources:
-          limits:
-            memory: 500Mi
-          requests:
-            memory: 100Mi
+          resources:
+            limits:
+              memory: 500Mi
+            requests:
+              memory: 100Mi
 
-        service:
-          type: ClusterIP
-          port: 80
-          targetPort: 8080
+          service:
+            type: ClusterIP
+            port: 80
+            targetPort: 8080
 
-        envFrom:
-          - secretRef:
-              name: pghero-data-secret
+          envFrom:
+            - secretRef:
+                name: pghero-data-secret
 
   destination:
     server: "https://kubernetes.default.svc"
@@ -45,95 +46,3 @@ spec:
     automated:
       prune: false
       selfHeal: false
----
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: pghero-data-secret
-  namespace: tooling
-spec:
-  refreshInterval: 1h
-  secretStoreRef:
-    name: vault-secret-store
-    kind: ClusterSecretStore
-  target:
-    name: pghero-data-secret
-  data:
-  - secretKey: DATABASE_URL
-    remoteRef:
-      key: tooling/pghero
-      property: DATABASE_URL
----
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: capture-historical-query-stats
-  namespace: tooling
-spec:
-  schedule: "*/5 * * * *" # Every 5 minutes
-  concurrencyPolicy: Forbid
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-          - name: capture-query-stats
-            image: cr.asic.li/dockercache/ankane/pghero:latest
-            imagePullPolicy: IfNotPresent
-            command:
-            - bin/rake
-            - pghero:capture_query_stats
-
-            envFrom:
-              - secretRef:
-                  name: pghero-data-secret
-          - name: cleanup-query-stats
-            image: cr.asic.li/dockercache/ankane/pghero:latest
-            imagePullPolicy: IfNotPresent
-            command:
-            - bin/rake
-            - pghero:clean_query_stats
-            - KEEP_DAYS=14
-
-            envFrom:
-              - secretRef:
-                  name: pghero-data-secret
-          restartPolicy: OnFailure
-
----
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: capture-historical-space-stats
-  namespace: tooling
-spec:
-  schedule: "0 1 * * *"  # Daily at 1 AM
-  concurrencyPolicy: Forbid
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-          - name: capture-space-stats
-            image: cr.asic.li/dockercache/ankane/pghero:latest
-            imagePullPolicy: IfNotPresent
-            command:
-            - bin/rake
-            - pghero:capture_space_stats
-
-            envFrom:
-              - secretRef:
-                  name: pghero-data-secret
-
-          - name: cleanup-space-stats
-            image: cr.asic.li/dockercache/ankane/pghero:latest
-            imagePullPolicy: IfNotPresent
-            command:
-            - bin/rake
-            - pghero:clean_space_stats
-            - KEEP_DAYS=90
-
-            envFrom:
-              - secretRef:
-                  name: pghero-data-secret
-          restartPolicy: OnFailure
