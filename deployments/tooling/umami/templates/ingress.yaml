@@ -13,10 +13,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - ${UMAMI_HOST}
+        - umami.asic.li
       secretName: umami-ingress
   rules:
-    - host: ${UMAMI_HOST}
+    - host: umami.asic.li
       http:
         paths:
           - pathType: Exact
