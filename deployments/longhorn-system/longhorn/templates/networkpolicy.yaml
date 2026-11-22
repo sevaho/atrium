@@ -1,0 +1,18 @@
+---
+# The UI has no login and can delete volumes: only Envoy (WireGuard gateway) may reach it.
+# Scoped to the UI pods only; the manager/CSI pods talk to each other and must stay open.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: longhorn-ui-from-envoy
+  namespace: longhorn-system
+spec:
+  podSelector:
+    matchLabels:
+      app: longhorn-ui
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system

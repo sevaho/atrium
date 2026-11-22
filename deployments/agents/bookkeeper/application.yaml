@@ -16,6 +16,8 @@ spec:
         agent:
           name: bookkeeper
           model: mistral-large
+          # Default thinking took 60-80s per call; scripts do the heavy lifting.
+          reasoningEffort: low
           mcpServers:
             - bookkeeping
           # ocr.py, runs in the pod to OCR files sent over Telegram.

@@ -14,18 +14,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: longhorn-svc-bridge
-  namespace: tooling
-spec:
-  type: ExternalName
-  externalName: longhorn-frontend.longhorn-system.svc.cluster.local
-  ports:
-    - port: 80
-      targetPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
   name: firefly-svc-bridge
   namespace: tooling
 spec:
@@ -34,30 +22,6 @@ spec:
   ports:
     - port: 80
       targetPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wealthfolio-svc-bridge
-  namespace: tooling
-spec:
-  type: ExternalName
-  externalName: wealthfolio.applications.svc.cluster.local
-  ports:
-    - port: 80
-      targetPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: vault-svc-bridge
-  namespace: tooling
-spec:
-  type: ExternalName
-  externalName: vault.tooling.svc.cluster.local
-  ports:
-    - port: 80
-      targetPort: 8200
 ---
 apiVersion: v1
 kind: Service
@@ -103,26 +67,6 @@ spec:
         - "${OAUTH2_PROXY_INTERNAL_HOST}"
       secretName: oauth2-proxy-internal-ingress
   rules:
-    - host: ${HEADLAMP_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: headlamp
-                port:
-                  number: 80
-    - host: ${VAULT_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: vault-svc-bridge
-                port:
-                  number: 80
     - host: ${HARBOR_INTERNAL_HOST}
       http:
         paths:
@@ -171,26 +115,6 @@ spec:
             backend:
               service:
                 name: firefly-svc-bridge
-                port:
-                  number: 80
-    - host: ${WEALTHFOLIO_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: wealthfolio-svc-bridge
-                port:
-                  number: 80
-    - host: ${LONGHORN_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: longhorn-svc-bridge
                 port:
                   number: 80
     - host: ${ARGO_WORKFLOWS_HOST}

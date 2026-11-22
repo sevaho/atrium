@@ -1,0 +1,21 @@
+---
+# Envoy (WireGuard gateway) for the UI, external-secrets for syncing secrets.
+# Anything else that needs Vault has to be added here, or it is silently cut off.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: vault-from-envoy-and-eso
+  namespace: tooling
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vault
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: external-secrets

@@ -14,6 +14,9 @@ data:
       api_key: ${LITELLM_API_KEY}
 
     agent:
+      {{- with .Values.reasoningEffort }}
+      reasoning_effort: {{ . }}
+      {{- end }}
       disabled_toolsets:
         {{- toYaml .Values.disabledToolsets | nindent 8 }}
     {{- if or .Values.mcpServers .Values.localMcpServers }}

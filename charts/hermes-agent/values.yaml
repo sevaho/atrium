@@ -9,6 +9,8 @@ image:
 
 model: mistral-large
 litellmUrl: http://litellm.tooling.svc.cluster.local:4000/v1
+# none | minimal | low | medium | high, empty = Hermes default.
+reasoningEffort: ""
 
 # MCP servers this agent may call, by MCPServer name in the mcp namespace.
 # Each needs its MCPOIDCConfig to accept this agent's service account.

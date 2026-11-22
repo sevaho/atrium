@@ -5,3 +5,4 @@ metadata:
   name: longhorn-system
   labels:
     vector.dev/exclude: "true"
+    wg-gateway: "true"
