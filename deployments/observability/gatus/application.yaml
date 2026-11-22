@@ -19,6 +19,18 @@ spec:
           envFrom:
           - secretRef:
               name: gatus-data-secret
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - gatus.wg.asic.li
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/whitelist-source-range: 10.234.0.0/24
+            tls:
+              - secretName: gatus-tls
+                hosts:
+                  - gatus.wg.asic.li
           config:
             ui:
               default-sort-by: group

@@ -50,30 +50,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gatus-svc-bridge
-  namespace: tooling
-spec:
-  type: ExternalName
-  externalName: gatus.observability.svc.cluster.local
-  ports:
-    - port: 80
-      targetPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: metabase-svc-bridge
-  namespace: tooling
-spec:
-  type: ExternalName
-  externalName: metabase.tooling.svc.cluster.local
-  ports:
-    - port: 80
-      targetPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
   name: vault-svc-bridge
   namespace: tooling
 spec:
@@ -139,16 +115,6 @@ spec:
         - "${OAUTH2_PROXY_INTERNAL_HOST}"
       secretName: oauth2-proxy-internal-ingress
   rules:
-    - host: ${GATUS_HOST}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: gatus-svc-bridge
-                port:
-                  number: 80
     - host: ${HEADLAMP_HOST}
       http:
         paths:
