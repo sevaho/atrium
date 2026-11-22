@@ -1,0 +1,9 @@
+---
+# Local stdio MCP servers for the agent chart (localMcpServers), one <server>.py each.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bookkeeper-local-mcp
+data:
+  ocr.py: |
+    {{- .Files.Get "ocr.py" | nindent 4 }}

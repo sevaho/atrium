@@ -16,14 +16,22 @@ data:
     agent:
       disabled_toolsets:
         {{- toYaml .Values.disabledToolsets | nindent 8 }}
-    {{- with .Values.mcpServers }}
+    {{- if or .Values.mcpServers .Values.localMcpServers }}
 
     mcp_servers:
-      {{- range . }}
+      {{- range .Values.mcpServers }}
       {{ . }}:
         url: http://mcp-{{ . }}-proxy.mcp.svc.cluster.local:8080/mcp
         headers:
           Authorization: "Bearer ${MCP_{{ . | upper | replace "-" "_" }}_TOKEN}"
+      {{- end }}
+      {{- range .Values.localMcpServers }}
+      {{ . }}:
+        command: /opt/hermes/.venv/bin/python
+        args: [/opt/local-mcp/{{ . }}.py]
+        env:
+          LITELLM_URL: {{ $.Values.litellmUrl }}
+          LITELLM_API_KEY: ${LITELLM_API_KEY}
       {{- end }}
     {{- end }}
 

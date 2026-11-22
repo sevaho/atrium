@@ -3,6 +3,11 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Values.name }}
+  {{- if .Values.localMcpServers }}
+  annotations:
+    # The scripts come from the agent's own chart, so the checksum below can't see them.
+    configmap.reloader.stakater.com/reload: {{ .Values.name }}-local-mcp
+  {{- end }}
 spec:
   # Hermes must never run two gateways on the same data directory.
   replicas: 1
@@ -67,12 +72,22 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /opt/data
+            {{- if .Values.localMcpServers }}
+            - name: local-mcp
+              mountPath: /opt/local-mcp
+              readOnly: true
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: seed
           configMap:
             name: {{ .Values.name }}-config
+        {{- if .Values.localMcpServers }}
+        - name: local-mcp
+          configMap:
+            name: {{ .Values.name }}-local-mcp
+        {{- end }}
         {{- with .Values.mcpServers }}
         - name: mcp-tokens
           projected:
