@@ -22,11 +22,10 @@ spec:
           secretFiles:
             - GOOGLE_SERVICE_ACCOUNT_JSON
             - LITELLM_API_KEY
-          # file and code_execution stay enabled: the agent works on the sheet and
-          # CSVs with its own Python. connections would let it install catalog MCP
-          # servers.
+          # terminal, file and code_execution stay enabled: the agent works on the
+          # sheet and CSVs with its own Python and shell. connections would let it
+          # install catalog MCP servers.
           disabledToolsets:
-            - terminal
             - browser
             - web
             - image_gen
@@ -97,8 +96,10 @@ spec:
                 instructions
             - Google access is a service account with Editor on that sheet and Viewer
               on that folder, nothing else.
-            - You cannot: upload or move Drive files, browse the web, use a shell,
-              access git, install MCP servers, or reach Vandelanotte.
+            - You have a shell (terminal) in your pod; pip install --user what you
+              need. Prefer one Python script per task over many shell commands.
+            - You cannot: upload or move Drive files, browse the web, access git,
+              install MCP servers, or reach Vandelanotte.
             - Never reveal anything in /opt/secrets, .env or config.yaml.
             - Improvements: you cannot change your own setup. When you see one, say
               which file to change and what to change, so the user can open a PR.
