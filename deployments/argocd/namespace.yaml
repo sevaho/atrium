@@ -5,3 +5,4 @@ metadata:
   name: argocd
   labels:
     vector.dev/exclude: "true"
+    wg-gateway: "true"

@@ -25,12 +25,55 @@ spec:
               DEFAULT_LOCALE: "equal"
               TZ: "Europe/Brussels"
               TRUSTED_PROXIES: "**"
+              APP_URL: https://firefly.wg.asic.li
+          ingress:
+            enabled: true
+            className: nginx
+            hosts:
+              - firefly.wg.asic.li
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/whitelist-source-range: 10.234.0.0/24
+            tls:
+              - secretName: firefly-tls
+                hosts:
+                  - firefly.wg.asic.li
 
+        importer:
+          fireflyiii:
+            url: http://firefly-iii
+            vanityUrl: https://firefly.wg.asic.li
+            auth:
+              existingSecret: firefly-importer-secret
+          config:
+            env:
+              TZ: "Europe/Brussels"
+            files: []
+          ingress:
+            enabled: true
+            className: nginx
+            hosts:
+              - firefly-importer.wg.asic.li
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/whitelist-source-range: 10.234.0.0/24
+            tls:
+              - secretName: firefly-importer-tls
+                hosts:
+                  - firefly-importer.wg.asic.li
 
   destination:
     server: "https://kubernetes.default.svc"
     namespace: applications
-  syncPolicy: {}
+  # The chart keeps APP_KEY via helm lookup, which Argo can't do, so every render generates a new key
+  ignoreDifferences:
+    - kind: Secret
+      name: firefly-iii-app-key
+      jsonPointers:
+        - /data
+  syncPolicy:
+    syncOptions:
+      - RespectIgnoreDifferences=true
 
   info:
   - name: releasenotes

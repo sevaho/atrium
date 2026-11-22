@@ -8,3 +8,6 @@ dependencies:
   - name: firefly-iii
     version: "*"
     repository: https://firefly-iii.github.io/kubernetes/
+  - name: importer
+    version: "1.6.1"
+    repository: https://firefly-iii.github.io/kubernetes/
