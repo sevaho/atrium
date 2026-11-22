@@ -1,0 +1,17 @@
+---
+# Only Envoy (WireGuard gateway) may reach Wealthfolio.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: wealthfolio-from-envoy
+  namespace: applications
+spec:
+  podSelector:
+    matchLabels:
+      app: wealthfolio
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system

@@ -24,7 +24,7 @@ spec:
           env:
             WF_DB_PATH: /data/wealthfolio.db
             WF_LISTEN_ADDR: "0.0.0.0:8080"
-            WF_CORS_ALLOW_ORIGINS: "https://wealthfolio.internal.asic.li"
+            WF_CORS_ALLOW_ORIGINS: "https://wealthfolio.wg.asic.li"
 
           image:
             repository: cr.asic.li/dockercache/afadil/wealthfolio
