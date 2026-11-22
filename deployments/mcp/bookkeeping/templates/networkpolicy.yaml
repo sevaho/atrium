@@ -1,0 +1,22 @@
+---
+# MCP pods accept traffic only from inside mcp (proxy -> server) and from the
+# bookkeeper agent. Granting another agent: add it here and in oidc-config.yaml.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: bookkeeping-callers
+  namespace: mcp
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: bookkeeping
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: agents
+          podSelector:
+            matchLabels:
+              app: bookkeeper

@@ -1,0 +1,70 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: bookkeeping
+  namespace: mcp
+spec:
+  # No image of our own: server.py comes from the ConfigMap, pinned deps are installed on start.
+  image: docker.io/library/python:3.13-alpine
+  transport: streamable-http
+  args:
+    - sh
+    - -c
+    - pip install -q --no-cache-dir --target /tmp/deps mcp==1.20.0 google-api-python-client==2.179.0 pypdf==6.1.1 && PYTHONPATH=/tmp/deps exec python /app/server.py
+  mcpPort: 8000
+  proxyPort: 8080
+
+  oidcConfigRef:
+    name: bookkeeping-callers
+    # Must be unique per server so a token for one server can't be replayed on another.
+    audience: mcp-bookkeeping
+
+  env:
+    - name: SPREADSHEET_ID
+      value: 1_PTWIlWbpegK3lHIdnrErmH44gm9pFAnr88L4TuUwYI
+    - name: INVOICES_FOLDER_ID
+      value: 1HpQWI7v-6emCFo-nmF3RgN_Tt3F_cd4T  # "04 Facturen"
+    - name: HOME
+      value: /tmp
+  secrets:
+    - name: bookkeeping-credentials
+      key: GOOGLE_SERVICE_ACCOUNT_JSON
+      targetEnvName: GOOGLE_SERVICE_ACCOUNT_JSON
+
+  resources:
+    requests:
+      cpu: 20m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
+
+  podTemplateSpec:
+    metadata:
+      annotations:
+        checksum/server: {{ .Files.Get "server.py" | sha256sum }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: mcp
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: server
+              mountPath: /app
+              readOnly: true
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: server
+          configMap:
+            name: bookkeeping-server

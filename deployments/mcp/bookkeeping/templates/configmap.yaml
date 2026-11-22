@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bookkeeping-server
+  namespace: mcp
+data:
+  server.py: |
+    {{- .Files.Get "server.py" | nindent 4 }}
