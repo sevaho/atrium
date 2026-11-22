@@ -93,6 +93,18 @@ spec:
                 - type: telegram
                   send-on-resolved: true
 
+              # Gatus is not a VPN peer, so the wg gateway must refuse it. 200 means the
+              # wg-only SecurityPolicy is gone; no answer means Envoy is down.
+              - name: wg gateway rejects non-VPN
+                group: wireguard
+                url: https://grafana.wg.asic.li
+                interval: 60s
+                conditions:
+                  - "[STATUS] == 403"
+                alerts:
+                - type: telegram
+                  send-on-resolved: true
+
   destination:
     server: "https://kubernetes.default.svc"
     namespace: observability

@@ -58,6 +58,17 @@ spec:
                       summary: Host out of memory.
                       description: Node memory is filling up.
 
+                - name: WireGuard
+                  rules:
+                  - alert: WireGuardDown
+                    expr: absent(node_network_info{device="wg0", adminstate="up"})
+                    for: 2m
+                    labels:
+                      severity: critical
+                    annotations:
+                      summary: WireGuard interface wg0 is down on the server.
+                      description: No VPN access to *.wg.asic.li. Check wg-quick@wg0 on the host.
+
 
           scrapeConfigs:
 
