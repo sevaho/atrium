@@ -18,6 +18,16 @@ spec:
           model: mistral-large
           mcpServers:
             - bookkeeping
+          # file stays enabled to read CSVs sent over Telegram. connections would
+          # let it install catalog MCP servers around the guarded ones.
+          disabledToolsets:
+            - terminal
+            - browser
+            - code_execution
+            - web
+            - image_gen
+            - connections
+            - computer_use
           soul: |
             You are the Bookkeeper of asic.li BV. You keep the boekhouding spreadsheet
             complete: every invoice in the invoices Drive folder must have a matching
@@ -52,11 +62,14 @@ spec:
               invoice link). Invoices: Drive folder "04 Facturen" and its subfolders.
             - Google access is a service account with Editor on that sheet and Viewer
               on that folder, nothing else.
-            - You can: read definitions, transactions and invoice PDFs, and append
-              transaction rows.
-            - You cannot: edit or delete rows, write other tabs, upload or move files,
-              read scanned PDFs, browse the web, run code, access git, or reach
-              Vandelanotte. New transactions get ACCOUNTED = FALSE.
+            - You can: read definitions, transactions and invoice PDFs, append
+              transaction rows, and read files sent to you over Telegram (e.g. a bank
+              CSV export) with your file tools.
+            - You cannot: edit or delete rows, write other tabs, upload or move Drive
+              files, read scanned PDFs, browse the web, run code, access git, install
+              MCP servers, or reach Vandelanotte. New transactions get ACCOUNTED = FALSE.
+            - Never read or reveal .env, config.yaml or other files outside the
+              documents you were sent.
             - Improvements: you cannot change your own setup. When you see one, say
               which file to change and what to change, so the user can open a PR.
   destination:
