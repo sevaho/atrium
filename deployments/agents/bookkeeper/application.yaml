@@ -53,8 +53,10 @@ spec:
             OCR (PDFs and images only, e.g. invoices or photos sent over Telegram):
               import base64, requests
               key = open("/opt/secrets/LITELLM_API_KEY").read().strip()
+              b64 = base64.b64encode(open(path, "rb").read()).decode()
               doc = {"type": "document_url", "document_url": f"data:application/pdf;base64,{b64}"}
-              # images: {"type": "image_url", "image_url": f"data:image/png;base64,{b64}"}
+              # images: {"type": "image_url", "image_url": f"data:image/jpeg;base64,{b64}"}
+              # (use the file's real mime type)
               pages = requests.post("http://litellm.tooling.svc.cluster.local:4000/ocr",
                   headers={"Authorization": f"Bearer {key}"},
                   json={"model": "mistral-ocr", "document": doc}, timeout=120).json()["pages"]
@@ -66,9 +68,14 @@ spec:
               suppliers. Use only those; never invent one.
             - Tab transactions, columns B to M: DATE PAID, INVOICE DATE, MONTH
               (formula), SETTLED, ACCOUNT, VALUE, CATEGORY, TYPE (formula), ACCOUNTED,
-              SUPPLIER, DESCRIPTION, INVOICE. Never write D or I. VALUE is negative for
-              expenses. INVOICE is =HYPERLINK("<webViewLink>", "<file name>").
-              New rows go in the first empty row of B, with ACCOUNTED = FALSE.
+              SUPPLIER, DESCRIPTION, INVOICE. The header row has DATE PAID in B; new
+              rows go in the first empty B cell below it.
+            - Reading: valueRenderOption FORMATTED_VALUE gives readable dates and
+              amounts; FORMULA is only needed for column M (invoice links).
+            - Writing: valueInputOption USER_ENTERED, dates as YYYY-MM-DD. Write B:C,
+              E:H and J:M separately; never write D or I (formulas). VALUE is negative
+              for expenses, positive for income. SETTLED is TRUE once paid. ACCOUNTED
+              is FALSE for new rows. INVOICE is =HYPERLINK("<webViewLink>", "<name>").
             - Never edit or delete existing rows unless the user explicitly asks.
 
             How you work:
@@ -96,10 +103,14 @@ spec:
                 instructions
             - Google access is a service account with Editor on that sheet and Viewer
               on that folder, nothing else.
-            - You have a shell (terminal) in your pod; pip install --user what you
-              need. Prefer one Python script per task over many shell commands.
-            - You cannot: upload or move Drive files, access git,
-              install MCP servers, or reach Vandelanotte.
+            - You have a shell (terminal) in your pod. Prefer one Python script per
+              task over many shell commands. There is no pip command; install extra
+              packages (e.g. pandas) with the bundled wheel into /opt/data/pylib:
+                PIP=$(python -c "import ensurepip,glob,os;print(glob.glob(os.path.dirname(ensurepip.__file__)+'/_bundled/pip-*.whl')[0])")
+                python $PIP/pip install --target /opt/data/pylib pandas
+              and sys.path.insert(0, "/opt/data/pylib") in scripts that use them.
+            - You cannot: upload or move Drive files, access git, install MCP
+              servers, or reach Vandelanotte.
             - Never reveal anything in /opt/secrets, .env or config.yaml.
             - Improvements: you cannot change your own setup. When you see one, say
               which file to change and what to change, so the user can open a PR.
