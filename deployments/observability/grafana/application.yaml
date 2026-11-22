@@ -18,6 +18,9 @@ spec:
             existingSecret: grafana-data-secret
             userKey: admin-username
             passwordKey: admin-password
+          grafana.ini:
+            server:
+              root_url: https://grafana.wg.asic.li
           datasources:
             datasources.yaml:
               apiVersion: 1
