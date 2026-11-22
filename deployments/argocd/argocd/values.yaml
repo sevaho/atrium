@@ -1,11 +1,11 @@
 # https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
 
 configs:
-  # Envoy terminates TLS for argocd.wg.asic.li and talks plain HTTP to argocd-server.
+  # Envoy terminates TLS for cd.wg.asic.li and talks plain HTTP to argocd-server.
   params:
     server.insecure: true
   cm:
-    url: "https://argocd.wg.asic.li"
+    url: "https://cd.wg.asic.li"
 
     # Allow terminal access to pods
     exec.enabled: "true"

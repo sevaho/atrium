@@ -10,7 +10,7 @@ spec:
     - name: wg
       namespace: envoy-gateway-system
   hostnames:
-    - argocd.wg.asic.li
+    - cd.wg.asic.li
   rules:
     - backendRefs:
         - name: argocd-server
