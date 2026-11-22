@@ -4,16 +4,17 @@ The agent never gets raw Sheets/Drive access: it can only read, list invoices an
 append rows into the transactions tab, never edit or delete existing rows.
 """
 
+import base64
 import io
 import json
 import os
+import urllib.request
 from datetime import date
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from mcp.server.fastmcp import FastMCP
-from pypdf import PdfReader
 
 SPREADSHEET_ID = os.environ["SPREADSHEET_ID"]
 INVOICES_FOLDER_ID = os.environ["INVOICES_FOLDER_ID"]
@@ -79,17 +80,27 @@ def list_invoices() -> list[dict]:
 
 @mcp.tool()
 def read_invoice(file_id: str) -> str:
-    """Text of an invoice PDF from the invoices folder. Empty text means a scanned PDF: ask the user for the details."""
+    """Invoice from the invoices folder (PDF, scanned PDF or image) as markdown, read with Mistral OCR."""
     invoice = next((f for f in list_invoices() if f["id"] == file_id), None)
     if invoice is None:
         raise ValueError("file is not in the invoices folder")
-    if invoice["mimeType"] != "application/pdf":
-        raise ValueError(f"only PDFs can be read, this is {invoice['mimeType']}")
+    mime = invoice["mimeType"]
+    if mime != "application/pdf" and not mime.startswith("image/"):
+        raise ValueError(f"only PDFs and images can be read, this is {mime}")
     buffer = io.BytesIO()
     downloader = MediaIoBaseDownload(buffer, drive.files().get_media(fileId=file_id))
     while not downloader.next_chunk()[1]:
         pass
-    return "\n".join(page.extract_text() or "" for page in PdfReader(buffer).pages)[:8000]
+    data_url = f"data:{mime};base64,{base64.b64encode(buffer.getvalue()).decode()}"
+    kind = "image_url" if mime.startswith("image/") else "document_url"
+    request = urllib.request.Request(
+        f"{os.environ['LITELLM_URL']}/v1/ocr",
+        data=json.dumps({"model": "mistral-ocr", "document": {"type": kind, kind: data_url}}).encode(),
+        headers={"Authorization": f"Bearer {os.environ['LITELLM_API_KEY']}", "Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(request, timeout=120) as response:
+        pages = json.load(response)["pages"]
+    return "\n\n".join(page["markdown"] for page in pages)[:12000]
 
 
 @mcp.tool()
